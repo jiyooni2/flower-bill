@@ -12,5 +12,5 @@ export class OrderProduct extends CoreEntity {
   product: Product;
 
   @ManyToOne((type) => Bill, (bill) => bill.orderProducts)
-  bill: Bill;
+  bill?: Bill;
 }
