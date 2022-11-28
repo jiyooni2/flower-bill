@@ -8,6 +8,9 @@ import { DataSource } from 'typeorm';
 import { BillService } from './bill/bill.service';
 import { Bill } from './bill/entities/bill.entity';
 import { Store } from './store/entities/store.entity';
+import { Category } from './category/entities/category.entity';
+import { OrderProduct } from './orderProduct/orderProduct.entity';
+import { Product } from './product/entities/product.entity';
 
 class AppUpdater {
   constructor() {
@@ -22,7 +25,7 @@ export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
   synchronize: true,
-  entities: [Bill, Store],
+  entities: [Bill, Store, Category, OrderProduct, Product],
   logging: true,
 });
 

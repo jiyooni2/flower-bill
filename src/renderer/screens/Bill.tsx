@@ -5,7 +5,7 @@ import { AppDataSource } from './../../main/main';
 import { ipcRenderer } from 'electron';
 
 const BillPage = () => {
-  const [bill, setBill] = useState([]);
+  const [orderProducts, setOrderProducts] = useState([]);
 
   const onClick = () => {
     console.log('AAA');
