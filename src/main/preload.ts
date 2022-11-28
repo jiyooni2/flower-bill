@@ -1,6 +1,28 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example' | 'create-bill';
+export type Channels =
+  | 'ipc-example'
+  | 'create-bill'
+  | 'get-bill'
+  | 'delete-bill'
+  | 'update-bill'
+  | 'create-store'
+  | 'get-store'
+  | 'delete-store'
+  | 'update-store'
+  | 'create-order-product'
+  | 'get-order-product'
+  | 'delete-order-product'
+  | 'update-order-product'
+  | 'create-product'
+  | 'get-product'
+  | 'get-products'
+  | 'delete-product'
+  | 'update-product'
+  | 'create-category'
+  | 'get-category'
+  | 'delete-category'
+  | 'update-category';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -18,6 +40,9 @@ contextBridge.exposeInMainWorld('electron', {
     },
     once(channel: Channels, func: (...args: unknown[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
+    },
+    sendSyncMessage(channel: Channels, args: unknown[]) {
+      ipcRenderer.sendSync(channel, args);
     },
   },
 });

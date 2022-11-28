@@ -11,6 +11,7 @@ import { Store } from './store/entities/store.entity';
 import { Category } from './category/entities/category.entity';
 import { OrderProduct } from './orderProduct/orderProduct.entity';
 import { Product } from './product/entities/product.entity';
+import { ProductService } from './product/product.service';
 
 class AppUpdater {
   constructor() {
@@ -30,6 +31,7 @@ export const AppDataSource = new DataSource({
 });
 
 const billService: BillService = new BillService();
+const productService: ProductService = new ProductService();
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -41,8 +43,12 @@ ipcMain.on('ipc-example', async (event, arg) => {
 
 ipcMain.on('create-bill', async (event, arg) => {
   await billService.createBill({ memo: 'AA' });
-  console.log('data create');
   event.reply('create-bill', 'PONG');
+});
+
+ipcMain.on('get-products', async (event, arg) => {
+  const products = await productService.getProducts();
+  event.reply('get-products', products);
 });
 
 if (process.env.NODE_ENV === 'production') {

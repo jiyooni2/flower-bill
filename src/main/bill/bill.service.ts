@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateBillInput } from './dtos/create-bill.dto';
 
 export class BillService {
-  readonly billRepository: Repository<Bill>;
+  private readonly billRepository: Repository<Bill>;
 
   constructor() {
     this.billRepository = AppDataSource.getRepository(Bill);
@@ -12,7 +12,6 @@ export class BillService {
 
   async createBill(createBillInput: CreateBillInput) {
     try {
-      console.log('CREATE BILL START', createBillInput);
       await this.billRepository
         .createQueryBuilder()
         .insert()
@@ -20,7 +19,6 @@ export class BillService {
         .values(createBillInput)
         .execute();
 
-      console.log('CREATE BILL');
       return { ok: true };
     } catch (error: any) {
       return { ok: false, error: error.message };
