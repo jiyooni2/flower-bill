@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { DataSource } from 'typeorm';
 
 class AppUpdater {
   constructor() {
@@ -22,6 +23,11 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+
+export const appDataSource = new DataSource({
+  type: 'sqlite',
+  database: 'database.sqlite',
+});
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -127,6 +133,15 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    appDataSource
+      .initialize()
+      .then(() => {
+        console.log('DataSource init success');
+      })
+      .catch((err) => {
+        console.error('Error during data source initialization', err);
+      });
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
