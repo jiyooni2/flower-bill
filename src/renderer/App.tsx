@@ -1,8 +1,23 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+  MemoryRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from 'react-router-dom';
 import icon from '../../assets/icon.svg';
 import './App.css';
+import Bill from './screens/Bill';
+import routes from './routes';
 
 const Hello = () => {
+  const navigate = useNavigate();
+
+  const onClick = () => {
+    navigate(routes.bill, {
+      state: { message: 'Go to Bill' },
+    });
+  };
+
   return (
     <div>
       <div className="Hello">
@@ -22,18 +37,12 @@ const Hello = () => {
             Read our docs
           </button>
         </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="folded hands">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
+        <button type="button" onClick={onClick}>
+          <span role="img" aria-label="folded hands">
+            🙏
+          </span>
+          Donate
+        </button>
       </div>
     </div>
   );
@@ -44,6 +53,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Hello />} />
+        <Route path="/bill" element={<Bill />} />
       </Routes>
     </Router>
   );

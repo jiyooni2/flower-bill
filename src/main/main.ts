@@ -1,13 +1,3 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
-
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `npm run build` or `npm run build:main`, this file is compiled to
- * `./src/main.js` using webpack. This gives us some performance wins.
- */
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
@@ -15,6 +5,9 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { DataSource } from 'typeorm';
+import { BillService } from './bill/bill.service';
+import { Bill } from './bill/entities/bill.entity';
+import { Store } from './store/entities/store.entity';
 
 class AppUpdater {
   constructor() {
@@ -24,10 +17,16 @@ class AppUpdater {
   }
 }
 
-export const appDataSource = new DataSource({
+//db init
+export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
+  synchronize: true,
+  entities: [Bill, Store],
+  logging: true,
 });
+
+const billService: BillService = new BillService();
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -35,6 +34,12 @@ ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('create-bill', async (event, arg) => {
+  await billService.createBill({ memo: 'AA' });
+  console.log('data create');
+  event.reply('create-bill', 'PONG');
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -133,8 +138,7 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
-    appDataSource
-      .initialize()
+    AppDataSource.initialize()
       .then(() => {
         console.log('DataSource init success');
       })

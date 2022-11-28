@@ -1,7 +1,7 @@
-import { Store } from "../../store/entities/store.entity";
+import { Store } from '../../store/entities/store.entity';
 
-import { Column, Entity, ManyToOne } from "typeorm";
-import { CoreEntity } from "../../common/entities/core.entity";
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { CoreEntity } from '../../common/entities/core.entity';
 
 @Entity()
 export class Bill extends CoreEntity {
