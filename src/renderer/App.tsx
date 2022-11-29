@@ -13,9 +13,7 @@ const Hello = () => {
   const navigate = useNavigate();
 
   const onClick = () => {
-    navigate(routes.bill, {
-      state: { message: 'Go to Bill' },
-    });
+    navigate(routes.bill);
   };
 
   return (
@@ -37,7 +35,7 @@ const Hello = () => {
             Read our docs
           </button>
         </a>
-        <button type="button" onClick={onClick}>
+        <button type="button" onClick={() => navigate(routes.bill)}>
           <span role="img" aria-label="folded hands">
             🙏
           </span>

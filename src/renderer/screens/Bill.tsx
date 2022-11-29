@@ -1,17 +1,22 @@
 import './Bill.scss';
 import '../common.scss';
 
+import * as React from 'react';
+import Button from '@mui/material/Button';
+
 import { useEffect, useState } from 'react';
 import { BillService } from './../../main/bill/bill.service';
 import { AppDataSource } from './../../main/main';
 import { ipcRenderer } from 'electron';
 import { OrderProduct } from './../../main/orderProduct/orderProduct.entity';
 import { Product } from './../../main/product/entities/product.entity';
+import { TextField } from '@mui/material';
 
 const Bill = () => {
   const [orderProducts, setOrderProducts] = useState<OrderProduct[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [counts, setCounts] = useState<number[]>([]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', []);
@@ -33,25 +38,36 @@ const Bill = () => {
       ...orderProducts,
       { id: orderProducts.length, product, count: 1 },
     ]);
+    setCounts([...counts, 1]);
   };
 
   const changeCount = (e: any, orderProduct: OrderProduct) => {
+    let {
+      value,
+      dataset: { id },
+    } = e.target;
+
+    if (value == '' || isNaN(value)) {
+      value = 0;
+    }
+
     let nextOrderProducts = orderProducts;
     let updatedProduct = nextOrderProducts.find(
       (p) => p.id === orderProduct.id
     );
-    console.log(nextOrderProducts);
-    console.log(updatedProduct);
 
     if (updatedProduct) {
-      updatedProduct.count = parseInt(e.target.value);
+      updatedProduct.count = parseInt(value);
     }
 
     setOrderProducts(nextOrderProducts);
 
-    console.log(nextOrderProducts);
+    //have to make new obj
+    let updateCounts = Array.from(counts);
 
-    // updatedProduct.count=
+    updateCounts[id] = parseInt(value);
+    setCounts(updateCounts);
+    console.log(counts);
   };
 
   return (
@@ -60,6 +76,7 @@ const Bill = () => {
         <div className="header-container">
           <p className="font-title">계산서</p>
         </div>
+
         <div className="contents-container">
           {orderProducts.map((orderProduct, index) => {
             return (
@@ -67,14 +84,19 @@ const Bill = () => {
                 <span className="font-content">
                   {orderProduct.product.name}
                 </span>
-                <input
-                  onInput={(e) => changeCount(e, orderProduct)}
-                  value={orderProduct.count}
-                  type="number"
-                ></input>
-                <span className="font-content">{orderProduct.count}</span>
-                <span className="font-content">
-                  \{orderProduct.product.price * orderProduct.count}
+                <span className="input-container">
+                  <input
+                    data-id={index}
+                    onInput={(e) => changeCount(e, orderProduct)}
+                    value={counts[index] === 0 ? '' : counts[index]}
+                    type="number"
+                  ></input>
+                  <span className="font-content">
+                    \
+                    {isNaN(orderProduct.count)
+                      ? 0
+                      : orderProduct.product.price * orderProduct.count}
+                  </span>
                 </span>
               </div>
             );
@@ -90,7 +112,10 @@ const Bill = () => {
             }, 0)}
           </p>
         </div>
-        <button onClick={createBill}>계산서 생성</button>
+
+        <Button onClick={createBill} variant="contained">
+          계산서 생성
+        </Button>
       </div>
 
       <div className="product-container">
@@ -102,13 +127,15 @@ const Bill = () => {
           <div className="content">
             {products?.map((product) => {
               return (
-                <div
-                  key={product.id}
-                  className="content"
-                  onClick={() => addOrderProduct(product)}
-                >
+                <div key={product.id} className="content">
                   <p className="font-content">{product.name}</p>
                   <p className="font-content">\{product.price}</p>
+                  <Button
+                    onClick={() => addOrderProduct(product)}
+                    variant="contained"
+                  >
+                    추가
+                  </Button>
                 </div>
               );
             })}
