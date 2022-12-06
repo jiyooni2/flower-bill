@@ -1,3 +1,4 @@
+import './main-ipc';
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
@@ -30,26 +31,10 @@ export const AppDataSource = new DataSource({
   logging: true,
 });
 
-const billService: BillService = new BillService();
-const productService: ProductService = new ProductService();
+export const billService: BillService = new BillService();
+export const productService: ProductService = new ProductService();
 
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
-
-ipcMain.on('create-bill', async (event, arg) => {
-  await billService.createBill({ memo: 'AA' });
-  event.reply('create-bill', 'PONG');
-});
-
-ipcMain.on('get-products', async (event, arg) => {
-  const products = await productService.getProducts();
-  event.reply('get-products', products);
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
