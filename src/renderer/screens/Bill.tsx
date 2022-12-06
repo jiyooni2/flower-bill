@@ -11,21 +11,25 @@ import { ipcRenderer } from 'electron';
 import { OrderProduct } from './../../main/orderProduct/orderProduct.entity';
 import { Product } from './../../main/product/entities/product.entity';
 import { TextField } from '@mui/material';
+import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
+import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 
 const Bill = () => {
   const [orderProducts, setOrderProducts] = useState<OrderProduct[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [counts, setCounts] = useState<number[]>([]);
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-products', []);
+    window.electron.ipcRenderer.sendMessage('get-products', {});
 
-    window.electron.ipcRenderer.on('get-products', (args) => {
-      setProducts(args.products as Product[]);
-      console.log(products);
-      setIsLoading(true);
-    });
+    window.electron.ipcRenderer.on(
+      'get-products',
+      (args: GetProductsOutput) => {
+        setProducts(args.products as Product[]);
+        setIsLoading(false);
+      }
+    );
   }, []);
 
   const createBill = () => {

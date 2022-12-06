@@ -7,9 +7,15 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
+//bill
 ipcMain.on('create-bill', async (event, arg) => {
-  await billService.createBill({ memo: 'AA' });
-  event.reply('create-bill', 'PONG');
+  const result = await billService.createBill({ memo: arg.memo });
+  event.reply('create-bill', result);
+});
+
+ipcMain.on('get-bill', async (event, arg) => {
+  const result = await billService.getBill(arg);
+  event.reply('get-bill', result);
 });
 
 ipcMain.on('get-products', async (event, arg) => {

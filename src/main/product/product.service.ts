@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { AppDataSource } from './../main';
-import { GetProductsInput } from './dtos/get-products.dto';
+import { GetProductsInput, GetProductsOutput } from './dtos/get-products.dto';
 
 export class ProductService {
   private readonly productRepository: Repository<Product>;
@@ -10,14 +10,12 @@ export class ProductService {
     this.productRepository = AppDataSource.getRepository(Product);
   }
 
-  async getProducts() {
+  async getProducts(): Promise<GetProductsOutput> {
     try {
       const products = await this.productRepository
         .createQueryBuilder('product')
         .select()
         .getMany();
-
-      console.log(products);
 
       return { ok: true, products };
     } catch (error: any) {
