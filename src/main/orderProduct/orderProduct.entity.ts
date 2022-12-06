@@ -8,8 +8,8 @@ export class OrderProduct extends CoreEntity {
   @Column()
   count: number;
 
-  @Column()
-  transactionDate: Date;
+  @Column({ default: () => 'CURRENT_TIMESTAMP' })
+  transactionDate?: Date;
 
   @ManyToOne((type) => Product, (product) => product.orderProducts)
   product: Product;

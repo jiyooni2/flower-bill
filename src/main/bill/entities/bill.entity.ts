@@ -9,8 +9,8 @@ export class Bill extends CoreEntity {
   @Column({ nullable: true })
   memo?: string;
 
-  @Column()
-  transactionDate: Date;
+  @Column({ default: () => 'CURRENT_TIMESTAMP' })
+  transactionDate?: Date;
 
   @ManyToOne((type) => Store, (store) => store.bills)
   store: Store;
