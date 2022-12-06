@@ -8,6 +8,9 @@ export class OrderProduct extends CoreEntity {
   @Column()
   count: number;
 
+  @Column()
+  transactionDate: Date;
+
   @ManyToOne((type) => Product, (product) => product.orderProducts)
   product: Product;
 
