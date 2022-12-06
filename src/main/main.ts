@@ -13,6 +13,7 @@ import { Category } from './category/entities/category.entity';
 import { OrderProduct } from './orderProduct/orderProduct.entity';
 import { Product } from './product/entities/product.entity';
 import { ProductService } from './product/product.service';
+import { StoreService } from './store/store.service';
 
 class AppUpdater {
   constructor() {
@@ -33,6 +34,7 @@ export const AppDataSource = new DataSource({
 
 export const billService: BillService = new BillService();
 export const productService: ProductService = new ProductService();
+export const storeService: StoreService = new StoreService();
 
 let mainWindow: BrowserWindow | null = null;
 

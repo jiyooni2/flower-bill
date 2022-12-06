@@ -6,8 +6,8 @@ import { OrderProduct } from './../../orderProduct/orderProduct.entity';
 
 @Entity()
 export class Bill extends CoreEntity {
-  @Column()
-  memo: string;
+  @Column({ nullable: true })
+  memo?: string;
 
   @ManyToOne((type) => Store, (store) => store.bills)
   store: Store;
