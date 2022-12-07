@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import { billService, productService, storeService } from './main';
 import { CreateBillInput } from './bill/dtos/create-bill.dto';
 import { CreateStoreInput } from './store/dtos/create-store.dto';
+import { UpdateBillInput } from './bill/dtos/update-bill.dto';
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -23,6 +24,11 @@ ipcMain.on('get-bill', async (event, arg) => {
 ipcMain.on('delete-bill', async (event, arg) => {
   const result = await billService.deleteBill(arg);
   event.reply('delete-bill', result);
+});
+
+ipcMain.on('update-bill', async (event, updateBIllInput: UpdateBillInput) => {
+  const result = await billService.updateBill(updateBIllInput);
+  event.reply('update-bill', result);
 });
 
 ipcMain.on('get-products', async (event, arg) => {

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateBillInput } from './dtos/create-bill.dto';
 import { GetBillInput, GetBillOutput } from './dtos/get-bill.dto';
 import { DeleteBillInput, DeleteBillOutput } from './dtos/delete-bill.dto';
+import { UpdateBillInput, UpdateBillOutput } from './dtos/update-bill.dto';
 
 export class BillService {
   private readonly billRepository: Repository<Bill>;
@@ -39,6 +40,23 @@ export class BillService {
   async deleteBill({ id }: DeleteBillInput): Promise<DeleteBillOutput> {
     try {
       await this.billRepository.delete({ id });
+
+      return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async updateBill(
+    updateBillInput: UpdateBillInput
+  ): Promise<UpdateBillOutput> {
+    try {
+      const { billId } = updateBillInput;
+      await AppDataSource.createQueryBuilder()
+        .update(Bill)
+        .set(updateBillInput)
+        .where('id=:billId', { billId })
+        .execute();
 
       return { ok: true };
     } catch (error: any) {
