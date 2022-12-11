@@ -3,6 +3,7 @@ import { billService, productService, storeService } from './main';
 import { CreateBillInput } from './bill/dtos/create-bill.dto';
 import { CreateStoreInput } from './store/dtos/create-store.dto';
 import { UpdateBillInput } from './bill/dtos/update-bill.dto';
+import { SearchStoreInput } from './store/dtos/search-store.dto';
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -41,5 +42,13 @@ ipcMain.on(
   async (event, createStoreInput: CreateStoreInput) => {
     const result = await storeService.createStore(createStoreInput);
     event.reply('create-store', result);
+  }
+);
+
+ipcMain.on(
+  'search-store',
+  async (event, searchStoreInput: SearchStoreInput) => {
+    const result = await storeService.searchStore(searchStoreInput);
+    event.reply('search-store', result);
   }
 );

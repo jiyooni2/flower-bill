@@ -136,7 +136,7 @@ app
   .then(() => {
     AppDataSource.initialize()
       .then(() => {
-        console.log('DataSource init success');
+        console.log('DataSource init success, 성공!');
       })
       .catch((err) => {
         console.error('Error during data source initialization', err);
