@@ -12,12 +12,16 @@ import { TextField } from '@mui/material';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import { CreateBillInput } from './../../main/bill/dtos/create-bill.dto';
+import { Store } from './../../main/store/entities/store.entity';
+import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 
 const Bill = () => {
   const [orderProducts, setOrderProducts] = useState<OrderProduct[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [counts, setCounts] = useState<number[]>([]);
+  const [memo, setMemo] = useState<string>('');
+  const [store, setStore] = useState<Store>();
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {});
@@ -27,6 +31,19 @@ const Bill = () => {
       (args: GetProductsOutput) => {
         setProducts(args.products as Product[]);
         setIsLoading(false);
+      }
+    );
+
+    window.electron.ipcRenderer.on(
+      'search-store',
+      ({ ok, error, stores }: SearchStoreOutput) => {
+        if (ok) {
+          console.log(stores);
+          // need to select store
+          // setStore(stores[0]);
+        } else {
+          alert(error);
+        }
       }
     );
   }, []);
@@ -42,6 +59,12 @@ const Bill = () => {
       { id: orderProducts.length, product, count: 1 },
     ]);
     setCounts([...counts, 1]);
+  };
+
+  const searchStore = () => {
+    window.electron.ipcRenderer.sendMessage('search-store', {
+      keyword: '에이스',
+    });
   };
 
   const changeCount = (e: any, orderProduct: OrderProduct) => {
@@ -77,7 +100,11 @@ const Bill = () => {
     <div className="container">
       <div className="bill-container">
         <div className="header-container">
-          <p className="font-title">계산서</p>
+          <p className="font-title">영수증</p>
+          <div className="store-container">
+            <p>{store ? store.name : ''} 귀하</p>
+            <Button onClick={searchStore}>검색</Button>
+          </div>
         </div>
 
         <div className="contents-container">

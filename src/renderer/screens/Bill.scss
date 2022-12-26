@@ -32,6 +32,11 @@
 
   .header-container {
     padding: 10px;
+
+    .store-container {
+      display: flex;
+      align-items: center;
+    }
   }
 
   .contents-container {
