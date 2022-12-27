@@ -1,13 +1,10 @@
 import './BillPage.scss';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
-import { ipcRenderer } from 'electron';
-import { useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { storeState } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
-import { OrderProduct } from 'main/orderProduct/orderProduct.entity';
-import ROUTES from '../../constants/routes';
+import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 import StoreSearchModal from '../../components/StoreSearchModal/StoreSearchModal';
 
 const BillPage = () => {
@@ -18,8 +15,6 @@ const BillPage = () => {
   const [memo, setMemo] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const store = useRecoilValue(storeState);
-
-  const navigate = useNavigate();
 
   const createBill = () => {
     window.electron.ipcRenderer.sendMessage('create-bill', {
@@ -96,9 +91,6 @@ const BillPage = () => {
     <>
       <StoreSearchModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="container">
-        <Button type="button" onClick={() => navigate(ROUTES.HOME)}>
-          뒤로가기
-        </Button>
         <div className="bill-container">
           <div className="header-container">
             <p className="font-title">영수증</p>

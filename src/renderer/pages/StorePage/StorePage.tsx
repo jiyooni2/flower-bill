@@ -1,8 +1,6 @@
 import './StorePage.scss';
 import { TextField } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import useInputs from '../../hooks/useInputs';
-import ROUTES from '../../constants/routes';
 import { CreateStoreInput } from '../../../main/store/dtos/create-store.dto';
 
 interface IForm extends Omit<CreateStoreInput, 'businessNumber'> {
@@ -10,7 +8,6 @@ interface IForm extends Omit<CreateStoreInput, 'businessNumber'> {
 }
 
 const StorePage = () => {
-  const navigate = useNavigate();
   const [{ businessNumber, address, name, owner }, handleChange] =
     useInputs<IForm>({
       businessNumber: '',
@@ -32,9 +29,6 @@ const StorePage = () => {
 
   return (
     <div>
-      <button type="button" onClick={() => navigate(ROUTES.HOME)}>
-        뒤로가기
-      </button>
       <form onSubmit={handleSubmit}>
         <div className="form-box">
           <div>
