@@ -5,6 +5,7 @@ import { CreateStoreInput, CreateStoreOutput } from './dtos/create-store.dto';
 import { SearchStoreInput, SearchStoreOutput } from './dtos/search-store.dto';
 import { UpdateStoreInput, UpdateStoreOutput } from './dtos/update-store.dto';
 import { GetStoresInput, GetStoresOutput } from './dtos/get-stores.dto';
+import { DeleteStoreInput, DeleteStoreOutput } from './dtos/delete-store.dto';
 
 export class StoreService {
   private readonly storeRepository: Repository<Store>;
@@ -77,6 +78,20 @@ export class StoreService {
         .select()
         .offset(page)
         .limit(10)
+        .execute();
+
+      return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async deleteStore({ id }: DeleteStoreInput): Promise<DeleteStoreOutput> {
+    try {
+      await this.storeRepository
+        .createQueryBuilder(Store.name)
+        .delete()
+        .where('id=:id', { id })
         .execute();
 
       return { ok: true };
