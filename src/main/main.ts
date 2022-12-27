@@ -10,10 +10,11 @@ import { BillService } from './bill/bill.service';
 import { Bill } from './bill/entities/bill.entity';
 import { Store } from './store/entities/store.entity';
 import { Category } from './category/entities/category.entity';
-import { OrderProduct } from './orderProduct/orderProduct.entity';
+import { OrderProduct } from './orderProduct/entities/orderProduct.entity';
 import { Product } from './product/entities/product.entity';
 import { ProductService } from './product/product.service';
 import { StoreService } from './store/store.service';
+import { OrderProductService } from './orderProduct/orderProduct.service';
 
 class AppUpdater {
   constructor() {
@@ -35,6 +36,8 @@ export const AppDataSource = new DataSource({
 export const billService: BillService = new BillService();
 export const productService: ProductService = new ProductService();
 export const storeService: StoreService = new StoreService();
+export const orderProductService: OrderProductService =
+  new OrderProductService();
 
 let mainWindow: BrowserWindow | null = null;
 

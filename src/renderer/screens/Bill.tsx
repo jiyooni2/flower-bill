@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 
 import { useEffect, useState } from 'react';
 import { ipcRenderer } from 'electron';
-import { OrderProduct } from './../../main/orderProduct/orderProduct.entity';
 import { Product } from './../../main/product/entities/product.entity';
 import { TextField } from '@mui/material';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';

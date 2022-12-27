@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { CoreEntity } from './../../common/entities/core.entity';
 import { Category } from './../../category/entities/category.entity';
-import { OrderProduct } from './../../orderProduct/orderProduct.entity';
+import { OrderProduct } from '../../orderProduct/entities/orderProduct.entity';
 
 @Entity()
 export class Product extends CoreEntity {
