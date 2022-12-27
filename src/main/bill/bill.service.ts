@@ -1,22 +1,19 @@
-import { AppDataSource, orderProductService } from '../main';
+import { AppDataSource } from '../main';
 import { Bill } from './entities/bill.entity';
 import { Repository } from 'typeorm';
 import { CreateBillInput } from './dtos/create-bill.dto';
 import { GetBillInput, GetBillOutput } from './dtos/get-bill.dto';
 import { DeleteBillInput, DeleteBillOutput } from './dtos/delete-bill.dto';
 import { UpdateBillInput, UpdateBillOutput } from './dtos/update-bill.dto';
-import { OrderProductService } from './../orderProduct/orderProduct.service';
 import { OrderProduct } from './../orderProduct/entities/orderProduct.entity';
 
 export class BillService {
   private readonly billRepository: Repository<Bill>;
   private readonly orderProductRepository: Repository<OrderProduct>;
-  private readonly orderProductService: OrderProductService;
 
   constructor() {
     this.billRepository = AppDataSource.getRepository(Bill);
     this.orderProductRepository = AppDataSource.getRepository(OrderProduct);
-    this.orderProductService = orderProductService;
   }
 
   async createBill({
