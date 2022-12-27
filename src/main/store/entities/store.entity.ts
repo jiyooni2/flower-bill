@@ -14,7 +14,7 @@ export class Store extends CoreEntity {
   owner: string;
 
   @Column()
-  address: string;
+  address?: string;
 
   @OneToMany((type) => Bill, (bill) => bill.store)
   bills: Bill[];
