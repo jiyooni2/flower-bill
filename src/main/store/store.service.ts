@@ -29,12 +29,17 @@ export class StoreService {
     }
   }
 
-  async searchStore({ keyword }: SearchStoreInput): Promise<SearchStoreOutput> {
+  async searchStore({
+    page,
+    keyword,
+  }: SearchStoreInput): Promise<SearchStoreOutput> {
     try {
       const stores = await this.storeRepository
         .createQueryBuilder(Store.name)
         .select()
         .where(`name LIKE "%${keyword}%"`)
+        .offset(page)
+        .limit(10)
         .getMany();
 
       console.log(stores);
