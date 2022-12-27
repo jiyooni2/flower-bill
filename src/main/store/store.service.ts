@@ -3,6 +3,7 @@ import { Store } from './entities/store.entity';
 import { AppDataSource } from './../main';
 import { CreateStoreInput, CreateStoreOutput } from './dtos/create-store.dto';
 import { SearchStoreInput, SearchStoreOutput } from './dtos/search-store.dto';
+import { UpdateStoreInput, UpdateStoreOutput } from './dtos/update-store.dto';
 
 export class StoreService {
   private readonly storeRepository: Repository<Store>;
@@ -39,6 +40,24 @@ export class StoreService {
       console.log(stores);
 
       return { ok: true, stores };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async updateStore(
+    updateStoreInput: UpdateStoreInput
+  ): Promise<UpdateStoreOutput> {
+    try {
+      const { id } = updateStoreInput;
+
+      await AppDataSource.createQueryBuilder()
+        .update(Store)
+        .set(updateStoreInput)
+        .where('id=:id', { id })
+        .execute();
+
+      return { ok: true };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }

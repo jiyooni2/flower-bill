@@ -51,11 +51,11 @@ export class BillService {
     updateBillInput: UpdateBillInput
   ): Promise<UpdateBillOutput> {
     try {
-      const { billId } = updateBillInput;
+      const { id } = updateBillInput;
       await AppDataSource.createQueryBuilder()
         .update(Bill)
         .set(updateBillInput)
-        .where('id=:billId', { billId })
+        .where('id=:id', { id })
         .execute();
 
       return { ok: true };

@@ -5,7 +5,7 @@ export interface UpdateBillInput
   extends Partial<
     Pick<Bill, 'transactionDate' | 'memo' | 'orderProducts' | 'store'>
   > {
-  billId: number;
+  id: number;
 }
 
 export interface UpdateBillOutput extends CoreOutput {}
