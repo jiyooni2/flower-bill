@@ -4,6 +4,7 @@ import { CreateBillInput } from './bill/dtos/create-bill.dto';
 import { CreateStoreInput } from './store/dtos/create-store.dto';
 import { UpdateBillInput } from './bill/dtos/update-bill.dto';
 import { SearchStoreInput } from './store/dtos/search-store.dto';
+import { GetStoresInput, GetStoresOutput } from './store/dtos/get-stores.dto';
 import {
   UpdateStoreInput,
   UpdateStoreOutput,
@@ -66,3 +67,8 @@ ipcMain.on(
     event.reply('update-store', result);
   }
 );
+
+ipcMain.on('get-stores', async (event, getStoresInput: GetStoresInput) => {
+  const result: GetStoresOutput = await storeService.getStores(getStoresInput);
+  event.reply('update-store', result);
+});
