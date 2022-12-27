@@ -1,17 +1,17 @@
 import './StorePage.scss';
 import { TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Store } from 'renderer/types';
 import useInputs from '../../hooks/useInputs';
 import ROUTES from '../../constants/routes';
+import { CreateStoreInput } from '../../../main/store/dtos/create-store.dto';
 
-interface IForm extends Omit<Store, 'bills' | 'businessNumber'> {
+interface IForm extends Omit<CreateStoreInput, 'businessNumber'> {
   businessNumber: string;
 }
 
 const StorePage = () => {
   const navigate = useNavigate();
-  const [{ businessNumber, address, name, owner }, handleChange, setForm] =
+  const [{ businessNumber, address, name, owner }, handleChange] =
     useInputs<IForm>({
       businessNumber: '',
       address: '',
@@ -21,6 +21,13 @@ const StorePage = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    window.electron.ipcRenderer.sendMessage('create-store', {
+      businessNumber: Number(businessNumber),
+      address,
+      name,
+      owner,
+    });
   };
 
   return (
