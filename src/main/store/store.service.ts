@@ -4,6 +4,8 @@ import { AppDataSource } from './../main';
 import { CreateStoreInput, CreateStoreOutput } from './dtos/create-store.dto';
 import { SearchStoreInput, SearchStoreOutput } from './dtos/search-store.dto';
 import { UpdateStoreInput, UpdateStoreOutput } from './dtos/update-store.dto';
+import { GetStoresInput, GetStoresOutput } from './dtos/get-stores.dto';
+import { DeleteStoreInput, DeleteStoreOutput } from './dtos/delete-store.dto';
 
 export class StoreService {
   private readonly storeRepository: Repository<Store>;
@@ -29,12 +31,17 @@ export class StoreService {
     }
   }
 
-  async searchStore({ keyword }: SearchStoreInput): Promise<SearchStoreOutput> {
+  async searchStore({
+    page,
+    keyword,
+  }: SearchStoreInput): Promise<SearchStoreOutput> {
     try {
       const stores = await this.storeRepository
         .createQueryBuilder(Store.name)
         .select()
         .where(`name LIKE "%${keyword}%"`)
+        .offset(page)
+        .limit(10)
         .getMany();
 
       console.log(stores);
@@ -51,9 +58,39 @@ export class StoreService {
     try {
       const { id } = updateStoreInput;
 
-      await AppDataSource.createQueryBuilder()
+      await this.storeRepository
+        .createQueryBuilder()
         .update(Store)
         .set(updateStoreInput)
+        .where('id=:id', { id })
+        .execute();
+
+      return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async getStores({ page }: GetStoresInput): Promise<GetStoresOutput> {
+    try {
+      await this.storeRepository
+        .createQueryBuilder(Store.name)
+        .select()
+        .offset(page)
+        .limit(10)
+        .execute();
+
+      return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async deleteStore({ id }: DeleteStoreInput): Promise<DeleteStoreOutput> {
+    try {
+      await this.storeRepository
+        .createQueryBuilder(Store.name)
+        .delete()
         .where('id=:id', { id })
         .execute();
 

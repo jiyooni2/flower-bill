@@ -4,6 +4,11 @@ import { CreateBillInput } from './bill/dtos/create-bill.dto';
 import { CreateStoreInput } from './store/dtos/create-store.dto';
 import { UpdateBillInput } from './bill/dtos/update-bill.dto';
 import { SearchStoreInput } from './store/dtos/search-store.dto';
+import { GetStoresInput, GetStoresOutput } from './store/dtos/get-stores.dto';
+import {
+  DeleteStoreInput,
+  DeleteStoreOutput,
+} from './store/dtos/delete-store.dto';
 import {
   UpdateStoreInput,
   UpdateStoreOutput,
@@ -64,5 +69,20 @@ ipcMain.on(
       updateStoreInput
     );
     event.reply('update-store', result);
+  }
+);
+
+ipcMain.on('get-stores', async (event, getStoresInput: GetStoresInput) => {
+  const result: GetStoresOutput = await storeService.getStores(getStoresInput);
+  event.reply('update-store', result);
+});
+
+ipcMain.on(
+  'delete-store',
+  async (event, deleteStoreInput: DeleteStoreInput) => {
+    const result: DeleteStoreOutput = await storeService.deleteStore(
+      deleteStoreInput
+    );
+    event.reply('delete-store', result);
   }
 );
