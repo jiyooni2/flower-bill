@@ -1,27 +1,84 @@
-import './Bill.scss';
-import '../common.scss';
+import './BillPage.scss';
 
 import * as React from 'react';
 import Button from '@mui/material/Button';
 
 import { useEffect, useState } from 'react';
 import { ipcRenderer } from 'electron';
-import { OrderProduct } from './../../main/orderProduct/orderProduct.entity';
-import { Product } from './../../main/product/entities/product.entity';
 import { TextField } from '@mui/material';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
-import { CreateBillInput } from './../../main/bill/dtos/create-bill.dto';
-import { Store } from './../../main/store/entities/store.entity';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
+import { useNavigate } from 'react-router-dom';
+import { OrderProduct } from '../../../main/orderProduct/orderProduct.entity';
+import { Product } from '../../../main/product/entities/product.entity';
+import { CreateBillInput } from '../../../main/bill/dtos/create-bill.dto';
+import { Store } from '../../../main/store/entities/store.entity';
+import ROUTES from '../../constants/routes';
 
-const Bill = () => {
+const BillPage = () => {
   const [orderProducts, setOrderProducts] = useState<OrderProduct[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [counts, setCounts] = useState<number[]>([]);
   const [memo, setMemo] = useState<string>('');
   const [store, setStore] = useState<Store>();
+
+  const navigate = useNavigate();
+
+  const createBill = () => {
+    window.electron.ipcRenderer.sendMessage('create-bill', {
+      orderProductIds: [1, 2, 3],
+      memo: '하이',
+    });
+  };
+
+  const addOrderProduct = (product: Product) => {
+    console.log(product);
+    setOrderProducts([
+      ...orderProducts,
+      { id: orderProducts.length, product, count: 1 },
+    ]);
+    setCounts([...counts, 1]);
+  };
+
+  const searchStore = () => {
+    window.electron.ipcRenderer.sendMessage('search-store', {
+      keyword: '에이스',
+    });
+  };
+
+  // const changeCount = (
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  //   orderProduct: OrderProduct
+  // ) => {
+  //   const {
+  //     value,
+  //     dataset: { id },
+  //   } = e.target;
+
+  //   // if (value == '' || Number.isNaN(value)) {
+  //   //   value = 0;
+  //   // }
+
+  //   const nextOrderProducts = orderProducts;
+  //   const updatedProduct = nextOrderProducts.find(
+  //     (p) => p.id === orderProduct.id
+  //   );
+
+  //   if (updatedProduct) {
+  //     updatedProduct.count = parseInt(value);
+  //   }
+
+  //   setOrderProducts(nextOrderProducts);
+
+  //   // have to make new obj
+  //   const updateCounts = Array.from(counts);
+
+  //   updateCounts[id] = parseInt(value);
+  //   setCounts(updateCounts);
+  //   console.log(counts);
+  // };
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {});
@@ -48,56 +105,11 @@ const Bill = () => {
     );
   }, []);
 
-  const createBill = () => {
-    window.electron.ipcRenderer.sendMessage('create-bill', {});
-  };
-
-  const addOrderProduct = (product: Product) => {
-    console.log(product);
-    setOrderProducts([
-      ...orderProducts,
-      { id: orderProducts.length, product, count: 1 },
-    ]);
-    setCounts([...counts, 1]);
-  };
-
-  const searchStore = () => {
-    window.electron.ipcRenderer.sendMessage('search-store', {
-      keyword: '에이스',
-    });
-  };
-
-  const changeCount = (e: any, orderProduct: OrderProduct) => {
-    let {
-      value,
-      dataset: { id },
-    } = e.target;
-
-    if (value == '' || isNaN(value)) {
-      value = 0;
-    }
-
-    let nextOrderProducts = orderProducts;
-    let updatedProduct = nextOrderProducts.find(
-      (p) => p.id === orderProduct.id
-    );
-
-    if (updatedProduct) {
-      updatedProduct.count = parseInt(value);
-    }
-
-    setOrderProducts(nextOrderProducts);
-
-    //have to make new obj
-    let updateCounts = Array.from(counts);
-
-    updateCounts[id] = parseInt(value);
-    setCounts(updateCounts);
-    console.log(counts);
-  };
-
   return (
     <div className="container">
+      <Button type="button" onClick={() => navigate(ROUTES.HOME)}>
+        뒤로가기
+      </Button>
       <div className="bill-container">
         <div className="header-container">
           <p className="font-title">영수증</p>
@@ -110,20 +122,19 @@ const Bill = () => {
         <div className="contents-container">
           {orderProducts.map((orderProduct, index) => {
             return (
-              <div key={index} className="content">
+              <div className="content">
                 <span className="font-content">
                   {orderProduct.product.name}
                 </span>
                 <span className="input-container">
                   <input
                     data-id={index}
-                    onInput={(e) => changeCount(e, orderProduct)}
                     value={counts[index] === 0 ? '' : counts[index]}
                     type="number"
-                  ></input>
+                  />
                   <span className="font-content">
                     \
-                    {isNaN(orderProduct.count)
+                    {Number.isNaN(orderProduct.count)
                       ? 0
                       : orderProduct.product.price * orderProduct.count}
                   </span>
@@ -176,4 +187,4 @@ const Bill = () => {
   );
 };
 
-export default Bill;
+export default BillPage;
