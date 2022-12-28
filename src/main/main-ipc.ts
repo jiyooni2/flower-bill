@@ -11,6 +11,10 @@ import {
 } from './store/dtos/delete-store.dto';
 import { CreateUserInput, CreateUserOutput } from './user/dtos/create-user.dto';
 import {
+  CreateProductInput,
+  CreateProductOutput,
+} from './product/dtos/create-product.dto';
+import {
   UpdateStoreInput,
   UpdateStoreOutput,
 } from './store/dtos/update-store.dto';
@@ -94,3 +98,13 @@ ipcMain.on('create-user', async (event, createUserInput: CreateUserInput) => {
   );
   event.reply('create-user', result);
 });
+
+ipcMain.on(
+  'create-product',
+  async (event, createProductInput: CreateProductInput) => {
+    const result: CreateProductOutput = await productService.createProduct(
+      createProductInput
+    );
+    event.reply('create-product', result);
+  }
+);
