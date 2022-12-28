@@ -11,6 +11,7 @@ export type Channels =
   | 'get-stores'
   | 'delete-store'
   | 'update-store'
+  | 'create-user'
   | 'create-order-product'
   | 'get-order-product'
   | 'delete-order-product'

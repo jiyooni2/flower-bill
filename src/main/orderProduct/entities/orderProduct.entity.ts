@@ -11,6 +11,9 @@ export class OrderProduct extends CoreEntity {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   transactionDate?: Date;
 
+  @Column()
+  orderPrice: number;
+
   @ManyToOne((type) => Product, (product) => product.orderProducts)
   @JoinColumn({ name: 'productId' })
   product: Product;
