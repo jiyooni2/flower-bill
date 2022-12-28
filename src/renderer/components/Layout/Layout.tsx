@@ -9,7 +9,7 @@ const Layout = ({ children }: ILayout) => {
   return (
     <div className={styles.container}>
       <NavBar />
-      {children}
+      <div className={styles.content}>{children}</div>
     </div>
   );
 };

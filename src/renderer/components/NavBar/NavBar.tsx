@@ -7,7 +7,9 @@ const NavBar = () => {
 
   return (
     <nav className={styles.container}>
-      <h1>Flower Bill</h1>
+      <p className={styles.menu} onClick={() => navigate(ROUTES.HOME)}>
+        Flower Bill
+      </p>
       <hr />
       <p className={styles.menu} onClick={() => navigate(ROUTES.STORE)}>
         스토어
@@ -15,7 +17,7 @@ const NavBar = () => {
       <p className={styles.menu} onClick={() => navigate(ROUTES.BILL)}>
         계산서
       </p>
-      <p className={styles.menu} onClick={() => navigate(ROUTES.HOME)}>
+      <p className={styles.menu} onClick={() => navigate(ROUTES.USER)}>
         내 가게 관리
       </p>
     </nav>
