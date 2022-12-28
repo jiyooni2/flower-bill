@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { billService, productService, storeService } from './main';
+import { billService, productService, storeService, userService } from './main';
 import { CreateBillInput } from './bill/dtos/create-bill.dto';
 import { CreateStoreInput } from './store/dtos/create-store.dto';
 import { UpdateBillInput } from './bill/dtos/update-bill.dto';
@@ -9,6 +9,7 @@ import {
   DeleteStoreInput,
   DeleteStoreOutput,
 } from './store/dtos/delete-store.dto';
+import { CreateUserInput, CreateUserOutput } from './user/dtos/create-user.dto';
 import {
   UpdateStoreInput,
   UpdateStoreOutput,
@@ -86,3 +87,10 @@ ipcMain.on(
     event.reply('delete-store', result);
   }
 );
+
+ipcMain.on('create-user', async (event, createUserInput: CreateUserInput) => {
+  const result: CreateUserOutput = await userService.createUser(
+    createUserInput
+  );
+  event.reply('create-user', result);
+});
