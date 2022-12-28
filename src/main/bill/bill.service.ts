@@ -34,11 +34,12 @@ export class BillService {
       await this.billRepository.save(bill);
 
       const orderProducts = [];
-      for (const { count, productId } of orderProductInputs) {
+      for (const { count, productId, orderPrice } of orderProductInputs) {
         const orderProduct = new OrderProduct();
         orderProduct.count = count;
         orderProduct.productId = productId;
         orderProduct.bill = bill;
+        orderProduct.orderPrice = orderPrice;
         orderProducts.push(orderProduct);
       }
 
