@@ -32,14 +32,14 @@ const CreateProductModal = ({ isOpen, setIsOpen }: IProps) => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    console.log(name, price, categoryId);
     const product = {
       name,
       price: Number(price),
       categoryId: Number(categoryId),
     };
 
-    window.electron.ipcRenderer.sendMessage('create-product', { product });
+    window.electron.ipcRenderer.sendMessage('create-product', product);
 
     window.electron.ipcRenderer.on(
       'create-product',

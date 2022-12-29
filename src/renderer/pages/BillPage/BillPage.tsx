@@ -37,7 +37,7 @@ const BillPage = () => {
       orderProductInputs,
     };
 
-    window.electron.ipcRenderer.sendMessage('create-bill', { bill });
+    window.electron.ipcRenderer.sendMessage('create-bill', bill);
   };
 
   useEffect(() => {
