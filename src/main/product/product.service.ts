@@ -3,6 +3,10 @@ import { Product } from './entities/product.entity';
 import { AppDataSource } from './../main';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-products.dto';
 import {
+  UpdateProductInput,
+  UpdateProductOutput,
+} from './dtos/update-product.dto';
+import {
   CreateProductOutput,
   CreateProductInput,
 } from './dtos/create-product.dto';
@@ -38,6 +42,19 @@ export class ProductService {
         .into(Product)
         .values(createProductInput)
         .execute();
+
+      return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async updateProduct({
+    id,
+    ...updateProductInput
+  }: UpdateProductInput): Promise<UpdateProductOutput> {
+    try {
+      await this.productRepository.update({ id }, { ...updateProductInput });
 
       return { ok: true };
     } catch (error: any) {

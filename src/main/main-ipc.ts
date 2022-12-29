@@ -25,6 +25,10 @@ import {
   CreateCategoryOutput,
 } from './category/dtos/create-category.dto';
 import {
+  UpdateProductOutput,
+  UpdateProductInput,
+} from './product/dtos/update-product.dto';
+import {
   UpdateStoreInput,
   UpdateStoreOutput,
 } from './store/dtos/update-store.dto';
@@ -127,5 +131,15 @@ ipcMain.on(
     );
 
     event.reply('create-category', result);
+  }
+);
+
+ipcMain.on(
+  'update-product',
+  async (event, updateProductInput: UpdateProductInput) => {
+    const result: UpdateProductOutput = await productService.updateProduct(
+      updateProductInput
+    );
+    event.reply('update-product', result);
   }
 );
