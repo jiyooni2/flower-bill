@@ -1,5 +1,11 @@
 import { ipcMain } from 'electron';
-import { billService, productService, storeService, userService } from './main';
+import {
+  billService,
+  categoryService,
+  productService,
+  storeService,
+  userService,
+} from './main';
 import { CreateBillInput } from './bill/dtos/create-bill.dto';
 import { CreateStoreInput } from './store/dtos/create-store.dto';
 import { UpdateBillInput } from './bill/dtos/update-bill.dto';
@@ -14,6 +20,10 @@ import {
   CreateProductInput,
   CreateProductOutput,
 } from './product/dtos/create-product.dto';
+import {
+  CreateCategoryInput,
+  CreateCategoryOutput,
+} from './category/dtos/create-category.dto';
 import {
   UpdateStoreInput,
   UpdateStoreOutput,
@@ -106,5 +116,16 @@ ipcMain.on(
       createProductInput
     );
     event.reply('create-product', result);
+  }
+);
+
+ipcMain.on(
+  'create-category',
+  async (event, createCategoryInput: CreateCategoryInput) => {
+    const result: CreateCategoryOutput = await categoryService.createCategory(
+      createCategoryInput
+    );
+
+    event.reply('create-category', result);
   }
 );

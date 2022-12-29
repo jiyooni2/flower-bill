@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { CoreEntity } from './../../common/entities/core.entity';
 import { Product } from './../../product/entities/product.entity';
 
@@ -11,7 +11,11 @@ export class Category extends CoreEntity {
   level: number;
 
   @ManyToOne((type) => Category, (category) => category.childCategories)
-  parentCategory: Category;
+  @JoinColumn({ name: 'parentCategoryId' })
+  parentCategory?: Category;
+
+  @Column({ nullable: true })
+  parentCategoryId?: number;
 
   @OneToMany((type) => Category, (category) => category.parentCategory)
   childCategories: Category[];

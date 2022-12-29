@@ -17,6 +17,7 @@ import { StoreService } from './store/store.service';
 import { OrderProductService } from './orderProduct/orderProduct.service';
 import { User } from './user/entities/user.entity';
 import { UserService } from './user/user.service';
+import { CategoryService } from './category/category.service';
 
 class AppUpdater {
   constructor() {
@@ -41,6 +42,7 @@ export const storeService: StoreService = new StoreService();
 export const orderProductService: OrderProductService =
   new OrderProductService();
 export const userService: UserService = new UserService();
+export const categoryService: CategoryService = new CategoryService();
 
 let mainWindow: BrowserWindow | null = null;
 
