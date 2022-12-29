@@ -1,64 +1,62 @@
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { storeState, productsState } from 'renderer/recoil/states';
+import {
+  storeState,
+  productsState,
+  orderProductsState,
+  memoState,
+} from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
-import styles from './BillPage.module.scss';
-import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
-import StoreSearchModal from '../../components/StoreSearchModal/StoreSearchModal';
 import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
+import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
+import styles from './BillPage.module.scss';
+import StoreSearchModal from './components/StoreSearchModal/StoreSearchModal';
+import OrderProductBox from './components/OrderProductBox/OrderProductBox';
+import MemoModal from './components/MemoModal/MemoModal';
+import ProductBox from './components/ProductBox/ProductBox';
 
 const BillPage = () => {
-  const [orderProductInputs, setOrderProductInputs] = useState<
-    CreateOrderProductInput[]
-  >([]);
   const [products, setProducts] = useRecoilState(productsState);
-  const [memo, setMemo] = useState<string>('');
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const orderProducts = useRecoilValue(orderProductsState);
+  const memo = useRecoilValue(memoState);
   const store = useRecoilValue(storeState);
+  const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
+  const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
 
   const createBill = () => {
-    window.electron.ipcRenderer.sendMessage('create-bill', {
-      orderProductIds: [1, 2, 3],
-      memo: '하이',
-    });
-  };
+    const orderProductInputs = orderProducts.map((orderProduct) => ({
+      count: orderProduct.count,
+      productId: orderProduct.product.id,
+      orderPrice: orderProduct.orderPrice,
+    }));
 
-  const onProductClick = (
-    event: React.MouseEvent<HTMLDivElement>,
-    product: Product
-  ) => {
-    setOrderProductInputs((prev) => [
-      ...prev,
-      {
-        productId: product.id as number,
-        count: 1,
-        orderPrice: product.price,
-      },
-    ]);
-
-    const onUpdateProductClick = (
-      event: React.MouseEvent<HTMLDivElement>,
-      product: Product
-    ) => {
-      setOrderProductInputs(
-        orderProductInputs.map((orderProduct) => {
-          if (orderProduct.productId === product.id) {
-            return {
-              ...orderProduct,
-              count: orderProduct.count + 1,
-              orderPrice: orderProduct.orderPrice + product.price,
-            };
-          }
-          return orderProduct;
-        })
-      );
+    const bill = {
+      storeId: store.id,
+      memo,
+      orderProductInputs,
     };
+
+    window.electron.ipcRenderer.sendMessage('create-bill', { bill });
   };
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-products', {});
+    window.electron.ipcRenderer.on(
+      'get-products',
+      (args: GetProductsOutput) => {
+        setProducts(args.products as Product[]);
+      }
+    );
+  }, []);
 
   return (
     <>
-      <StoreSearchModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <MemoModal isOpen={isMemoOpen} setIsOpen={setIsMemoOpen} />
+      <StoreSearchModal
+        isOpen={isSearchStoreOpen}
+        setIsOpen={setIsSearchStoreOpen}
+      />
       <div className={styles.container}>
         <div className={`${styles.content_container} ${styles.bill_container}`}>
           <h1>계산서</h1>
@@ -66,14 +64,31 @@ const BillPage = () => {
           <div>
             {store.name !== '' ? store.name : '______'}
             귀하
-            <Button onClick={() => setIsOpen(true)}>스토어 검색</Button>
+            <Button onClick={() => setIsSearchStoreOpen(true)}>
+              스토어 검색
+            </Button>
+            <Button onClick={() => setIsMemoOpen(true)}>메모</Button>
           </div>
           <div>
-            {orderProductInputs.map((product) => (
-              <div key={product.productId}>
-                {product.count}개 {product.orderPrice.toLocaleString('ko-KR')}
-              </div>
+            {orderProducts.map((orderProduct) => (
+              <OrderProductBox
+                key={orderProduct.product.id}
+                orderProduct={orderProduct}
+              />
             ))}
+          </div>
+          <hr />
+          <div>
+            <p>
+              총
+              {orderProducts
+                .reduce((acc, cur) => acc + cur.orderPrice, 0)
+                .toLocaleString('ko-KR')}
+              원
+            </p>
+            <Button variant="contained" onClick={createBill}>
+              계산서 생성
+            </Button>
           </div>
         </div>
         <div
@@ -83,14 +98,7 @@ const BillPage = () => {
           <hr />
           <div className={styles.products_list}>
             {products.map((product) => (
-              <div
-                key={product.id}
-                className={styles.product_box}
-                onClick={(event) => onProductClick(event, product)}
-              >
-                <div>{product.name}</div>
-                <div>{product.price.toLocaleString('ko-KR')}원</div>
-              </div>
+              <ProductBox key={product.id} product={product} />
             ))}
           </div>
         </div>

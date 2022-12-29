@@ -1,7 +1,5 @@
-import styles from './UserPage.module.scss';
 import { useEffect, useState } from 'react';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
-import { Product } from './../../../main/product/entities/product.entity';
 import Button from '@mui/material/Button';
 import {
   Table,
@@ -12,9 +10,11 @@ import {
   TablePagination,
   TableRow,
 } from '@mui/material';
-import CreateProductModal from './components/CreateProductModal/CreateProductModal';
 import { useRecoilState } from 'recoil';
 import { productsState } from 'renderer/recoil/states';
+import { Product } from 'main/product/entities/product.entity';
+import CreateProductModal from './components/CreateProductModal/CreateProductModal';
+import styles from './UserPage.module.scss';
 
 const UserPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -94,7 +94,7 @@ const UserPage = () => {
       </div>
       <div className={styles.content_container}>
         <p>카테고리 목록</p>
-        <div className={styles.content}></div>
+        <div className={styles.content} />
       </div>
     </>
   );

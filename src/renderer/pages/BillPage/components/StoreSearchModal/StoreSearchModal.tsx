@@ -1,5 +1,5 @@
 import { Modal, Input } from '@mui/material';
-import './StoreSearchModal.scss';
+import styles from './StoreSearchModal.module.scss';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
@@ -49,7 +49,7 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
 
   return (
     <Modal open={isOpen} onClose={handleClose}>
-      <div className="modal-container">
+      <div className={styles.modal_container}>
         <div>
           <Input onChange={handleChange} value={keyword} />
           <Button type="button" onClick={searchStore}>

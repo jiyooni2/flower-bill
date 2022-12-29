@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  div {
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+  }
+  .count_input {
+    border: 1px solid lightgray;
+  }
+}
