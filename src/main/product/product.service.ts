@@ -54,8 +54,31 @@ export class ProductService {
     ...updateProductInput
   }: UpdateProductInput): Promise<UpdateProductOutput> {
     try {
+      const product = await this.productRepository.findOne({ where: { id } });
+
+      if (!product) {
+        return { ok: false, error: '존재하지 않는 상품입니다.' };
+      }
+
       await this.productRepository.update({ id }, { ...updateProductInput });
 
+      return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async deleteProduct({
+    id,
+  }: UpdateProductInput): Promise<UpdateProductOutput> {
+    try {
+      const product = await this.productRepository.findOne({ where: { id } });
+
+      if (!product) {
+        return { ok: false, error: '존재하지 않는 상품입니다.' };
+      }
+
+      await this.productRepository.delete({ id });
       return { ok: true };
     } catch (error: any) {
       return { ok: false, error: error.message };

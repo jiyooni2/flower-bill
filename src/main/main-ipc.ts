@@ -29,6 +29,10 @@ import {
   UpdateProductInput,
 } from './product/dtos/update-product.dto';
 import {
+  DeleteProductInput,
+  DeleteProductOutput,
+} from './product/dtos/delete-product.dto';
+import {
   UpdateStoreInput,
   UpdateStoreOutput,
 } from './store/dtos/update-store.dto';
@@ -141,5 +145,16 @@ ipcMain.on(
       updateProductInput
     );
     event.reply('update-product', result);
+  }
+);
+
+ipcMain.on(
+  'delete-product',
+  async (event, deleteProductInput: DeleteProductInput) => {
+    const result: DeleteProductOutput = await productService.deleteProduct(
+      deleteProductInput
+    );
+
+    event.reply('delete-product', result);
   }
 );
