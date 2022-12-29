@@ -16,10 +16,11 @@ export class ProductService {
 
   async getProducts(): Promise<GetProductsOutput> {
     try {
-      const products = await this.productRepository
-        .createQueryBuilder('product')
-        .select()
-        .getMany();
+      const products = await this.productRepository.find({
+        relations: {
+          category: true,
+        },
+      });
 
       return { ok: true, products };
     } catch (error: any) {
