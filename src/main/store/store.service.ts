@@ -99,4 +99,14 @@ export class StoreService {
       return { ok: false, error: error.message };
     }
   }
+
+  async getStore(id: number) {
+    try {
+      const store = await this.storeRepository.findOne({ where: { id } });
+
+      return { ok: true, store };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
 }

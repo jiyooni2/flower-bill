@@ -1,4 +1,4 @@
-import { AppDataSource } from '../main';
+import { AppDataSource, storeService } from '../main';
 import { Bill } from './entities/bill.entity';
 import { Repository } from 'typeorm';
 import { CreateBillInput } from './dtos/create-bill.dto';
@@ -24,6 +24,11 @@ export class BillService {
   }: CreateBillInput) {
     try {
       //need transaction
+
+      const store = await storeService.getStore(storeId);
+      if (!store) {
+        return { ok: false, error: '존재하지 않는 스토어입니다.' };
+      }
 
       //insert bill
       const bill = new Bill();

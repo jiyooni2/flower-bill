@@ -26,7 +26,7 @@ export class CategoryService {
         });
 
         if (!parentCategory) {
-          return { ok: false, error: 'Not exist Parent Category' };
+          return { ok: false, error: '존재하지 않는 상위 카테고리입니다.' };
         }
       }
 
