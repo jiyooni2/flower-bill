@@ -32,6 +32,7 @@ import {
   DeleteProductInput,
   DeleteProductOutput,
 } from './product/dtos/delete-product.dto';
+import { UpdateUserInput, UpdateUserOutput } from './user/dtos/update-user.dto';
 import {
   UpdateStoreInput,
   UpdateStoreOutput,
@@ -45,6 +46,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
 
 //bill
 ipcMain.on('create-bill', async (event, createBillInput: CreateBillInput) => {
+  //if not auth, return
   const result = await billService.createBill(createBillInput);
   event.reply('create-bill', result);
 });
@@ -158,3 +160,10 @@ ipcMain.on(
     event.reply('delete-product', result);
   }
 );
+
+ipcMain.on('update-user', async (event, updateUserInput: UpdateUserInput) => {
+  const result: UpdateUserOutput = await userService.updateUser(
+    updateUserInput
+  );
+  event.reply('update-user', result);
+});
