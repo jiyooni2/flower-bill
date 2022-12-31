@@ -37,6 +37,10 @@ import {
   UpdateStoreInput,
   UpdateStoreOutput,
 } from './store/dtos/update-store.dto';
+import {
+  GetProductByCategoryInput,
+  GetProductByCategoryOutput,
+} from './product/dtos/get-product-by-category.dto';
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -167,3 +171,12 @@ ipcMain.on('update-user', async (event, updateUserInput: UpdateUserInput) => {
   );
   event.reply('update-user', result);
 });
+
+ipcMain.on(
+  'get-product-by-category',
+  async (event, getProductByCategoryInput: GetProductByCategoryInput) => {
+    const result: GetProductByCategoryOutput =
+      await productService.getProductByCategory(getProductByCategoryInput);
+    event.reply('get-product-by-category', result);
+  }
+);
