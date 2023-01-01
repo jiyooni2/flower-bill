@@ -82,11 +82,44 @@ export class BillService {
     }
   }
 
-  async updateBill(
-    updateBillInput: UpdateBillInput
-  ): Promise<UpdateBillOutput> {
+  async updateBill({
+    id,
+    orderProductInputs,
+    ...updateBillInput
+  }: UpdateBillInput): Promise<UpdateBillOutput> {
     try {
-      const { id } = updateBillInput;
+      const bill = await this.billRepository.findOne({ where: { id } });
+
+      if (!bill) {
+        return { ok: false, error: '없는 게산서입니다.' };
+      }
+
+      if (updateBillInput.storeId) {
+        const store = await storeService.getStore(updateBillInput.storeId);
+        if (!store) {
+          return { ok: false, error: '없는 스토어입니다.' };
+        }
+      }
+
+      if (orderProductInputs) {
+        //기존의 orderProducts 삭제
+        const orderProducts = [];
+        for (const { count, productId, orderPrice } of orderProductInputs) {
+          const orderProduct = new OrderProduct();
+          orderProduct.count = count;
+          orderProduct.productId = productId;
+          orderProduct.bill = bill;
+          orderProduct.orderPrice = orderPrice;
+          orderProducts.push(orderProduct);
+        }
+        await this.orderProductRepository
+          .createQueryBuilder()
+          .insert()
+          .into(OrderProduct)
+          .values(orderProducts)
+          .execute();
+      }
+
       await AppDataSource.createQueryBuilder()
         .update(Bill)
         .set(updateBillInput)
