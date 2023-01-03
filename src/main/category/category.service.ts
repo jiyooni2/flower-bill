@@ -28,6 +28,13 @@ export class CategoryService {
         if (!parentCategory) {
           return { ok: false, error: '존재하지 않는 상위 카테고리입니다.' };
         }
+
+        if (parentCategory.level === 3) {
+          return {
+            ok: false,
+            error: '최하위 카테고리가 부모가 될 수 없습니다.',
+          };
+        }
       }
 
       await this.categoryRepository

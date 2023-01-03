@@ -108,42 +108,68 @@ export class ProductService {
 
       const { level: categoryLevel } = category;
 
-      //level에 대해서 ENUM으로 관리하기
+      console.log(categoryLevel);
+
       if (categoryLevel === 3) {
-        const products = await this.productRepository
+        const products: Product[] = await this.productRepository
           .createQueryBuilder(Product.name)
           .select()
           .where('categoryId=:categoryId', { categoryId })
+          .orderBy('product.id')
           .offset(page)
           .limit(10)
-          .execute();
+          .getMany();
 
         console.log(products);
 
         return { ok: true, products };
       } else if (categoryLevel === 2) {
-        let products: Product[] = [];
-
-        for (const { id: categoryId } of category.childCategories) {
-          const tempProducts = await this.productRepository
-            .createQueryBuilder(Product.name)
-            .select()
-            .where('categoryId=:categoryId', { categoryId })
-            .offset(page)
-            .limit(10)
-            .execute();
-
-          products.push(tempProducts);
-        }
+        const products: Product[] = await this.productRepository
+          .createQueryBuilder(Product.name)
+          .select()
+          .where('categoryId IN(:...ids)', {
+            ids: category.childCategories.map(
+              (childCategory) => childCategory.id
+            ),
+          })
+          .orderBy('product.id')
+          .offset(page)
+          .limit(10)
+          .getMany();
 
         return { ok: true, products };
       } else {
-        let products: Product[] = [];
+        let subCategoryIds = category.childCategories.map(
+          (childCategory) => childCategory.id
+        );
 
-        //need to refactor, getProductByCategory의 재귀호출 고려
+        const subCategories = await this.categoryRepository
+          .createQueryBuilder(Category.name)
+          .select()
+          .where('parentCategoryId IN(:...ids)', {
+            ids: subCategoryIds,
+          })
+          .getMany();
 
-        console.log(category.childCategories);
-        return { ok: true };
+        subCategoryIds = subCategories.map((subCategory) => subCategory.id);
+
+        console.log(subCategories);
+
+        //최종적으로는 level=3 인 카테고리로만 관계 맺혀져 있으므로 level 3인 카테고리에서만 찾으면 됨
+        const products: Product[] = await this.productRepository
+          .createQueryBuilder(Product.name)
+          .select()
+          .where('categoryId IN(:...ids)', {
+            ids: subCategoryIds,
+          })
+          .orderBy('product.id')
+          .offset(page)
+          .limit(10)
+          .getMany();
+
+        console.log(products);
+
+        return { ok: true, products };
       }
     } catch (error: any) {
       return { ok: false, error: error.message };
