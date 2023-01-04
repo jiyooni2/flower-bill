@@ -103,13 +103,12 @@ export class BillService {
 
       if (orderProductInputs) {
         //기존의 orderProducts 삭제
+        await this.orderProductRepository.delete({ billId: bill.id });
+
         const orderProducts = [];
-        for (const { count, productId, orderPrice } of orderProductInputs) {
-          const orderProduct = new OrderProduct();
-          orderProduct.count = count;
-          orderProduct.productId = productId;
-          orderProduct.bill = bill;
-          orderProduct.orderPrice = orderPrice;
+        for (const orderProductInput of orderProductInputs) {
+          let orderProduct = new OrderProduct();
+          orderProduct = { ...orderProduct, ...orderProductInput, bill };
           orderProducts.push(orderProduct);
         }
         await this.orderProductRepository
@@ -120,11 +119,7 @@ export class BillService {
           .execute();
       }
 
-      await AppDataSource.createQueryBuilder()
-        .update(Bill)
-        .set(updateBillInput)
-        .where('id=:id', { id })
-        .execute();
+      await this.billRepository.update({ id }, { ...updateBillInput });
 
       return { ok: true };
     } catch (error: any) {
