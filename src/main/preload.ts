@@ -6,6 +6,7 @@ export type Channels =
   | 'get-bill'
   | 'delete-bill'
   | 'update-bill'
+  | 'get-bill-by-store'
   | 'create-store'
   | 'search-store'
   | 'get-stores'

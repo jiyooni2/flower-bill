@@ -21,7 +21,9 @@ export class OrderProduct extends CoreEntity {
   @Column()
   productId?: number;
 
-  @ManyToOne((type) => Bill, (bill) => bill.orderProducts)
+  @ManyToOne((type) => Bill, (bill) => bill.orderProducts, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'billId' })
   bill?: Bill;
 

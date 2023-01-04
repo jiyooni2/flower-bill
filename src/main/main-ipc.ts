@@ -41,6 +41,10 @@ import {
   GetProductByCategoryInput,
   GetProductByCategoryOutput,
 } from './product/dtos/get-product-by-category.dto';
+import {
+  GetBillByStoreOutput,
+  GetBillByStoreInput,
+} from './bill/dtos/get-bill-by-store.dto';
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -69,6 +73,17 @@ ipcMain.on('update-bill', async (event, updateBIllInput: UpdateBillInput) => {
   const result = await billService.updateBill(updateBIllInput);
   event.reply('update-bill', result);
 });
+
+ipcMain.on(
+  'get-bill-by-store',
+  async (event, getBillByStoreInput: GetBillByStoreInput) => {
+    const result: GetBillByStoreOutput = await billService.getBillByStore(
+      getBillByStoreInput
+    );
+
+    event.reply('get-bill-by-store', result);
+  }
+);
 
 ipcMain.on('get-products', async (event, arg) => {
   const products = await productService.getProducts();

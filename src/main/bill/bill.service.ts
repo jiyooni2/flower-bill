@@ -6,6 +6,10 @@ import { GetBillInput, GetBillOutput } from './dtos/get-bill.dto';
 import { DeleteBillInput, DeleteBillOutput } from './dtos/delete-bill.dto';
 import { UpdateBillInput, UpdateBillOutput } from './dtos/update-bill.dto';
 import { OrderProduct } from './../orderProduct/entities/orderProduct.entity';
+import {
+  GetBillByStoreOutput,
+  GetBillByStoreInput,
+} from './dtos/get-bill-by-store.dto';
 
 export class BillService {
   private readonly billRepository: Repository<Bill>;
@@ -25,7 +29,7 @@ export class BillService {
     try {
       //need transaction
 
-      const store = await storeService.getStore(storeId);
+      const { store } = await storeService.getStore({ id: storeId });
       if (!store) {
         return { ok: false, error: '존재하지 않는 스토어입니다.' };
       }
@@ -95,7 +99,9 @@ export class BillService {
       }
 
       if (updateBillInput.storeId) {
-        const store = await storeService.getStore(updateBillInput.storeId);
+        const { store } = await storeService.getStore({
+          id: updateBillInput.storeId,
+        });
         if (!store) {
           return { ok: false, error: '없는 스토어입니다.' };
         }
@@ -122,6 +128,31 @@ export class BillService {
       await this.billRepository.update({ id }, { ...updateBillInput });
 
       return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async getBillByStore({
+    storeId,
+    page,
+  }: GetBillByStoreInput): Promise<GetBillByStoreOutput> {
+    try {
+      const { store } = await storeService.getStore({ id: storeId });
+      if (!store) {
+        return { ok: false, error: '없는 스토어입니다.' };
+      }
+
+      const bills = await this.billRepository
+        .createQueryBuilder()
+        .select()
+        .where('storeId=:storeId', { storeId: store.id })
+        .orderBy('bill.id')
+        .offset(page)
+        .limit(10)
+        .getMany();
+
+      return { ok: true, bills };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }
