@@ -78,6 +78,12 @@ export class BillService {
 
   async deleteBill({ id }: DeleteBillInput): Promise<DeleteBillOutput> {
     try {
+      const bill = await this.billRepository.findOne({ where: { id } });
+
+      if (!bill) {
+        return { ok: false, error: '없는 계산서입니다.' };
+      }
+
       await this.billRepository.delete({ id });
 
       return { ok: true };
