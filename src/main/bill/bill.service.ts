@@ -70,7 +70,12 @@ export class BillService {
   async getBill({ id }: GetBillInput): Promise<GetBillOutput> {
     try {
       const bill = await this.billRepository.findOne({ where: { id } });
-      return { ok: true, bill: bill ? bill : undefined };
+
+      if (!bill) {
+        return { ok: false, error: '존재하지 않는 계산서입니다.' };
+      }
+
+      return { ok: true, bill };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }
@@ -81,7 +86,7 @@ export class BillService {
       const bill = await this.billRepository.findOne({ where: { id } });
 
       if (!bill) {
-        return { ok: false, error: '없는 계산서입니다.' };
+        return { ok: false, error: '존재하지 않는 계산서입니다.' };
       }
 
       await this.billRepository.delete({ id });
