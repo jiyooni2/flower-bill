@@ -6,6 +6,10 @@ import { GetBillInput, GetBillOutput } from './dtos/get-bill.dto';
 import { DeleteBillInput, DeleteBillOutput } from './dtos/delete-bill.dto';
 import { UpdateBillInput, UpdateBillOutput } from './dtos/update-bill.dto';
 import { OrderProduct } from './../orderProduct/entities/orderProduct.entity';
+import {
+  GetBillByStoreOutput,
+  GetBillByStoreInput,
+} from './dtos/get-bill-by-store.dto';
 
 export class BillService {
   private readonly billRepository: Repository<Bill>;
@@ -25,7 +29,7 @@ export class BillService {
     try {
       //need transaction
 
-      const store = await storeService.getStore(storeId);
+      const { store } = await storeService.getStore({ id: storeId });
       if (!store) {
         return { ok: false, error: '존재하지 않는 스토어입니다.' };
       }
@@ -66,7 +70,12 @@ export class BillService {
   async getBill({ id }: GetBillInput): Promise<GetBillOutput> {
     try {
       const bill = await this.billRepository.findOne({ where: { id } });
-      return { ok: true, bill: bill ? bill : undefined };
+
+      if (!bill) {
+        return { ok: false, error: '존재하지 않는 계산서입니다.' };
+      }
+
+      return { ok: true, bill };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }
@@ -74,6 +83,12 @@ export class BillService {
 
   async deleteBill({ id }: DeleteBillInput): Promise<DeleteBillOutput> {
     try {
+      const bill = await this.billRepository.findOne({ where: { id } });
+
+      if (!bill) {
+        return { ok: false, error: '존재하지 않는 계산서입니다.' };
+      }
+
       await this.billRepository.delete({ id });
 
       return { ok: true };
@@ -82,18 +97,73 @@ export class BillService {
     }
   }
 
-  async updateBill(
-    updateBillInput: UpdateBillInput
-  ): Promise<UpdateBillOutput> {
+  async updateBill({
+    id,
+    orderProductInputs,
+    ...updateBillInput
+  }: UpdateBillInput): Promise<UpdateBillOutput> {
     try {
-      const { id } = updateBillInput;
-      await AppDataSource.createQueryBuilder()
-        .update(Bill)
-        .set(updateBillInput)
-        .where('id=:id', { id })
-        .execute();
+      const bill = await this.billRepository.findOne({ where: { id } });
+
+      if (!bill) {
+        return { ok: false, error: '없는 게산서입니다.' };
+      }
+
+      if (updateBillInput.storeId) {
+        const { store } = await storeService.getStore({
+          id: updateBillInput.storeId,
+        });
+        if (!store) {
+          return { ok: false, error: '없는 스토어입니다.' };
+        }
+      }
+
+      if (orderProductInputs) {
+        //기존의 orderProducts 삭제
+        await this.orderProductRepository.delete({ billId: bill.id });
+
+        const orderProducts = [];
+        for (const orderProductInput of orderProductInputs) {
+          let orderProduct = new OrderProduct();
+          orderProduct = { ...orderProduct, ...orderProductInput, bill };
+          orderProducts.push(orderProduct);
+        }
+        await this.orderProductRepository
+          .createQueryBuilder()
+          .insert()
+          .into(OrderProduct)
+          .values(orderProducts)
+          .execute();
+      }
+
+      await this.billRepository.update({ id }, { ...updateBillInput });
 
       return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async getBillByStore({
+    storeId,
+    page,
+  }: GetBillByStoreInput): Promise<GetBillByStoreOutput> {
+    try {
+      const { store } = await storeService.getStore({ id: storeId });
+      if (!store) {
+        return { ok: false, error: '없는 스토어입니다.' };
+      }
+
+      const bills = await this.billRepository
+        .createQueryBuilder()
+        .select()
+        .where('storeId=:storeId', { storeId: store.id })
+        .orderBy('bill.id')
+        .offset(page)
+        .limit(10)
+        .getMany();
+
+      return { ok: true, bills };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }

@@ -25,9 +25,26 @@ import {
   CreateCategoryOutput,
 } from './category/dtos/create-category.dto';
 import {
+  UpdateProductOutput,
+  UpdateProductInput,
+} from './product/dtos/update-product.dto';
+import {
+  DeleteProductInput,
+  DeleteProductOutput,
+} from './product/dtos/delete-product.dto';
+import { UpdateUserInput, UpdateUserOutput } from './user/dtos/update-user.dto';
+import {
   UpdateStoreInput,
   UpdateStoreOutput,
 } from './store/dtos/update-store.dto';
+import {
+  GetProductByCategoryInput,
+  GetProductByCategoryOutput,
+} from './product/dtos/get-product-by-category.dto';
+import {
+  GetBillByStoreOutput,
+  GetBillByStoreInput,
+} from './bill/dtos/get-bill-by-store.dto';
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -37,6 +54,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
 
 //bill
 ipcMain.on('create-bill', async (event, createBillInput: CreateBillInput) => {
+  //if not auth, return
   const result = await billService.createBill(createBillInput);
   event.reply('create-bill', result);
 });
@@ -55,6 +73,17 @@ ipcMain.on('update-bill', async (event, updateBIllInput: UpdateBillInput) => {
   const result = await billService.updateBill(updateBIllInput);
   event.reply('update-bill', result);
 });
+
+ipcMain.on(
+  'get-bill-by-store',
+  async (event, getBillByStoreInput: GetBillByStoreInput) => {
+    const result: GetBillByStoreOutput = await billService.getBillByStore(
+      getBillByStoreInput
+    );
+
+    event.reply('get-bill-by-store', result);
+  }
+);
 
 ipcMain.on('get-products', async (event, arg) => {
   const products = await productService.getProducts();
@@ -127,5 +156,42 @@ ipcMain.on(
     );
 
     event.reply('create-category', result);
+  }
+);
+
+ipcMain.on(
+  'update-product',
+  async (event, updateProductInput: UpdateProductInput) => {
+    const result: UpdateProductOutput = await productService.updateProduct(
+      updateProductInput
+    );
+    event.reply('update-product', result);
+  }
+);
+
+ipcMain.on(
+  'delete-product',
+  async (event, deleteProductInput: DeleteProductInput) => {
+    const result: DeleteProductOutput = await productService.deleteProduct(
+      deleteProductInput
+    );
+
+    event.reply('delete-product', result);
+  }
+);
+
+ipcMain.on('update-user', async (event, updateUserInput: UpdateUserInput) => {
+  const result: UpdateUserOutput = await userService.updateUser(
+    updateUserInput
+  );
+  event.reply('update-user', result);
+});
+
+ipcMain.on(
+  'get-product-by-category',
+  async (event, getProductByCategoryInput: GetProductByCategoryInput) => {
+    const result: GetProductByCategoryOutput =
+      await productService.getProductByCategory(getProductByCategoryInput);
+    event.reply('get-product-by-category', result);
   }
 );

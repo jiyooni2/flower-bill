@@ -6,6 +6,7 @@ import { SearchStoreInput, SearchStoreOutput } from './dtos/search-store.dto';
 import { UpdateStoreInput, UpdateStoreOutput } from './dtos/update-store.dto';
 import { GetStoresInput, GetStoresOutput } from './dtos/get-stores.dto';
 import { DeleteStoreInput, DeleteStoreOutput } from './dtos/delete-store.dto';
+import { GetStoreInput, GetStoreOutput } from './dtos/get-store.dto';
 
 export class StoreService {
   private readonly storeRepository: Repository<Store>;
@@ -100,9 +101,13 @@ export class StoreService {
     }
   }
 
-  async getStore(id: number) {
+  async getStore({ id }: GetStoreInput): Promise<GetStoreOutput> {
     try {
       const store = await this.storeRepository.findOne({ where: { id } });
+
+      if (!store) {
+        return { ok: false, error: '없는 스토어입니다.' };
+      }
 
       return { ok: true, store };
     } catch (error: any) {
