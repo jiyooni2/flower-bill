@@ -69,7 +69,7 @@ const BillPage = () => {
             </Button>
             <Button onClick={() => setIsMemoOpen(true)}>메모</Button>
           </div>
-          <div>
+          <div className={`${styles.orderProducts_list}`}>
             {orderProducts.map((orderProduct) => (
               <OrderProductBox
                 key={orderProduct.product.id}

@@ -58,7 +58,9 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
           onChange={onCountChange}
           className={styles.count_input}
         />
-        <Button onClick={onDeleteClick}>X</Button>
+        <Button variant="contained" onClick={onDeleteClick}>
+          X
+        </Button>
       </div>
     </div>
   );

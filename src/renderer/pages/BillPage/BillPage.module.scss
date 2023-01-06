@@ -26,14 +26,29 @@
 }
 
 .bill_container {
+  display: flex;
+  flex-direction: column;
+}
+
+.orderProducts_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 10px;
+  overflow: auto;
 }
 
 .products_container {
+  display: flex;
+  flex-direction: column;
 }
 
 .products_list {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  height: 100%;
   padding: 10px;
+  overflow: auto;
 }
