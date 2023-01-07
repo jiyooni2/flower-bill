@@ -41,6 +41,7 @@ import {
   GetProductByCategoryInput,
   GetProductByCategoryOutput,
 } from './product/dtos/get-product-by-category.dto';
+import { GetProductsInput } from './product/dtos/get-products.dto';
 import {
   GetBillByStoreOutput,
   GetBillByStoreInput,
@@ -85,10 +86,13 @@ ipcMain.on(
   }
 );
 
-ipcMain.on('get-products', async (event, arg) => {
-  const products = await productService.getProducts();
-  event.reply('get-products', products);
-});
+ipcMain.on(
+  'get-products',
+  async (event, getProductsInput: GetProductsInput) => {
+    const products = await productService.getProducts(getProductsInput);
+    event.reply('get-products', products);
+  }
+);
 
 ipcMain.on(
   'create-store',

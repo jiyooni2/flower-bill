@@ -25,13 +25,15 @@ export class ProductService {
     this.categoryRepository = AppDataSource.getRepository(Category);
   }
 
-  async getProducts(): Promise<GetProductsOutput> {
+  async getProducts({ page }: GetProductsInput): Promise<GetProductsOutput> {
     try {
-      const products = await this.productRepository.find({
-        relations: {
-          category: true,
-        },
-      });
+      const products = await this.productRepository
+        .createQueryBuilder()
+        .select()
+        .orderBy('product.id')
+        .offset(page)
+        .limit(10)
+        .getMany();
 
       return { ok: true, products };
     } catch (error: any) {
