@@ -13,6 +13,11 @@ export interface Store {
   bills: Bill[];
 }
 
+export interface CreateStore
+  extends Pick<Store, 'name' | 'owner' | 'address'> {
+  businessNumber: string;
+}
+
 export interface OrderProduct {
   count: number;
   transactionDate?: Date;

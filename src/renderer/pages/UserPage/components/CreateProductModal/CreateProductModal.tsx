@@ -1,11 +1,12 @@
-import { Modal, TextField } from '@mui/material';
-import styles from './CreateProductModal.module.scss';
-import useInputs from './../../../../hooks/useInputs';
-import Button from '@mui/material/Button';
-import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
+import { TextField } from '@mui/material';
 import { useSetRecoilState } from 'recoil';
+import Button from '@mui/material/Button';
+import useInputs from 'renderer/hooks/useInputs';
+import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import { productsState } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
+import Modal from 'renderer/components/Modal/Modal';
+import styles from './CreateProductModal.module.scss';
 
 interface IProps {
   isOpen: boolean;
@@ -25,10 +26,6 @@ const CreateProductModal = ({ isOpen, setIsOpen }: IProps) => {
     price: '',
     categoryId: '',
   });
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,37 +56,35 @@ const CreateProductModal = ({ isOpen, setIsOpen }: IProps) => {
       }
     );
 
-    handleClose();
+    setIsOpen(false);
   };
 
   return (
-    <Modal open={isOpen} onClose={handleClose}>
-      <div className={styles.modal_container}>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="상품명"
-            name="name"
-            variant="filled"
-            onChange={handleChange}
-            value={name}
-          />
-          <TextField
-            label="가격"
-            name="price"
-            variant="filled"
-            onChange={handleChange}
-            value={price}
-          />
-          <TextField
-            label="카테고리 번호"
-            name="categoryId"
-            variant="filled"
-            onChange={handleChange}
-            value={categoryId}
-          />
-          <Button type="submit">제출</Button>
-        </form>
-      </div>
+    <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="상품명"
+          name="name"
+          variant="filled"
+          onChange={handleChange}
+          value={name}
+        />
+        <TextField
+          label="가격"
+          name="price"
+          variant="filled"
+          onChange={handleChange}
+          value={price}
+        />
+        <TextField
+          label="카테고리 번호"
+          name="categoryId"
+          variant="filled"
+          onChange={handleChange}
+          value={categoryId}
+        />
+        <Button type="submit">제출</Button>
+      </form>
     </Modal>
   );
 };

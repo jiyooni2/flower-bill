@@ -23,7 +23,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
         if (item.product.id === orderProduct.product.id) {
           return {
             ...item,
-            count,
+            count: Number(value),
             orderPrice: orderProduct.product.price * Number(value),
           };
         }

@@ -1,11 +1,12 @@
-import { Modal, Input } from '@mui/material';
-import styles from './StoreSearchModal.module.scss';
+import { Input } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 import { storeState } from 'renderer/recoil/states';
 import { useSetRecoilState } from 'recoil';
 import { Store } from 'main/store/entities/store.entity';
+import Modal from 'renderer/components/Modal/Modal';
+import styles from './StoreSearchModal.module.scss';
 
 interface IProps {
   isOpen: boolean;
@@ -48,24 +49,22 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
   };
 
   return (
-    <Modal open={isOpen} onClose={handleClose}>
-      <div className={styles.modal_container}>
-        <div>
-          <Input onChange={handleChange} value={keyword} />
-          <Button type="button" onClick={searchStore}>
-            검색
-          </Button>
-        </div>
-        <div>
-          {storeList?.map((store) => (
-            <div key={store.id}>
-              <p>이름: {store.name}</p>
-              <p>사업자: {store.owner}</p>
-              <Button onClick={() => onStoreClick(store)}>선택</Button>
-              <hr />
-            </div>
-          ))}
-        </div>
+    <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
+      <div>
+        <Input onChange={handleChange} value={keyword} />
+        <Button type="button" onClick={searchStore}>
+          검색
+        </Button>
+      </div>
+      <div>
+        {storeList?.map((store) => (
+          <div key={store.id}>
+            <p>이름: {store.name}</p>
+            <p>사업자: {store.owner}</p>
+            <Button onClick={() => onStoreClick(store)}>선택</Button>
+            <hr />
+          </div>
+        ))}
       </div>
     </Modal>
   );
