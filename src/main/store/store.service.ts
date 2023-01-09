@@ -74,14 +74,14 @@ export class StoreService {
 
   async getStores({ page }: GetStoresInput): Promise<GetStoresOutput> {
     try {
-      await this.storeRepository
+      const stores = await this.storeRepository
         .createQueryBuilder(Store.name)
         .select()
         .offset(page)
         .limit(10)
-        .execute();
+        .getMany();
 
-      return { ok: true };
+      return { ok: true, stores };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }

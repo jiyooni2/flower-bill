@@ -10,6 +10,7 @@ export type Channels =
   | 'create-store'
   | 'search-store'
   | 'get-stores'
+  | 'get-store'
   | 'delete-store'
   | 'update-store'
   | 'create-user'
