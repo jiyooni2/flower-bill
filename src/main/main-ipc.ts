@@ -43,6 +43,7 @@ import {
 } from './product/dtos/get-product-by-category.dto';
 import { GetProductsInput } from './product/dtos/get-products.dto';
 import { GetStoreInput } from './store/dtos/get-store.dto';
+import { GetCategoryInput } from './category/dtos/get-category.dto';
 import {
   GetBillByStoreOutput,
   GetBillByStoreInput,
@@ -166,6 +167,14 @@ ipcMain.on(
     );
 
     event.reply('create-category', result);
+  }
+);
+
+ipcMain.on(
+  'get-category',
+  async (event, getCategoryInput: GetCategoryInput) => {
+    const result = await categoryService.getCategory(getCategoryInput);
+    event.reply('get-category', result);
   }
 );
 
