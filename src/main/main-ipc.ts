@@ -122,7 +122,7 @@ ipcMain.on(
 
 ipcMain.on('get-stores', async (event, getStoresInput: GetStoresInput) => {
   const result: GetStoresOutput = await storeService.getStores(getStoresInput);
-  event.reply('update-store', result);
+  event.reply('get-stores', result);
 });
 
 ipcMain.on(
