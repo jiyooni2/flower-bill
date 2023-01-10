@@ -1,75 +1,30 @@
-import './StorePage.scss';
-import { TextField } from '@mui/material';
-import useInputs from '../../hooks/useInputs';
-import { CreateStoreInput } from '../../../main/store/dtos/create-store.dto';
-
-interface IForm extends Omit<CreateStoreInput, 'businessNumber'> {
-  businessNumber: string;
-}
+import { useState } from 'react';
+import Button from '@mui/material/Button';
+import Modal from 'renderer/components/Modal/Modal';
+import CreateStoreForm from './components/CreateStoreForm/CreateStoreForm';
 
 const StorePage = () => {
-  const [{ businessNumber, address, name, owner }, handleChange] =
-    useInputs<IForm>({
-      businessNumber: '',
-      address: '',
-      name: '',
-      owner: '',
-    });
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    window.electron.ipcRenderer.sendMessage('create-store', {
-      businessNumber: Number(businessNumber),
-      address,
-      name,
-      owner,
-    });
-  };
+  const [isCreateStoreOpen, setIsCreateStoreOpen] = useState<boolean>(false);
+  const [isStoreListOpen, setIsStoreListOpen] = useState<boolean>(false);
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div className="form-box">
-          <div>
-            <TextField
-              label="사업자등록번호"
-              name="businessNumber"
-              variant="filled"
-              onChange={handleChange}
-              value={businessNumber}
-            />
-          </div>
-          <div>
-            <TextField
-              label="상호"
-              name="name"
-              variant="filled"
-              onChange={handleChange}
-              value={name}
-            />
-          </div>
-          <div>
-            <TextField
-              label="성명"
-              name="owner"
-              variant="filled"
-              onChange={handleChange}
-              value={owner}
-            />
-          </div>
-          <div>
-            <TextField
-              label="사업장 소재지(선택)"
-              name="address"
-              variant="filled"
-              onChange={handleChange}
-              value={address}
-            />
-          </div>
-          <button type="submit">제출</button>
-        </div>
-      </form>
+  <div>
+      {isCreateStoreOpen && (
+        <Modal isOpen={isCreateStoreOpen} setIsOpen={setIsCreateStoreOpen}>
+          <CreateStoreForm />
+        </Modal>
+      )}
+      {isStoreListOpen && (
+        <Modal isOpen={isStoreListOpen} setIsOpen={setIsStoreListOpen}>
+          하이
+        </Modal>
+      )}
+      <Button variant="contained" onClick={() => setIsCreateStoreOpen(true)}>
+        스토어 등록
+      </Button>
+      <Button variant="contained" onClick={() => setIsStoreListOpen(true)}>
+        스토어 관리
+      </Button>
     </div>
   );
 };
