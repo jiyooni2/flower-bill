@@ -13,8 +13,5 @@ export class User extends CoreEntity {
   owner: string;
 
   @Column()
-  password: string;
-
-  @Column()
   address?: string;
 }
