@@ -24,6 +24,7 @@ export type Channels =
   | 'get-products'
   | 'delete-product'
   | 'update-product'
+  | 'search-product'
   | 'create-category'
   | 'get-category'
   | 'delete-category'

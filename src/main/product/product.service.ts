@@ -15,6 +15,10 @@ import {
   CreateProductInput,
 } from './dtos/create-product.dto';
 import { Category } from './../category/entities/category.entity';
+import {
+  SearchProductInput,
+  SearchProductOutput,
+} from './dtos/search-product.dto';
 
 export class ProductService {
   private readonly productRepository: Repository<Product>;
@@ -89,6 +93,26 @@ export class ProductService {
 
       await this.productRepository.delete({ id });
       return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async searchProduct({
+    keyword,
+    page,
+  }: SearchProductInput): Promise<SearchProductOutput> {
+    try {
+      const products = await this.productRepository
+        .createQueryBuilder()
+        .select()
+        .where(`name LIKE "%${keyword}%"`)
+        .orderBy('product.id')
+        .offset(page)
+        .limit(10)
+        .getMany();
+
+      return { ok: true, products };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }
