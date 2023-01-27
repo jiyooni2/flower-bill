@@ -1,10 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { CoreEntity } from '../../common/entities/core.entity';
 import { Product } from '../../product/entities/product.entity';
 import { Bill } from '../../bill/entities/bill.entity';
+import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
 @Entity()
-export class OrderProduct extends CoreEntity {
+export class OrderProduct extends BusinessRelatedEntity {
   @Column()
   count: number;
 

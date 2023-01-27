@@ -1,9 +1,9 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { CoreEntity } from '../../common/entities/core.entity';
 import { Bill } from '../../bill/entities/bill.entity';
+import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
 @Entity()
-export class Store extends CoreEntity {
+export class Store extends BusinessRelatedEntity {
   @Column()
   businessNumber: number;
 
