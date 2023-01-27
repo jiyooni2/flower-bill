@@ -39,6 +39,8 @@ export class ProductService {
         .limit(10)
         .getMany();
 
+      console.log(products);
+
       return { ok: true, products };
     } catch (error: any) {
       return { ok: false, error: error.message };

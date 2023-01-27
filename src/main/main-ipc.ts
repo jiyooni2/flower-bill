@@ -5,6 +5,7 @@ import {
   productService,
   storeService,
   ownerService,
+  businessService,
 } from './main';
 import { CreateBillInput } from './bill/dtos/create-bill.dto';
 import { CreateStoreInput } from './store/dtos/create-store.dto';
@@ -51,6 +52,7 @@ import { GetProductsInput } from './product/dtos/get-products.dto';
 import { GetStoreInput } from './store/dtos/get-store.dto';
 import { GetCategoryInput } from './category/dtos/get-category.dto';
 import { SearchProductInput } from './product/dtos/search-product.dto';
+import { CreateBusinessInput } from './business/dtos/create-business.dto';
 import {
   GetBillByStoreOutput,
   GetBillByStoreInput,
@@ -225,5 +227,13 @@ ipcMain.on(
   async (event, searchProductInput: SearchProductInput) => {
     const result = await productService.searchProduct(searchProductInput);
     event.reply('search-product', result);
+  }
+);
+
+ipcMain.on(
+  'create-business',
+  async (event, createBusinessInput: CreateBusinessInput) => {
+    const result = await businessService.createBusiness(createBusinessInput);
+    event.reply('create-business', result);
   }
 );
