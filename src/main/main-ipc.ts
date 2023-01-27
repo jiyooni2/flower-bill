@@ -4,7 +4,7 @@ import {
   categoryService,
   productService,
   storeService,
-  userService,
+  ownerService,
 } from './main';
 import { CreateBillInput } from './bill/dtos/create-bill.dto';
 import { CreateStoreInput } from './store/dtos/create-store.dto';
@@ -15,7 +15,10 @@ import {
   DeleteStoreInput,
   DeleteStoreOutput,
 } from './store/dtos/delete-store.dto';
-import { CreateUserInput, CreateUserOutput } from './user/dtos/create-user.dto';
+import {
+  CreateOwnerInput,
+  CreateOwnerOutput,
+} from './owner/dtos/create-owner.dto';
 import {
   CreateProductInput,
   CreateProductOutput,
@@ -32,7 +35,10 @@ import {
   DeleteProductInput,
   DeleteProductOutput,
 } from './product/dtos/delete-product.dto';
-import { UpdateUserInput, UpdateUserOutput } from './user/dtos/update-user.dto';
+import {
+  UpdateOwnerInput,
+  UpdateOwnerOutput,
+} from './owner/dtos/update-owner.dto';
 import {
   UpdateStoreInput,
   UpdateStoreOutput,
@@ -143,10 +149,8 @@ ipcMain.on(
   }
 );
 
-ipcMain.on('create-user', async (event, createUserInput: CreateUserInput) => {
-  const result: CreateUserOutput = await userService.createUser(
-    createUserInput
-  );
+ipcMain.on('create-user', async (event, createUserInput: CreateOwnerInput) => {
+  const result = await ownerService.createOwner(createUserInput);
   event.reply('create-user', result);
 });
 
@@ -200,8 +204,8 @@ ipcMain.on(
   }
 );
 
-ipcMain.on('update-user', async (event, updateUserInput: UpdateUserInput) => {
-  const result: UpdateUserOutput = await userService.updateUser(
+ipcMain.on('update-user', async (event, updateUserInput: UpdateOwnerInput) => {
+  const result: UpdateOwnerOutput = await ownerService.updateOwner(
     updateUserInput
   );
   event.reply('update-user', result);

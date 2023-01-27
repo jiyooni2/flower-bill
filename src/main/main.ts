@@ -15,9 +15,9 @@ import { Product } from './product/entities/product.entity';
 import { ProductService } from './product/product.service';
 import { StoreService } from './store/store.service';
 import { OrderProductService } from './orderProduct/orderProduct.service';
-import { User } from './user/entities/user.entity';
-import { UserService } from './user/user.service';
+import { OwnerService } from './owner/owner.service';
 import { CategoryService } from './category/category.service';
+import { Owner } from './owner/entities/owner.entity';
 
 class AppUpdater {
   constructor() {
@@ -32,7 +32,7 @@ export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
   synchronize: true,
-  entities: [Bill, Store, Category, OrderProduct, Product, User],
+  entities: [Bill, Store, Category, OrderProduct, Product, Owner],
   logging: true,
 });
 
@@ -41,7 +41,7 @@ export const productService: ProductService = new ProductService();
 export const storeService: StoreService = new StoreService();
 export const orderProductService: OrderProductService =
   new OrderProductService();
-export const userService: UserService = new UserService();
+export const ownerService: OwnerService = new OwnerService();
 export const categoryService: CategoryService = new CategoryService();
 
 let mainWindow: BrowserWindow | null = null;
