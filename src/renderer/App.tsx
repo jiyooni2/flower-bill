@@ -6,6 +6,7 @@ import BillPage from './pages/BillPage/BillPage';
 import HomePage from './pages/HomePage/HomePage';
 import StorePage from './pages/StorePage/StorePage';
 import UserPage from './pages/UserPage/UserPage';
+import SellerPage from './pages/SellerPage/SellerPage';
 import Layout from './components/Layout/Layout';
 import ROUTES from './constants/routes';
 
@@ -19,6 +20,7 @@ export default function App() {
             <Route path={ROUTES.BILL} element={<BillPage />} />
             <Route path={ROUTES.STORE} element={<StorePage />} />
             <Route path={ROUTES.USER} element={<UserPage />} />
+            <Route path={ROUTES.SELLER} element={<SellerPage />} />
           </Routes>
         </Layout>
       </Router>
