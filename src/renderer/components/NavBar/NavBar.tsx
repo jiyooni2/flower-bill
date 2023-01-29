@@ -20,6 +20,9 @@ const NavBar = () => {
       <p className={styles.menu} onClick={() => navigate(ROUTES.USER)}>
         내 가게 관리
       </p>
+      <p className={styles.menu} onClick={() => navigate(ROUTES.SELLER)}>
+        판매처 관리
+      </p>
     </nav>
   );
 };
