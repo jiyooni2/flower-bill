@@ -5,6 +5,7 @@ import { CreateOrderProductInput } from './../../orderProduct/dtos/create-orderP
 export interface CreateBillInput
   extends Pick<Bill, 'memo' | 'transactionDate'> {
   storeId: number;
+  businessId: number;
   orderProductInputs: CreateOrderProductInput[];
 }
 

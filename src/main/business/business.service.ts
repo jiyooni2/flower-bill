@@ -16,6 +16,7 @@ export class BusinessService {
     this.ownerRepository = AppDataSource.getRepository(Owner);
   }
 
+  //service for API
   async createBusiness(
     createBusinessInput: CreateBusinessInput
   ): Promise<CreateBusinessOutput> {
@@ -40,6 +41,18 @@ export class BusinessService {
       return { ok: true };
     } catch (error: any) {
       return { ok: false, error: error.message };
+    }
+  }
+
+  //service not for API
+  async getBusiness(id: number) {
+    return this.businessRepository.findOne({ where: { id } });
+  }
+
+  async validateBusiness(id: number) {
+    const business = this.getBusiness(id);
+    if (!business) {
+      throw new Error('없는 사업자입니다.');
     }
   }
 }

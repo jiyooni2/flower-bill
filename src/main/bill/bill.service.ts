@@ -1,4 +1,4 @@
-import { AppDataSource, storeService } from '../main';
+import { AppDataSource, businessService, storeService } from '../main';
 import { Bill } from './entities/bill.entity';
 import { Repository } from 'typeorm';
 import { CreateBillInput } from './dtos/create-bill.dto';
@@ -24,6 +24,7 @@ export class BillService {
     memo,
     transactionDate,
     storeId,
+    businessId,
     orderProductInputs,
   }: CreateBillInput) {
     try {
@@ -39,6 +40,7 @@ export class BillService {
       bill.storeId = storeId;
       bill.transactionDate = transactionDate;
       bill.memo = memo;
+      bill.businessId = businessId;
 
       await this.billRepository.save(bill);
 
