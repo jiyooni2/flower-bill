@@ -4,9 +4,10 @@ import { ChangeEvent, useState } from 'react'
 interface propsType {
   placeholderText?: string;
   inputName: string;
+  setValue?: string;
 }
 
-const Input = ({ placeholderText, inputName }:propsType) => {
+const Input = ({ placeholderText, inputName, setValue }:propsType) => {
   const [inputText, setInputText] = useState<string>("");
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -14,12 +15,25 @@ const Input = ({ placeholderText, inputName }:propsType) => {
   };
 
   return (
-    <input
-      onChange={handleTextChange}
-      name={inputName}
-      value={inputText}
-      placeholder={placeholderText}
-    />
+    <>
+      {
+        setValue && setValue !== '' ? (
+          <input
+            name={inputName}
+            value={setValue}
+            placeholder={placeholderText}
+            readOnly
+          />
+        ) : (
+          <input
+            onChange={handleTextChange}
+            name={inputName}
+            value={inputText}
+            placeholder={placeholderText}
+          />
+        )
+      }
+   </>
   );
 };
 
