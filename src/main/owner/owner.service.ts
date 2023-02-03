@@ -115,4 +115,26 @@ export class OwnerService {
 
     return true;
   }
+
+  async getAuthOwner(token?: string): Promise<Owner | null> {
+    if (!token) {
+      return null;
+    }
+
+    const decoded = jwt.verify(token, this.ACCESS_KEY);
+
+    if (typeof decoded === 'object' && decoded.hasOwnProperty('data')) {
+      const owner = this.ownerRepository.findOne({
+        where: { id: decoded.data },
+      });
+
+      if (!owner) {
+        return null;
+      } else {
+        return owner;
+      }
+    } else {
+      return null;
+    }
+  }
 }

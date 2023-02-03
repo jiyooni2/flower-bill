@@ -1,4 +1,9 @@
-import { AppDataSource, businessService, storeService } from '../main';
+import {
+  AppDataSource,
+  businessService,
+  ownerService,
+  storeService,
+} from '../main';
 import { Bill } from './entities/bill.entity';
 import { Repository } from 'typeorm';
 import { CreateBillInput } from './dtos/create-bill.dto';
@@ -26,9 +31,20 @@ export class BillService {
     storeId,
     businessId,
     orderProductInputs,
+    token,
   }: CreateBillInput) {
     try {
       //need transaction
+
+      const owner = await ownerService.getAuthOwner(token);
+
+      const business = await businessService.getBusiness(businessId);
+      if (!business) {
+        return { ok: false, error: '존재하지 않는 사업자입니다.' };
+      }
+      if (business.owner !== owner) {
+        return { ok: false, error: '해당 사업자에 대한 권한이 없습니다.' };
+      }
 
       const { store } = await storeService.getStore({ id: storeId });
       if (!store) {
