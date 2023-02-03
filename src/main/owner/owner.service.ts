@@ -3,6 +3,7 @@ import { AppDataSource } from '../main';
 import { CreateOwnerOutput, CreateOwnerInput } from './dtos/create-owner.dto';
 import { UpdateOwnerInput, UpdateOwnerOutput } from './dtos/update-owner.dto';
 import { Owner } from './entities/owner.entity';
+import * as bcrypt from 'bcrypt';
 
 export class OwnerService {
   private readonly ownerRepository: Repository<Owner>;
@@ -11,15 +12,29 @@ export class OwnerService {
     this.ownerRepository = AppDataSource.getRepository(Owner);
   }
 
-  async createOwner(
-    createOwnerInput: CreateOwnerInput
-  ): Promise<CreateOwnerOutput> {
+  async createOwner({
+    ownerId,
+    password,
+    nickname,
+  }: CreateOwnerInput): Promise<CreateOwnerOutput> {
     try {
+      const existingOwner = await this.ownerRepository.findOne({
+        where: { ownerId },
+      });
+
+      if (existingOwner) {
+        return { ok: false, error: '이미 사용중인 ID입니다.' };
+      }
+
       await this.ownerRepository
         .createQueryBuilder()
         .insert()
         .into(Owner)
-        .values(createOwnerInput)
+        .values({
+          ownerId,
+          nickname,
+          password: await bcrypt.hash(password, 10),
+        })
         .execute();
 
       return { ok: true };
@@ -30,16 +45,23 @@ export class OwnerService {
 
   async updateOwner({
     id,
-    ...updateOwnerInput
+    nickname,
+    password,
   }: UpdateOwnerInput): Promise<UpdateOwnerOutput> {
     try {
-      const user = await this.ownerRepository.findOne({ where: { id } });
+      const owner = await this.ownerRepository.findOne({ where: { id } });
 
-      if (!user) {
-        return { ok: false, error: '없는 유저입니다.' };
+      if (!owner) {
+        return { ok: false, error: '없는 사용자입니다.' };
       }
 
-      await this.ownerRepository.update({ id }, { ...updateOwnerInput });
+      await this.ownerRepository.update(
+        { id },
+        {
+          nickname,
+          password: password ? await bcrypt.hash(password, 10) : undefined,
+        }
+      );
 
       return { ok: true };
     } catch (error: any) {
