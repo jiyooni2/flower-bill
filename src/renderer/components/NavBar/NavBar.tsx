@@ -23,6 +23,9 @@ const NavBar = () => {
       <p className={styles.menu} onClick={() => navigate(ROUTES.SELLER)}>
         판매처 관리
       </p>
+      <p className={styles.menu} onClick={() => navigate(ROUTES.CATEGORY)}>
+        카테고리 관리
+      </p>
     </nav>
   );
 };
