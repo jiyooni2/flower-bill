@@ -3,6 +3,7 @@ const ROUTES = {
   BILL: '/bill',
   STORE: '/store',
   USER: '/user',
+  CATEGORY: '/cateogory'
 };
 
 export default ROUTES;
