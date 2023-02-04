@@ -8,6 +8,7 @@ import StorePage from './pages/StorePage/StorePage';
 import UserPage from './pages/UserPage/UserPage';
 import Layout from './components/Layout/Layout';
 import ROUTES from './constants/routes';
+import CategoryPage from './pages/CategoryPage/CategoryPage';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path={ROUTES.BILL} element={<BillPage />} />
             <Route path={ROUTES.STORE} element={<StorePage />} />
             <Route path={ROUTES.USER} element={<UserPage />} />
+            <Route path={ROUTES.CATEGORY} element={<CategoryPage />} />
           </Routes>
         </Layout>
       </Router>

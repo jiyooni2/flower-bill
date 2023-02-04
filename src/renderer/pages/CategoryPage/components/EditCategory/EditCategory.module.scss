@@ -1,0 +1,27 @@
+$custom-gray-color : rgb(144, 144, 144);
+$custom-black-color: rgb(78, 78, 78);
+
+.categoryInput {
+    width: 12rem;
+    height: 2rem;
+    padding: 5px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    border-color: $custom-gray-color;
+    opacity: 0.8;
+    font-size: 16px;
+    font-weight: 400;
+
+    &::placeholder {
+        font-size: 15px;
+        font-style: italic;
+    }
+}
+
+.addButton {
+    font-size: 12px;
+    border-radius: 3px;
+    border: 1px solid;
+    background-color: lightcyan;
+    padding: 0.8% 2%;
+}
