@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
-import { AppDataSource, productService } from './../main';
+import { AppDataSource, productService, authService } from './../main';
 import {
   DeleteCategoryInput,
   DeleteCategoryOutput,
@@ -21,8 +21,12 @@ export class CategoryService {
   async createCategory({
     name,
     parentCategoryId,
+    token,
+    businessId,
   }: CreateCategoryInput): Promise<CreateCategoryOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       let parentCategory;
 
       if (parentCategoryId) {
@@ -83,8 +87,14 @@ export class CategoryService {
     }
   }
 
-  async getCategory({ id }: GetCategoryInput): Promise<GetCategoryOutput> {
+  async getCategory({
+    id,
+    token,
+    businessId,
+  }: GetCategoryInput): Promise<GetCategoryOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const category = await this.categoryRepository.findOne({ where: { id } });
 
       if (!category) {
