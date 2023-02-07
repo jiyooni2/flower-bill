@@ -19,8 +19,9 @@ ipcMain.on('get-bill', async (event, getBillInput: GetBillInput) => {
   event.reply('get-bill', result);
 });
 
-ipcMain.on('delete-bill', async (event, arg: DeleteBillInput) => {
-  const result = await billService.deleteBill(arg);
+ipcMain.on('delete-bill', async (event, deleteBillInput: DeleteBillInput) => {
+  await authService.checkAuth(deleteBillInput.token);
+  const result = await billService.deleteBill(deleteBillInput);
   event.reply('delete-bill', result);
 });
 
