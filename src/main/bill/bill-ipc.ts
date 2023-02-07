@@ -14,6 +14,7 @@ ipcMain.on('create-bill', async (event, createBillInput: CreateBillInput) => {
 });
 
 ipcMain.on('get-bill', async (event, getBillInput: GetBillInput) => {
+  await authService.checkAuth(getBillInput.token);
   const result = await billService.getBill(getBillInput);
   event.reply('get-bill', result);
 });

@@ -78,8 +78,14 @@ export class BillService {
     }
   }
 
-  async getBill({ id }: GetBillInput): Promise<GetBillOutput> {
+  async getBill({
+    id,
+    token,
+    businessId,
+  }: GetBillInput): Promise<GetBillOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const bill = await this.billRepository.findOne({ where: { id } });
 
       if (!bill) {
