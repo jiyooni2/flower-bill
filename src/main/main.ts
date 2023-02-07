@@ -20,6 +20,7 @@ import { CategoryService } from './category/category.service';
 import { Owner } from './owner/entities/owner.entity';
 import { Business } from './business/entities/business.entity';
 import { BusinessService } from './business/business.service';
+import { AuthService } from './../auth/auth.service';
 
 class AppUpdater {
   constructor() {
@@ -45,6 +46,7 @@ export const orderProductService = new OrderProductService();
 export const ownerService = new OwnerService();
 export const categoryService = new CategoryService();
 export const businessService = new BusinessService();
+export const authService = new AuthService();
 
 let mainWindow: BrowserWindow | null = null;
 

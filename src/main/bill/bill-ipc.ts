@@ -5,8 +5,10 @@ import { GetBillInput } from './dtos/get-bill.dto';
 import { DeleteBillInput } from './dtos/delete-bill.dto';
 import { UpdateBillInput } from './dtos/update-bill.dto';
 import { GetBillByStoreInput } from './dtos/get-bill-by-store.dto';
+import { authService } from './../main';
 
 ipcMain.on('create-bill', async (event, createBillInput: CreateBillInput) => {
+  await authService.checkAuth(createBillInput.token);
   const result = await billService.createBill(createBillInput);
   event.reply('create-bill', result);
 });

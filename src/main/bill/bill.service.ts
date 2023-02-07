@@ -1,5 +1,6 @@
 import {
   AppDataSource,
+  authService,
   businessService,
   ownerService,
   storeService,
@@ -36,15 +37,7 @@ export class BillService {
     try {
       //need transaction
 
-      const owner = await ownerService.getAuthOwner(token);
-
-      const business = await businessService.getBusiness(businessId);
-      if (!business) {
-        return { ok: false, error: '존재하지 않는 사업자입니다.' };
-      }
-      if (business.owner !== owner) {
-        return { ok: false, error: '해당 사업자에 대한 권한이 없습니다.' };
-      }
+      await authService.checkBusinessAuth(token, businessId);
 
       const { store } = await storeService.getStore({ id: storeId });
       if (!store) {
