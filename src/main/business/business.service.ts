@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { Business } from './entities/business.entity';
-import { AppDataSource } from './../main';
+import { AppDataSource, authService } from './../main';
 import { Owner } from './../owner/entities/owner.entity';
 import {
   CreateBusinessInput,
@@ -17,15 +17,17 @@ export class BusinessService {
   }
 
   //service for API
-  async createBusiness(
-    createBusinessInput: CreateBusinessInput
-  ): Promise<CreateBusinessOutput> {
+  async createBusiness({
+    name,
+    businessNumber,
+    businessOwnerName,
+    address,
+    token,
+  }: CreateBusinessInput): Promise<CreateBusinessOutput> {
     try {
       //owner 검증
 
-      const owner = this.ownerRepository.findOne({
-        where: { id: createBusinessInput.ownerId },
-      });
+      const owner = await authService.getAuthOwner(token);
 
       if (!owner) {
         return { ok: false, error: '없는 계정입니다.' };
@@ -35,7 +37,13 @@ export class BusinessService {
         .createQueryBuilder()
         .insert()
         .into(Business)
-        .values(createBusinessInput)
+        .values({
+          name,
+          businessNumber,
+          businessOwnerName,
+          address,
+          ownerId: owner.id,
+        })
         .execute();
 
       return { ok: true };
