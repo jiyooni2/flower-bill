@@ -98,8 +98,14 @@ export class BillService {
     }
   }
 
-  async deleteBill({ id }: DeleteBillInput): Promise<DeleteBillOutput> {
+  async deleteBill({
+    id,
+    token,
+    businessId,
+  }: DeleteBillInput): Promise<DeleteBillOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const bill = await this.billRepository.findOne({ where: { id } });
 
       if (!bill) {
@@ -117,9 +123,13 @@ export class BillService {
   async updateBill({
     id,
     orderProductInputs,
+    token,
+    businessId,
     ...updateBillInput
   }: UpdateBillInput): Promise<UpdateBillOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const bill = await this.billRepository.findOne({ where: { id } });
 
       if (!bill) {
@@ -164,8 +174,12 @@ export class BillService {
   async getBillByStore({
     storeId,
     page,
+    token,
+    businessId,
   }: GetBillByStoreInput): Promise<GetBillByStoreOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const { store } = await storeService.getStore({ id: storeId });
       if (!store) {
         return { ok: false, error: '없는 스토어입니다.' };

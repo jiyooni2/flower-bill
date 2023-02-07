@@ -26,6 +26,7 @@ ipcMain.on('delete-bill', async (event, deleteBillInput: DeleteBillInput) => {
 });
 
 ipcMain.on('update-bill', async (event, updateBIllInput: UpdateBillInput) => {
+  await authService.checkAuth(updateBIllInput.token);
   const result = await billService.updateBill(updateBIllInput);
   event.reply('update-bill', result);
 });
@@ -33,8 +34,8 @@ ipcMain.on('update-bill', async (event, updateBIllInput: UpdateBillInput) => {
 ipcMain.on(
   'get-bill-by-store',
   async (event, getBillByStoreInput: GetBillByStoreInput) => {
+    await authService.checkAuth(getBillByStoreInput.token);
     const result = await billService.getBillByStore(getBillByStoreInput);
-
     event.reply('get-bill-by-store', result);
   }
 );
