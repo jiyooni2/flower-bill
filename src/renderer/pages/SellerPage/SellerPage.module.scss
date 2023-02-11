@@ -1,36 +1,116 @@
 .container {
   width: 100%;
-}
 
-.content {
-  display: flex;
-  height: 100%;
-  gap: 10px;
+  .content {
+    display: flex;
+    height: 100%;
+    gap: 10px;
 
-  & > div {
-    flex-basis: 50%;
-    height: 100vh;
-    padding: 20px 0;
+    &>div {
+      flex-basis: 50%;
+      height: 100vh;
+      padding-top: 10px;
+    }
+
+    .searchInput {
+      margin-top: 13px;
+      padding-left: 10px;
+      width: 80%;
+      height: 5%;
+      border-radius: 5px;
+      border: 1px solid darkgray;
+      opacity: 0.9;
+
+      &::placeholder {
+        font-style: italic;
+      }
+    }
+
+    .userList {
+      margin-top: 18px;
+      margin-right: 10px;
+      height: 85.5vh;
+      background-color: rgb(232, 232, 232);
+    }
   }
 }
 
-.item {
-  display: flex;
-  align-items: center;
-}
-
 .infoContent {
+  margin-top: 5px;
   position: relative;
-  height: 100%;
-  background: skyblue;
+  height: 96vh;
+
+  .clearInput {
+    float: right;
+    margin-right: 10%;
+    margin-top: 23px;
+    padding: 4.5px 7px;
+    font-size: 11px;
+    border: 1px solid rgb(135, 135, 135);
+    border-radius: 5px;
+    color: rgb(56, 56, 56);
+    background-color: rgb(238, 238, 238);
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: 0.5px 1px 2px 0 rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .list {
+    margin-top: 60px;
+
+    .item {
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .dataInput {
+        width: 50%;
+        height: 27px;
+        border-radius: 5px;
+        border: 1px solid darkgray;
+        opacity: 0.9;
+      }
+    }
+
+    .labels {
+      width: 30%;
+      font-size: 15px;
+      margin-top: 2px;
+    }
+  }
 }
 
 .buttonList {
   position: absolute;
   left: 30px;
-  bottom: 20px;
+  bottom: 30px;
 }
 
 button {
   position: static;
+}
+
+.dataRow {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(215, 215, 215)
+  }
+}
+
+.noResult {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20%
+}
+
+.cutText {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 30px;
 }
