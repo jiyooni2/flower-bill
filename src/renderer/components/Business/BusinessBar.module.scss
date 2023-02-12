@@ -1,0 +1,49 @@
+.bar {
+  display: flex;
+  flex-direction: column;
+
+  .settingsIcon {
+    background-color: #f1f1f1;
+  }
+}
+
+.container {
+  padding: 30px;
+  width: 120px;
+  height: 95vh;
+  background-color: #f1f1f1;
+
+  .content {
+    height: 90%;
+
+    .box {
+      border: 4px solid rgb(255, 255, 255);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px;
+      height: 60px;
+      margin-top: 35px;
+      cursor: pointer;
+
+      & > img {
+        border-radius: 10px;
+        width: 100%;
+        height: 100%;
+        object-fit:cover;
+      }
+    }
+
+    .addBusiness {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 53px;
+      margin-top: 35px;
+      cursor: pointer;
+    }
+  }
+}

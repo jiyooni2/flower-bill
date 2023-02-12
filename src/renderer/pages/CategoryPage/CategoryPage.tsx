@@ -82,7 +82,6 @@ const CategoryPage = () => {
         </div>
       </div>
       <div className={styles.container}>
-        <div className={styles.category_container}></div>
         <div className={styles.detail_container}>
           <Typography
             variant="h5"
@@ -96,16 +95,11 @@ const CategoryPage = () => {
           >
             카테고리 관리
           </Typography>
-          <button
-            className={styles.createBtn}
-            // onClick={() => {
-            //   return setIsOpen(true);
-            // }}
-          >
-            생성
-          </button>
-          <button className={styles.deleteBtn}>삭제</button>
           <CategoryField data={data} />
+          <div className={styles.buttons}>
+            <button className={styles.deleteBtn}>삭제</button>
+            <button className={styles.createBtn}>생성</button>
+          </div>
         </div>
       </div>
     </>

@@ -6,27 +6,39 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className={styles.container}>
-      <p className={styles.menu} onClick={() => navigate(ROUTES.HOME)}>
-        Flower Bill
-      </p>
-      <hr />
-      <p className={styles.menu} onClick={() => navigate(ROUTES.STORE)}>
-        스토어
-      </p>
-      <p className={styles.menu} onClick={() => navigate(ROUTES.BILL)}>
-        계산서
-      </p>
-      <p className={styles.menu} onClick={() => navigate(ROUTES.USER)}>
-        내 가게 관리
-      </p>
-      <p className={styles.menu} onClick={() => navigate(ROUTES.SELLER)}>
-        판매처 관리
-      </p>
-      <p className={styles.menu} onClick={() => navigate(ROUTES.CATEGORY)}>
-        카테고리 관리
-      </p>
-    </nav>
+      <nav className={styles.container}>
+        <p className={styles.title} onClick={() => navigate(ROUTES.HOME)}>
+          Flower Bill
+        </p>
+        <hr />
+        <div>
+          <p className={styles.menuTitle}>계산서</p>
+          <p className={styles.menu} onClick={() => navigate(ROUTES.BILL)}>
+            계산서 생성
+          </p>
+          <p className={styles.menu} onClick={() => navigate(ROUTES.BILL)}>
+            계산서 목록
+          </p>
+        </div>
+        <div>
+          <p className={styles.menuTitle}>상품 관리</p>
+          <p className={styles.menu} onClick={() => navigate(ROUTES.USER)}>
+            상품 정보 관리
+          </p>
+          <p className={styles.menu} onClick={() => navigate(ROUTES.CATEGORY)}>
+            카테고리 관리
+          </p>
+        </div>
+        <div>
+          <p className={styles.menuTitle}>사업 관리</p>
+          <p className={styles.menu} onClick={() => navigate(ROUTES.SELLER)}>
+            판매처 관리
+          </p>
+          <p className={styles.menu} onClick={() => navigate(ROUTES.STORE)}>
+            사업자 관리
+          </p>
+        </div>
+      </nav>
   );
 };
 
