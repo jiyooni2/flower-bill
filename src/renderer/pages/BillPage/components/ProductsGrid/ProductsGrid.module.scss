@@ -1,0 +1,39 @@
+.content_container {
+  width: 50%;
+  min-width: 200px;
+  height: 100%;
+  padding: 10px;
+  background-color: #f5f5f5;
+  // align-items: center;
+}
+
+.products_container {
+  display: flex;
+  flex-direction: column;
+  width: 55%;
+}
+
+.category_container {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  height: 100%;
+  background-color: antiquewhite;
+}
+
+
+.searchProduct {
+  float: right;
+  margin-top: 13px;
+  padding-left: 10px;
+  width: 35vh;
+  height: 35px;
+  border-radius: 5px;
+  border: 1px solid darkgray;
+  opacity: 0.9;
+  margin: 15px 20px 30px 0px;
+
+  &::placeholder {
+    font-style: italic;
+  }
+}
