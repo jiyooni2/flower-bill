@@ -3,7 +3,7 @@ import { Button, Typography } from '@mui/material';
 import styles from './BillModal.module.scss';
 // import Button from '@mui/material/Button';
 import { useRecoilValue } from 'recoil';
-import { orderProductsState } from 'renderer/recoil/states';
+import { memoState, orderProductsState, storeState } from 'renderer/recoil/states';
 import Modal from './Modal';
 
 interface IProps {
@@ -14,6 +14,8 @@ interface IProps {
 const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   // const [memo, setMemo] = useRecoilState(memoState);
   const orderProducts = useRecoilValue(orderProductsState);
+  const memo = useRecoilValue(memoState);
+  const store = useRecoilValue(storeState);
 
   // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   setMemo(event.target.value);
@@ -21,6 +23,19 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
 
   const handleClick = () => {
     setIsOpen(false);
+    const orderProductInputs = orderProducts.map((orderProduct) => ({
+      count: orderProduct.count,
+      productId: orderProduct.product.id,
+      orderPrice: orderProduct.orderPrice,
+    }));
+
+    const bill = {
+      storeId: store.id,
+      memo,
+      orderProductInputs,
+    };
+
+    window.electron.ipcRenderer.sendMessage('create-bill', bill);
   };
 
   let sum = 0;
@@ -35,7 +50,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <div>
+      <div style={{ height: '490px'}}>
         <table
           style={{ width: '100%', border: '0' }}
           cellPadding="0"
@@ -153,17 +168,17 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             <th>단가</th>
             <th>금액</th>
           </tr>
-          {orderProducts.map((orderProduct) => {
-            return (
-              <tr key={orderProduct.id}>
-                <td className={styles.item}>{`${month} / ${day}`}</td>
-                <td className={styles.item}>{orderProduct.product.name}</td>
-                <td className={styles.article}>{orderProduct.count}</td>
-                <td className={styles.price}>{orderProduct.product.price}</td>
-                <td className={styles.sum}>{orderProduct.orderPrice}</td>
-              </tr>
-            );
-          })}
+            {orderProducts.map((orderProduct) => {
+              return (
+                <tr key={orderProduct.id}>
+                  <td className={styles.item}>{`${month} / ${day}`}</td>
+                  <td className={styles.item}>{orderProduct.product.name}</td>
+                  <td className={styles.article}>{orderProduct.count}</td>
+                  <td className={styles.price}>{orderProduct.product.price}</td>
+                  <td className={styles.sum}>{orderProduct.orderPrice}</td>
+                </tr>
+              );
+            })}
         </table>
         <div className={styles.sumDiv}>
           <td className={styles.lastSum}>합&ensp;&ensp;계</td>
@@ -176,7 +191,14 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
         <Button
           variant="contained"
           onClick={handleClick}
-          style={{ height: '30px', width: '90px', float: 'right', display: 'flex', bottom: '-10px', right: 0 }}
+          style={{
+            height: '30px',
+            width: '90px',
+            float: 'right',
+            display: 'flex',
+            bottom: '-10px',
+            right: 0,
+          }}
         >
           발행하기
         </Button>

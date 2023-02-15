@@ -1,8 +1,9 @@
 import { Product } from 'main/product/entities/product.entity';
 import styles from './ProductsGrid.module.scss';
-import { Box, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Typography } from '@mui/material';
 import ProductBox from '../ProductBox/ProductBox';
 import { useEffect, useState } from 'react';
+import MemoModal from '../MemoModal/MemoModal';
 // 카테고리 데이터 가져오기
 // import { useRecoilState } from 'recoil';
 // import { categoryState } from 'renderer/recoil/states';
@@ -56,6 +57,7 @@ const ProductsGrid = ({ products }: IProps) => {
   const [mainCat, setMainCat] = useState<RenderTree>();
   const [subCat, setSubCat] = useState<RenderTree>();
   const [groupCat, setGroupCat] = useState<RenderTree>();
+  const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setProductData(products)
@@ -112,99 +114,97 @@ const ProductsGrid = ({ products }: IProps) => {
   };
 
   return (
-    <div className={`${styles.content_container} ${styles.products_container}`}>
-      <div>
-        {/* <Typography
-          variant="h5"
-          align="center"
-          marginTop="15px"
-          marginBottom="20px"
-        >
-          상품
-        </Typography> */}
-        <input
-          type="text"
-          className={styles.searchProduct}
-          placeholder="상품 검색"
-          value={searchWord}
-          onChange={searchFilterHandler}
-        />
-      </div>
+    <>
+      <MemoModal isOpen={isMemoOpen} setIsOpen={setIsMemoOpen} />
+      <div
+        className={`${styles.content_container} ${styles.products_container}`}
+      >
+        <div style={{ marginBottom: '20px'}}>
+          <Button onClick={() => setIsMemoOpen(true)} className={styles.memoBtn}>메모</Button>
+          <input
+            type="text"
+            className={styles.searchProduct}
+            placeholder="상품 검색"
+            value={searchWord}
+            onChange={searchFilterHandler}
+          />
+        </div>
 
-      <Box sx={{ width: '95%', marginLeft: '20px', marginBottom: '20px' }}>
-        <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
-          <InputLabel>대분류</InputLabel>
-          <Select label="대분류" defaultValue="">
-            {catdata.map((item) => (
-              <MenuItem
-                key={item.id}
-                value={item.name}
-                onClick={() => handleClick(item, 'Main')}
-              >
-                {item.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
-          <InputLabel>중분류</InputLabel>
-          <Select label="중분류" defaultValue="">
-            {mainCat?.children.map((subs) => (
-              <MenuItem
-                key={subs.id}
-                value={subs.name}
-                onClick={() => handleClick(subs, 'Sub')}
-              >
-                {subs.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl size="small" sx={{ width: '30%' }}>
-          <InputLabel>소분류</InputLabel>
-          <Select label="소분류" defaultValue="">
-            {subCat?.children.map((groups) => (
-              <MenuItem
-                key={groups.id}
-                value={groups.name}
-                onClick={() => handleClick(groups, 'Group')}
-              >
-                {groups.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+        <Box sx={{ width: '95%', marginLeft: '20px', marginBottom: '20px' }}>
+          <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
+            <InputLabel>대분류</InputLabel>
+            <Select label="대분류" defaultValue="">
+              {catdata.map((item) => (
+                <MenuItem
+                  key={item.id}
+                  value={item.name}
+                  onClick={() => handleClick(item, 'Main')}
+                >
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
+            <InputLabel>중분류</InputLabel>
+            <Select label="중분류" defaultValue="">
+              {mainCat?.children.map((subs) => (
+                <MenuItem
+                  key={subs.id}
+                  value={subs.name}
+                  onClick={() => handleClick(subs, 'Sub')}
+                >
+                  {subs.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ width: '30%' }}>
+            <InputLabel>소분류</InputLabel>
+            <Select label="소분류" defaultValue="">
+              {subCat?.children.map((groups) => (
+                <MenuItem
+                  key={groups.id}
+                  value={groups.name}
+                  onClick={() => handleClick(groups, 'Group')}
+                >
+                  {groups.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
-      <div style={{ margin: '5%' }}>
-        {productData ? (
-          <Grid
-            container
-            spacing={{ xs: 1, md: 2 }}
-            columns={{ xs: 4, sm: 8, md: 12 }}
-            sx={{ marginLeft: '5px' }}
-          >
-            {Array.from(productData).map((product) => (
-              <Grid item key={product.id} xs={12} sm={6} md={3} lg={3} xl={2}>
-                <ProductBox product={product} />
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <div>데이터를 가져오고 있습니다.</div>
-        )}
+        <div style={{ margin: '5%' }}>
+          {productData ? (
+            <Grid
+              container
+              spacing={{ xs: 1, md: 2 }}
+              columns={{ xs: 4, sm: 8, md: 12 }}
+              sx={{ marginLeft: '5px' }}
+            >
+              {Array.from(productData).map((product) => (
+                <Grid item key={product.id} xs={12} sm={6} md={3} lg={3} xl={2}>
+                  <ProductBox product={product} />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <div>데이터를 가져오고 있습니다.</div>
+          )}
+        </div>
+        <div style={{ margin: '30px auto' }}>
+          <Pagination
+            count={LAST_PAGE}
+            size="small"
+            color="standard"
+            defaultPage={1}
+            boundaryCount={1}
+            onChange={(event) => handlePage(event)}
+          />
+        </div>
       </div>
-      <div style={{ margin: '30px auto' }}>
-        <Pagination
-          count={LAST_PAGE}
-          size="small"
-          color="standard"
-          defaultPage={1}
-          boundaryCount={1}
-          onChange={(event) => handlePage(event)}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

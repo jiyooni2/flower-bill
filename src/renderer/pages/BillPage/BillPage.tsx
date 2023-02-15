@@ -22,32 +22,12 @@ import BillModal from './components/BillModal/BillModal';
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
   const orderProducts = useRecoilValue(orderProductsState);
-  const memo = useRecoilValue(memoState);
-  const store = useRecoilValue(storeState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
-  const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
 
-  console.log(orderProducts);
-
-
-  // const createBill = () => {
-  //   const orderProductInputs = orderProducts.map((orderProduct) => ({
-  //     count: orderProduct.count,
-  //     productId: orderProduct.product.id,
-  //     orderPrice: orderProduct.orderPrice,
-  //   }));
-
-  //   const bill = {
-  //     storeId: store.id,
-  //     memo,
-  //     orderProductInputs,
-  //   };
-
-  //   window.electron.ipcRenderer.sendMessage('create-bill', bill);
-  // };
+  // console.log(orderProducts);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {});
@@ -90,7 +70,6 @@ const BillPage = () => {
 
   return (
     <>
-      <MemoModal isOpen={isMemoOpen} setIsOpen={setIsMemoOpen} />
       {/* <DiscountModal isOpen={isDiscountOpen} setIsOpen={setIsDiscountOpen} /> */}
       <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
       <StoreSearchModal
@@ -107,14 +86,6 @@ const BillPage = () => {
           >
             계산서
           </Typography>
-          {/* <div>
-            {store.name !== '' ? store.name : '______'}
-            귀하
-            <Button onClick={() => setIsSearchStoreOpen(true)}>
-              스토어 검색
-            </Button>
-            <Button onClick={() => setIsMemoOpen(true)}>메모</Button>
-          </div> */}
           <Table>
             <TableHead>
               <TableRow sx={{ fontWeight: 'bold' }}>
@@ -135,7 +106,7 @@ const BillPage = () => {
                 />
               ))}
           </div>
-          <div style={{ margin: '0 auto', marginBottom: '-20px' }}>
+          <div style={{ margin: '0 auto' }}>
             <Pagination
               count={LAST_PAGE}
               size="small"
