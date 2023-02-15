@@ -32,6 +32,14 @@ const MemoModal = ({ isOpen, setIsOpen }: IProps) => {
         value={memo}
         onChange={handleChange}
       />
+      {/* <div className={`${styles.orderProducts_list}`}>
+        {orderProducts.slice((page - 1) * 4, page * 4).map((orderProduct) => (
+          <OrderProductBox
+            key={orderProduct.product.id}
+            orderProduct={orderProduct}
+          />
+        ))}
+      </div> */}
       <Button variant="contained" onClick={handleClick}>
         확인
       </Button>

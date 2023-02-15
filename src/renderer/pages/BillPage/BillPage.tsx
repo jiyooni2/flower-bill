@@ -17,6 +17,7 @@ import MemoModal from './components/MemoModal/MemoModal';
 import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import DiscountModal from './components/DiscountModal/DiscountModal';
+import BillModal from './components/BillModal/BillModal';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -26,24 +27,27 @@ const BillPage = () => {
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
+  const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
 
+  console.log(orderProducts);
 
-  const createBill = () => {
-    const orderProductInputs = orderProducts.map((orderProduct) => ({
-      count: orderProduct.count,
-      productId: orderProduct.product.id,
-      orderPrice: orderProduct.orderPrice,
-    }));
 
-    const bill = {
-      storeId: store.id,
-      memo,
-      orderProductInputs,
-    };
+  // const createBill = () => {
+  //   const orderProductInputs = orderProducts.map((orderProduct) => ({
+  //     count: orderProduct.count,
+  //     productId: orderProduct.product.id,
+  //     orderPrice: orderProduct.orderPrice,
+  //   }));
 
-    window.electron.ipcRenderer.sendMessage('create-bill', bill);
-  };
+  //   const bill = {
+  //     storeId: store.id,
+  //     memo,
+  //     orderProductInputs,
+  //   };
+
+  //   window.electron.ipcRenderer.sendMessage('create-bill', bill);
+  // };
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {});
@@ -76,6 +80,10 @@ const BillPage = () => {
     return `${data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
   };
 
+  const billClickHandler = () => {
+    setIsBillOpen(true);
+  };
+
   const discountClickHandler = () => {
     setIsDiscountOpen(true)
   };
@@ -84,6 +92,7 @@ const BillPage = () => {
     <>
       <MemoModal isOpen={isMemoOpen} setIsOpen={setIsMemoOpen} />
       {/* <DiscountModal isOpen={isDiscountOpen} setIsOpen={setIsDiscountOpen} /> */}
+      <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
       <StoreSearchModal
         isOpen={isSearchStoreOpen}
         setIsOpen={setIsSearchStoreOpen}
@@ -167,7 +176,9 @@ const BillPage = () => {
                 <p className={styles.totalName}>
                   합&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;계
                 </p>
-                <p className={styles.totalNum}>{addComma(sum - (sum * discount / 100))} 원</p>
+                <p className={styles.totalNum}>
+                  {addComma(sum - (sum * discount) / 100)} 원
+                </p>
               </div>
               <hr />
             </div>
@@ -190,7 +201,7 @@ const BillPage = () => {
             </Button>
             <Button
               variant="contained"
-              onClick={createBill}
+              onClick={billClickHandler}
               sx={{
                 height: '33px',
                 width: '65%',
