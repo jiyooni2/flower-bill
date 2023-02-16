@@ -75,7 +75,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 (공급받는자용)
               </span>
             </td>
-            <td className={styles.name}>일지매 님</td>
+            <td className={styles.name}>{/* 사업자 이름*/} ㅁㄴㅇ 님</td>
             <td className={styles.for}>귀하</td>
           </tr>
         </table>

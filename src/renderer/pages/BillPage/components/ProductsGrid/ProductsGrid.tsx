@@ -67,9 +67,9 @@ const ProductsGrid = () => {
   };
 
   const LAST_PAGE =
-    products.length % 12 === 0
-      ? Math.round(products.length / 12)
-      : Math.floor(products.length / 12) + 1;
+    products.length % 9 === 0
+      ? Math.round(products.length / 9)
+      : Math.floor(products.length / 9) + 1;
 
 
   const handleClick = (data: RenderTree, name: string) => {
@@ -129,7 +129,7 @@ const ProductsGrid = () => {
           />
         </div>
 
-        <Box sx={{ width: '95%', marginLeft: '6%', marginBottom: '20px' }}>
+        <Box sx={{ width: '23rem', marginLeft: '20px', marginBottom: '25px' }}>
           <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
             <InputLabel>대분류</InputLabel>
             <Select label="대분류" defaultValue="">
@@ -174,16 +174,16 @@ const ProductsGrid = () => {
           </FormControl>
         </Box>
 
-        <div style={{ margin: '5%' }}>
+        <div style={{ margin: '20px' }}>
           {products ? (
             <Grid
               container
               spacing={{ xs: 1, md: 2 }}
               columns={{ xs: 4, sm: 8, md: 12 }}
-              sx={{ marginLeft: '5px' }}
+              sx={{ marginLeft: '5px', height: '300px', marginBottom: '30px' }}
             >
-              {Array.from(products).map((product) => (
-                <Grid item key={product.id} xs={12} sm={6} md={3} lg={3} xl={2}>
+              {Array.from(products).slice((page - 1) * 9, page * 9).map((product) => (
+                <Grid item key={product.id} xs={12} sm={6} md={4} lg={4} xl={2}>
                   <ProductBox product={product} />
                 </Grid>
               ))}
@@ -192,7 +192,7 @@ const ProductsGrid = () => {
             <div>데이터를 가져오고 있습니다.</div>
           )}
         </div>
-        <div style={{ margin: '30px auto' }}>
+        <div style={{ margin: '0 auto' }}>
           <Pagination
             count={LAST_PAGE}
             size="small"
