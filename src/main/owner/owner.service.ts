@@ -4,6 +4,7 @@ import { CreateOwnerOutput, CreateOwnerInput } from './dtos/create-owner.dto';
 import { UpdateOwnerInput, UpdateOwnerOutput } from './dtos/update-owner.dto';
 import { Owner } from './entities/owner.entity';
 import * as bcrypt from 'bcrypt';
+import { authService } from './../main';
 
 export class OwnerService {
   private readonly ownerRepository: Repository<Owner>;
@@ -48,9 +49,10 @@ export class OwnerService {
     id,
     nickname,
     password,
+    token,
   }: UpdateOwnerInput): Promise<UpdateOwnerOutput> {
     try {
-      const owner = await this.ownerRepository.findOne({ where: { id } });
+      const owner = await authService.getAuthOwner(token);
 
       if (!owner) {
         return { ok: false, error: '없는 사용자입니다.' };

@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import { ownerService } from '../main';
 import { CreateOwnerInput } from './dtos/create-owner.dto';
 import { UpdateOwnerInput } from './dtos/update-owner.dto';
+import { authService } from './../main';
 
 ipcMain.on(
   'create-owner',
@@ -14,6 +15,7 @@ ipcMain.on(
 ipcMain.on(
   'update-owner',
   async (event, updateOwnerInput: UpdateOwnerInput) => {
+    await authService.checkAuth(updateOwnerInput.token);
     const result = await ownerService.updateOwner(updateOwnerInput);
     event.reply('update-owner', result);
   }

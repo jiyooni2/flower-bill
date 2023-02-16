@@ -31,6 +31,7 @@ export class AuthService {
     }
   }
 
+  //validate token
   async checkAuth(token?: string): Promise<boolean> {
     if (!token) {
       return false;
@@ -55,6 +56,7 @@ export class AuthService {
     return true;
   }
 
+  //get owner
   async getAuthOwner(token?: string): Promise<Owner | null> {
     if (!token) {
       return null;
@@ -77,6 +79,7 @@ export class AuthService {
     }
   }
 
+  //validate business
   async checkBusinessAuth(token: string, businessId: number) {
     const owner = await this.getAuthOwner(token);
 
