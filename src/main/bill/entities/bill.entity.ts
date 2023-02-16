@@ -1,11 +1,10 @@
 import { Store } from '../../store/entities/store.entity';
-
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { CoreEntity } from '../../common/entities/core.entity';
 import { OrderProduct } from '../../orderProduct/entities/orderProduct.entity';
+import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
 @Entity()
-export class Bill extends CoreEntity {
+export class Bill extends BusinessRelatedEntity {
   @Column({ nullable: true })
   memo?: string;
 

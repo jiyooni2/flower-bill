@@ -1,4 +1,10 @@
-import { AppDataSource, storeService } from '../main';
+import {
+  AppDataSource,
+  authService,
+  businessService,
+  ownerService,
+  storeService,
+} from '../main';
 import { Bill } from './entities/bill.entity';
 import { Repository } from 'typeorm';
 import { CreateBillInput } from './dtos/create-bill.dto';
@@ -24,10 +30,14 @@ export class BillService {
     memo,
     transactionDate,
     storeId,
+    businessId,
     orderProductInputs,
+    token,
   }: CreateBillInput) {
     try {
       //need transaction
+
+      await authService.checkBusinessAuth(token, businessId);
 
       const { store } = await storeService.getStore({ id: storeId });
       if (!store) {
@@ -39,6 +49,7 @@ export class BillService {
       bill.storeId = storeId;
       bill.transactionDate = transactionDate;
       bill.memo = memo;
+      bill.businessId = businessId;
 
       await this.billRepository.save(bill);
 
@@ -67,8 +78,14 @@ export class BillService {
     }
   }
 
-  async getBill({ id }: GetBillInput): Promise<GetBillOutput> {
+  async getBill({
+    id,
+    token,
+    businessId,
+  }: GetBillInput): Promise<GetBillOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const bill = await this.billRepository.findOne({ where: { id } });
 
       if (!bill) {
@@ -81,8 +98,14 @@ export class BillService {
     }
   }
 
-  async deleteBill({ id }: DeleteBillInput): Promise<DeleteBillOutput> {
+  async deleteBill({
+    id,
+    token,
+    businessId,
+  }: DeleteBillInput): Promise<DeleteBillOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const bill = await this.billRepository.findOne({ where: { id } });
 
       if (!bill) {
@@ -100,9 +123,13 @@ export class BillService {
   async updateBill({
     id,
     orderProductInputs,
+    token,
+    businessId,
     ...updateBillInput
   }: UpdateBillInput): Promise<UpdateBillOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const bill = await this.billRepository.findOne({ where: { id } });
 
       if (!bill) {
@@ -147,8 +174,12 @@ export class BillService {
   async getBillByStore({
     storeId,
     page,
+    token,
+    businessId,
   }: GetBillByStoreInput): Promise<GetBillByStoreOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const { store } = await storeService.getStore({ id: storeId });
       if (!store) {
         return { ok: false, error: '없는 스토어입니다.' };

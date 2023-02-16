@@ -1,10 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { CoreEntity } from './../../common/entities/core.entity';
 import { Category } from './../../category/entities/category.entity';
 import { OrderProduct } from '../../orderProduct/entities/orderProduct.entity';
+import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
 @Entity()
-export class Product extends CoreEntity {
+export class Product extends BusinessRelatedEntity {
   @Column()
   name: string;
 

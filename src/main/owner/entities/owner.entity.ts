@@ -4,7 +4,10 @@ import { CoreEntity } from '../../common/entities/core.entity';
 @Entity()
 export class Owner extends CoreEntity {
   @Column()
-  name: string;
+  nickname: string;
+
+  @Column()
+  ownerId: string;
 
   @Column()
   password: string;

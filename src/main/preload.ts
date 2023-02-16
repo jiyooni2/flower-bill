@@ -1,7 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
-  | 'ipc-example'
   | 'create-bill'
   | 'get-bill'
   | 'delete-bill'
@@ -13,7 +12,6 @@ export type Channels =
   | 'get-store'
   | 'delete-store'
   | 'update-store'
-  | 'create-user'
   | 'create-order-product'
   | 'get-order-product'
   | 'delete-order-product'
@@ -28,7 +26,10 @@ export type Channels =
   | 'create-category'
   | 'get-category'
   | 'delete-category'
-  | 'update-category';
+  | 'update-category'
+  | 'create-owner'
+  | 'update-owner'
+  | 'create-business';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

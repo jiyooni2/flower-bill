@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { CoreEntity } from './../../common/entities/core.entity';
 import { Product } from './../../product/entities/product.entity';
+import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
 @Entity()
-export class Category extends CoreEntity {
+export class Category extends BusinessRelatedEntity {
   @Column()
   name: string;
 
