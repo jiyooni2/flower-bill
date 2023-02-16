@@ -184,7 +184,7 @@ const BillPage = () => {
             </Button>
           </div>
         </div>
-        <ProductsGrid products={products} />
+        <ProductsGrid />
       </div>
     </>
   );

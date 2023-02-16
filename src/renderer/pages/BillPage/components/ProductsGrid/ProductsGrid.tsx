@@ -4,6 +4,8 @@ import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Selec
 import ProductBox from '../ProductBox/ProductBox';
 import { useEffect, useState } from 'react';
 import MemoModal from '../MemoModal/MemoModal';
+import { useRecoilState } from 'recoil';
+import { productsState } from 'renderer/recoil/states';
 // 카테고리 데이터 가져오기
 // import { useRecoilState } from 'recoil';
 // import { categoryState } from 'renderer/recoil/states';
@@ -13,10 +15,6 @@ interface RenderTree {
   category: string;
   name: string;
   children: RenderTree[];
-}
-
-interface IProps {
-  products: Product[];
 }
 
 const catdata = [
@@ -49,18 +47,18 @@ const catdata = [
   },
 ];
 
-const ProductsGrid = ({ products }: IProps) => {
+const ProductsGrid = () => {
   // const [categories, setCategories] = useRecoilState(categoryState);  // 카테고리 데이터 가져오기
-  const [productData, setProductData] = useState(products);
+  const [products, setProducts] = useRecoilState(productsState);
   const [searchWord, setSearchWord] = useState('');
   const [page, setPage] = useState<number>(1);
   const [mainCat, setMainCat] = useState<RenderTree>();
   const [subCat, setSubCat] = useState<RenderTree>();
-  const [groupCat, setGroupCat] = useState<RenderTree>();
+  // const [categoryData, setCategoryData] = useState(products);
   const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setProductData(products)
+    setProducts(products)
   }, [])
 
   const handlePage = (event: any) => {
@@ -68,32 +66,28 @@ const ProductsGrid = ({ products }: IProps) => {
     setPage(pageNow);
   };
 
-  // console.log(productData)
-
   const LAST_PAGE =
-    productData.length % 12 === 0
-      ? Math.round(productData.length / 12)
-      : Math.floor(productData.length / 12) + 1;
+    products.length % 12 === 0
+      ? Math.round(products.length / 12)
+      : Math.floor(products.length / 12) + 1;
 
 
   const handleClick = (data: RenderTree, name: string) => {
-    if (name === 'Main') setMainCat(data);
-    else if (name === 'Sub') setSubCat(data);
-    else if (name === 'Group') setGroupCat(data);
+    if (name === 'main') setMainCat(data)
+    else if (name === 'subs') setSubCat(data)
 
-    // 여기부터
-    // setProductData(
-    //   productData.filter(
-    //     (item) => {
-    //       if (mainCat && subCat && groupCat) {
-    //         groupCat?.id === item.categoryId.toString();
-    //       } else if (mainCat && subCat && !groupCat){
-    //         subCat?.id === item.categoryId.toString();
-    //       } else if (mainCat && !subCat && !groupCat){
-    //         mainCat?.id === item.categoryId.toString();
-    //       }
-    //     }
-    //   ))
+    // if (mainCat || subCat){
+    //   const results = products.filter((product) => {
+    //     if (
+    //       product.categoryId.toString() === mainCat?.id ||
+    //       product.categoryId.toString() === subCat?.id
+    //     )
+    //       return product;
+    //   });
+    //   setProducts(results);
+    // } else {
+    //   setProducts(products)
+    // }
   };
 
   const searchFilterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,9 +99,9 @@ const ProductsGrid = ({ products }: IProps) => {
           .toLowerCase()
           .startsWith(keyword.toLowerCase());
       });
-      setProductData(results);
+      setProducts(results);
     } else {
-      setProductData(products);
+      setProducts(products);
     }
 
     setSearchWord(keyword);
@@ -119,8 +113,13 @@ const ProductsGrid = ({ products }: IProps) => {
       <div
         className={`${styles.content_container} ${styles.products_container}`}
       >
-        <div style={{ marginBottom: '20px'}}>
-          <Button onClick={() => setIsMemoOpen(true)} className={styles.memoBtn}>메모</Button>
+        <div style={{ margin: '20px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Button
+            onClick={() => setIsMemoOpen(true)}
+            className={styles.memoBtn}
+          >
+            메모
+          </Button>
           <input
             type="text"
             className={styles.searchProduct}
@@ -130,7 +129,7 @@ const ProductsGrid = ({ products }: IProps) => {
           />
         </div>
 
-        <Box sx={{ width: '95%', marginLeft: '20px', marginBottom: '20px' }}>
+        <Box sx={{ width: '95%', marginLeft: '6%', marginBottom: '20px' }}>
           <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
             <InputLabel>대분류</InputLabel>
             <Select label="대분류" defaultValue="">
@@ -138,7 +137,7 @@ const ProductsGrid = ({ products }: IProps) => {
                 <MenuItem
                   key={item.id}
                   value={item.name}
-                  onClick={() => handleClick(item, 'Main')}
+                  onClick={() => handleClick(item, 'main')}
                 >
                   {item.name}
                 </MenuItem>
@@ -152,7 +151,7 @@ const ProductsGrid = ({ products }: IProps) => {
                 <MenuItem
                   key={subs.id}
                   value={subs.name}
-                  onClick={() => handleClick(subs, 'Sub')}
+                  onClick={() => handleClick(subs, 'subs')}
                 >
                   {subs.name}
                 </MenuItem>
@@ -166,7 +165,7 @@ const ProductsGrid = ({ products }: IProps) => {
                 <MenuItem
                   key={groups.id}
                   value={groups.name}
-                  onClick={() => handleClick(groups, 'Group')}
+                  onClick={() => handleClick(groups, 'groups')}
                 >
                   {groups.name}
                 </MenuItem>
@@ -176,14 +175,14 @@ const ProductsGrid = ({ products }: IProps) => {
         </Box>
 
         <div style={{ margin: '5%' }}>
-          {productData ? (
+          {products ? (
             <Grid
               container
               spacing={{ xs: 1, md: 2 }}
               columns={{ xs: 4, sm: 8, md: 12 }}
               sx={{ marginLeft: '5px' }}
             >
-              {Array.from(productData).map((product) => (
+              {Array.from(products).map((product) => (
                 <Grid item key={product.id} xs={12} sm={6} md={3} lg={3} xl={2}>
                   <ProductBox product={product} />
                 </Grid>

@@ -1,7 +1,6 @@
-import { Button, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 // import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 import styles from './BillModal.module.scss';
-// import Button from '@mui/material/Button';
 import { useRecoilValue } from 'recoil';
 import { memoState, orderProductsState, storeState } from 'renderer/recoil/states';
 import Modal from './Modal';
@@ -12,14 +11,10 @@ interface IProps {
 }
 
 const BillModal = ({ isOpen, setIsOpen }: IProps) => {
-  // const [memo, setMemo] = useRecoilState(memoState);
   const orderProducts = useRecoilValue(orderProductsState);
   const memo = useRecoilValue(memoState);
   const store = useRecoilValue(storeState);
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setMemo(event.target.value);
-  // };
 
   const handleClick = () => {
     setIsOpen(false);
