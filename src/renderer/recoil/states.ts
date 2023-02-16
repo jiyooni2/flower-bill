@@ -2,6 +2,7 @@ import { Store } from 'main/store/entities/store.entity';
 import { atom } from 'recoil';
 import { Product } from './../../main/product/entities/product.entity';
 import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
+import { Category } from 'main/category/entities/category.entity';
 
 const storeState = atom<Store>({
   key: 'storeState',
@@ -32,4 +33,9 @@ const memoState = atom<string>({
   default: '',
 });
 
-export { storeState, productsState, orderProductsState, memoState };
+const categoryState = atom<Category[]>({
+  key: 'categoryState',
+  default: [],
+});
+
+export { storeState, productsState, orderProductsState, memoState, categoryState };
