@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
-import { AppDataSource } from './../main';
+import { AppDataSource, authService } from './../main';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-products.dto';
 import {
   UpdateProductInput,
@@ -16,6 +16,10 @@ import {
 } from './dtos/create-product.dto';
 import { Category } from './../category/entities/category.entity';
 import {
+  DeleteProductInput,
+  DeleteProductOutput,
+} from './dtos/delete-product.dto';
+import {
   SearchProductInput,
   SearchProductOutput,
 } from './dtos/search-product.dto';
@@ -29,8 +33,14 @@ export class ProductService {
     this.categoryRepository = AppDataSource.getRepository(Category);
   }
 
-  async getProducts({ page }: GetProductsInput): Promise<GetProductsOutput> {
+  async getProducts({
+    page,
+    token,
+    businessId,
+  }: GetProductsInput): Promise<GetProductsOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const products = await this.productRepository
         .createQueryBuilder()
         .select()
@@ -47,15 +57,33 @@ export class ProductService {
     }
   }
 
-  async createProduct(
-    createProductInput: CreateProductInput
-  ): Promise<CreateProductOutput> {
+  async createProduct({
+    name,
+    price,
+    categoryId,
+    token,
+    businessId,
+  }: CreateProductInput): Promise<CreateProductOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
+      const category = await this.categoryRepository.findOne({
+        where: { id: categoryId },
+      });
+
+      if (!category) {
+        return { ok: false, error: '없는 카테고리입니다.' };
+      }
+
+      if (category.level !== 3) {
+        return { ok: false, error: '최하위 카테고리를 입력해야 합니다.' };
+      }
+
       await this.productRepository
         .createQueryBuilder()
         .insert()
         .into(Product)
-        .values(createProductInput)
+        .values({ name, price, categoryId, businessId })
         .execute();
 
       return { ok: true };
@@ -66,16 +94,28 @@ export class ProductService {
 
   async updateProduct({
     id,
-    ...updateProductInput
+    name,
+    price,
+    categoryId,
+    token,
+    businessId,
   }: UpdateProductInput): Promise<UpdateProductOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const product = await this.productRepository.findOne({ where: { id } });
 
       if (!product) {
         return { ok: false, error: '존재하지 않는 상품입니다.' };
       }
+      if (product.businessId !== businessId) {
+        return { ok: false, error: '해당 상품에 권한이 없습니다.' };
+      }
 
-      await this.productRepository.update({ id }, { ...updateProductInput });
+      await this.productRepository.update(
+        { id },
+        { name, price, categoryId, businessId }
+      );
 
       return { ok: true };
     } catch (error: any) {
@@ -85,12 +125,19 @@ export class ProductService {
 
   async deleteProduct({
     id,
-  }: UpdateProductInput): Promise<UpdateProductOutput> {
+    token,
+    businessId,
+  }: DeleteProductInput): Promise<DeleteProductOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const product = await this.productRepository.findOne({ where: { id } });
 
       if (!product) {
         return { ok: false, error: '존재하지 않는 상품입니다.' };
+      }
+      if (product.businessId !== businessId) {
+        return { ok: false, error: '해당 상품에 권한이 없습니다.' };
       }
 
       await this.productRepository.delete({ id });
@@ -103,12 +150,17 @@ export class ProductService {
   async searchProduct({
     keyword,
     page,
+    token,
+    businessId,
   }: SearchProductInput): Promise<SearchProductOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const products = await this.productRepository
         .createQueryBuilder()
         .select()
         .where(`name LIKE "%${keyword}%"`)
+        .andWhere(`businessId:=businessId`, { businessId })
         .orderBy('product.id')
         .offset(page)
         .limit(10)
@@ -123,8 +175,12 @@ export class ProductService {
   async getProductByCategory({
     categoryId,
     page,
+    businessId,
+    token,
   }: GetProductByCategoryInput): Promise<GetProductByCategoryOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const category = await this.categoryRepository.findOne({
         where: { id: categoryId },
         relations: { childCategories: true },
@@ -132,6 +188,10 @@ export class ProductService {
 
       if (!category) {
         return { ok: false, error: '존재하지 않는 카테고리입니다.' };
+      }
+
+      if (category.businessId !== businessId) {
+        return { ok: false, error: '해당 카테고리에 대한 권한이 없습니다.' };
       }
 
       const { level: categoryLevel } = category;
@@ -143,6 +203,7 @@ export class ProductService {
           .createQueryBuilder(Product.name)
           .select()
           .where('categoryId=:categoryId', { categoryId })
+          .andWhere('businessId=:businessId', { businessId })
           .orderBy('product.id')
           .offset(page)
           .limit(10)
@@ -160,6 +221,7 @@ export class ProductService {
               (childCategory) => childCategory.id
             ),
           })
+          .andWhere('businessId=:businessId', { businessId })
           .orderBy('product.id')
           .offset(page)
           .limit(10)
@@ -177,6 +239,7 @@ export class ProductService {
           .where('parentCategoryId IN(:...ids)', {
             ids: subCategoryIds,
           })
+          .andWhere('businessId=:businessId', { businessId })
           .getMany();
 
         subCategoryIds = subCategories.map((subCategory) => subCategory.id);
@@ -190,6 +253,7 @@ export class ProductService {
           .where('categoryId IN(:...ids)', {
             ids: subCategoryIds,
           })
+          .andWhere('businessId=:businessId', { businessId })
           .orderBy('product.id')
           .offset(page)
           .limit(10)
