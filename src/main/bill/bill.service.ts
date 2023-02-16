@@ -12,6 +12,7 @@ import { GetBillInput, GetBillOutput } from './dtos/get-bill.dto';
 import { DeleteBillInput, DeleteBillOutput } from './dtos/delete-bill.dto';
 import { UpdateBillInput, UpdateBillOutput } from './dtos/update-bill.dto';
 import { OrderProduct } from './../orderProduct/entities/orderProduct.entity';
+import { Store } from './../store/entities/store.entity';
 import {
   GetBillByStoreOutput,
   GetBillByStoreInput,
@@ -20,10 +21,12 @@ import {
 export class BillService {
   private readonly billRepository: Repository<Bill>;
   private readonly orderProductRepository: Repository<OrderProduct>;
+  private readonly storeRepository: Repository<Store>;
 
   constructor() {
     this.billRepository = AppDataSource.getRepository(Bill);
     this.orderProductRepository = AppDataSource.getRepository(OrderProduct);
+    this.storeRepository = AppDataSource.getRepository(Store);
   }
 
   async createBill({
@@ -39,7 +42,10 @@ export class BillService {
 
       await authService.checkBusinessAuth(token, businessId);
 
-      const { store } = await storeService.getStore({ id: storeId });
+      const store = await this.storeRepository.findOne({
+        where: { id: storeId },
+      });
+
       if (!store) {
         return { ok: false, error: '존재하지 않는 스토어입니다.' };
       }
@@ -137,9 +143,10 @@ export class BillService {
       }
 
       if (updateBillInput.storeId) {
-        const { store } = await storeService.getStore({
-          id: updateBillInput.storeId,
+        const store = await this.storeRepository.findOne({
+          where: { id: updateBillInput.storeId },
         });
+
         if (!store) {
           return { ok: false, error: '없는 스토어입니다.' };
         }
@@ -180,7 +187,9 @@ export class BillService {
     try {
       await authService.checkBusinessAuth(token, businessId);
 
-      const { store } = await storeService.getStore({ id: storeId });
+      const store = await this.storeRepository.findOne({
+        where: { id: storeId },
+      });
       if (!store) {
         return { ok: false, error: '없는 스토어입니다.' };
       }
