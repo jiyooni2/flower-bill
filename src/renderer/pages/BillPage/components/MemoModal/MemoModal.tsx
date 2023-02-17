@@ -3,7 +3,7 @@ import styles from './MemoModal.module.scss';
 import Button from '@mui/material/Button';
 import { useRecoilState } from 'recoil';
 import { memoState } from 'renderer/recoil/states';
-import Modal from 'renderer/components/Modal/Modal';
+import Modal from './Modal';
 
 interface IProps {
   isOpen: boolean;
@@ -26,13 +26,12 @@ const MemoModal = ({ isOpen, setIsOpen }: IProps) => {
       <TextField
         placeholder="메모를 입력하세요."
         multiline
-        minRows={4}
-        maxRows={12}
+        minRows={8}
         className={styles.memo}
         value={memo}
         onChange={handleChange}
       />
-      <Button variant="contained" onClick={handleClick}>
+      <Button variant="contained" onClick={handleClick} className={styles.okbutton}>
         확인
       </Button>
     </Modal>

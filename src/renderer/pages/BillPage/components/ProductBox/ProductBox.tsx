@@ -2,6 +2,7 @@ import { Product } from 'main/product/entities/product.entity';
 import styles from './ProductBox.module.scss';
 import { useRecoilState } from 'recoil';
 import { orderProductsState } from 'renderer/recoil/states';
+import { Typography } from '@mui/material';
 
 interface IProps {
   product: Product;
@@ -47,8 +48,14 @@ const ProductBox = ({ product }: IProps) => {
 
   return (
     <div className={styles.product_box} onClick={onProductClick}>
-      <div>{product.name}</div>
-      <div>{product.price.toLocaleString('ko-KR')}원</div>
+      <Typography
+        sx={{ fontSize: '17px', marginBottom: '15px', fontWeight: '400', width: '80px' }}
+      >
+        {product.name}
+      </Typography>
+      <Typography sx={{ fontSize: '15px', fontWeight: '500', width: '70px' }} align="right">
+        {product.price.toLocaleString('ko-KR')}원
+      </Typography>
     </div>
   );
 };

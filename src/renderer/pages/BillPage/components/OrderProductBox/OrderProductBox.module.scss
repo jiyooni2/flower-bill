@@ -1,12 +1,70 @@
-.container {
+.contents {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  margin-top: 2px;
+  margin-left: 5px;
+
   div {
     display: flex;
-    justify-content: space-between;
-    width: 50%;
+    flex-direction: row;
   }
-  .count_input {
-    border: 1px solid lightgray;
+
+  .deleteButton {
+    justify-content: center;
+    background-color: transparent;
+    font-size: 14px;
+    color: crimson;
+    margin: 0 auto;
+    border: 0;
+    cursor: pointer;
   }
+
+  .count {
+    margin-top: -5px;
+    margin-bottom: 3px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .count_input {
+      border: 1px solid lightgray;
+      width: 35px;
+      height: 30px;
+      text-align: center;
+      margin-left: 12px;
+      margin-right: 10px;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+
+    .increase {
+      padding-top: 5px;
+      height: 30px;
+      width: 15px;
+      padding-left: 7px;
+      border: 0;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .decrease {
+      padding-top: 5px;
+      height: 30px;
+      width: 15px;
+      border: 0;
+      font-size: 23px;
+      cursor: pointer;
+    }
+  }
+}
+
+.cutText {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 75px;
 }
