@@ -31,10 +31,10 @@ const NavBar = () => {
         </div>
         <div>
           <p className={styles.menuTitle}>사업 관리</p>
-          <p className={styles.menu} onClick={() => navigate(ROUTES.SELLER)}>
+          <p className={styles.menu} onClick={() => navigate(ROUTES.STORE)}>
             판매처 관리
           </p>
-          <p className={styles.menu} onClick={() => navigate(ROUTES.STORE)}>
+          <p className={styles.menu} onClick={() => navigate(ROUTES.SELLER)}>
             사업자 관리
           </p>
         </div>
