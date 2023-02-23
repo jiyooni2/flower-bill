@@ -1,273 +1,176 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import styles from './CategoryPage.module.scss';
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Typography,
-} from '@mui/material';
+import { TreeItem, TreeView } from '@mui/lab';
+// import { useRecoilState } from 'recoil';
+// import { categoryState } from 'renderer/recoil/states';
+// import { GetCategoryOutput } from 'main/category/dtos/get-category.dto';
+// import { Category } from 'main/category/entities/category.entity';
+import { Category } from '../../types/index';
+import { ChevronRight, ExpandMore, AddRounded, Delete } from '@mui/icons-material';
+import { Typography } from '@mui/material';
 
-interface Category {
-  id: number;
-  name: string;
-  level: string;
-  parentCategoryId: string | null;
-}
-
-const CATEGORY = [
+const data: Category[] = [
   {
-    id: 1,
     name: '국산',
-    level: '1',
-    parentCategoryId: null,
+    level: 1,
+    parentCategory: null,
+    childCategories: [
+      {
+        name: '장미과',
+        level: 2,
+        parentCategory: null,
+        childCategories: [
+          {
+            name: '빨간 장미',
+            level: 3,
+            parentCategory: null,
+            childCategories: null,
+            products: null,
+          }
+        ],
+        products: null,
+      },
+    ],
+    products: null,
   },
   {
-    id: 2,
-    name: '미국산',
-    level: '1',
-    parentCategoryId: null,
-  },
-  {
-    id: 3,
-    name: '장미',
-    level: '2',
-    parentCategoryId: '1',
-  },
+    name: '외국산',
+    level: 1,
+    parentCategory: null,
+    childCategories: null,
+    products: null,
+  }
 ];
 
-const SellerPage = () => {
-  const [categories, setCategories] = useState<Category[]>(CATEGORY);
-  const [keyword, setKeyWord] = useState<string>("");
+
+const CategoryPage = () => {
+  // const [categories, setCategories] = useRecoilState(categoryState);
+
+  // useEffect(() => {
+  //   window.electron.ipcRenderer.sendMessage('get-category', {});
+  //   window.electron.ipcRenderer.on(
+  //     'get-category',
+  //     (args: GetCategoryOutput) => {
+  //       setCategories(args.category as Category);
+  //     }
+  //   );
+  // }, []);
+
+  const [categories, setCategories] = useState<Category[]>(data);
+  const [keyword, setKeyWord] = useState<string>('');
+  const [parentCategoryName, setParentCategoryName] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
-  const [nameHasError, setNameHasError] = useState<boolean>(false);
-  const [name, setName] = useState<string>('');
-  const [level, setLevel] = useState<string>('');
-  const [parentCategoryId, setParentCategoryId] = useState<string>('');
-  const [clickedData, setClickedData] = useState<Category[]>([
-    { id: 0, name: '', level: '', parentCategoryId: '' },
-  ]);
+  const [expanded, setExpanded] = useState<string[]>(['장미과']);
+
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
-    const keyword = e.target.value;
+    setKeyWord(e.target.value);
+  };
 
-    if (keyword !== '') {
-      const results = categories.filter((category) => {
-        return category.name.toLowerCase().startsWith(keyword.toLowerCase());
-      });
-      setCategories(results);
+  const clickAddHandler = (item: Category) => {
+    setClicked(true);
+    if (nameInputRef.current !== null) nameInputRef.current.focus();
+    if (item) setParentCategoryName(item.name);
+    else setParentCategoryName('')
+  };
+
+  const clickeDeleteHandler = (nodes: Category) => {
+    console.log(nodes)
+  }
+
+  const addTreeItem = (item: Category, text: string) => {
+    return (
+      <TreeItem
+        label={<Typography sx={{ fontSize: '14px'}}>{text}</Typography>}
+        key={item.name}
+        nodeId={item.name}
+        icon={<AddRounded />}
+        sx={{ marginTop: '15px' }}
+        onClick={() => clickAddHandler(item)}
+      />
+    )
+  }
+
+  const addTree = (item: Category, childrenDiff: boolean) => {
+    if (childrenDiff){
+      if (item.level === 1) return addTreeItem(item, '중분류 추가하기');
+      else if (item.level == 2) return addTreeItem(item, '소분류 추가하기');
     } else {
-      setCategories(CATEGORY);
+      if (item.level === 1) return addTreeItem(item, '중분류 추가하기');
+      else if (item.level === 2) return addTreeItem(item, '소분류 추가하기');
     }
-
-    setKeyWord(keyword);
   };
 
-
-  const changeDataHandler = (event: React.MouseEvent<unknown>, data: Category ) => {
-    setClicked(true)
-
-    categories.forEach((item) => {
-      if (item.name === data.name) {
-        setName(item.name);
-        setLevel(item.level);
-        setParentCategoryId(item.parentCategoryId);
-        setClickedData([
-          {
-            id: item.id,
-            name: item.name,
-            level: item.level,
-            parentCategoryId: item.parentCategoryId,
-          },
-        ]);
+  const renderTree = (nodes: Category) => (
+    <TreeItem
+      key={nodes.name}
+      nodeId={Math.random().toString()}
+      label={
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Typography sx={{ fontSize: '17px', fontWeight: '500' }}>
+            {nodes.name}
+          </Typography>
+          <Delete id="del" sx={{ fontSize: '16px', marginTop: '4px'}} onClick={() => clickeDeleteHandler(nodes)} />
+        </div>
       }
-    });
-  };
-
-  const deleteDataHandler = () => {
-    setCategories(
-      categories.filter((category) => category.name !== clickedData[0].name)
-    );
-  };
-
-  const changeStoreDataHandler = (event: React.ChangeEvent<HTMLInputElement>, dataName:string) => {
-    if (dataName === 'name') {
-      if (event.target.value == ''){
-        setNameHasError(false)
-      }
-      setName(event.target.value);
-    } else if (dataName === 'level') {
-      setLevel(event.target.value);
-    } else if (dataName === 'parent') {
-      setParentCategoryId(event.target.value);
-    }
-  };
-
-  const clearInputs = () => {
-    setClicked(false)
-
-    setName('');
-    setLevel('');
-    setParentCategoryId('');
-    setClickedData([
-      {
-        id: 0,
-        name: '',
-        level: '',
-        parentCategoryId: '',
-      },
-    ]);
-    setNameHasError(false);
-  };
-
-  const addDataHandler = () => {
-    if (categories.findIndex(data => data.name == name) != -1){
-      setNameHasError(true);
-      return;
-    }
-    if (name != '' && level != '' && parentCategoryId != '') {
-        const newData = {
-          id: categories.length + 1,
-          name: name,
-          level: level,
-          parentCategoryId: parentCategoryId,
-        };
-        setCategories((data) => [...data, newData]);
-        clearInputs();
-    }
-  };
-
-  const doubleClickHandler = () => {
-    setClicked(false);
-  };
-
-  const udpateDataHandler = () => {
-    const findIndex = categories.findIndex(element => element.name == clickedData[0].name)
-    categories[findIndex] = { ...categories[findIndex], name: name, level: level, parentCategoryId: parentCategoryId };
-    setCategories(categories)
-    setClicked(true)
-  };
+      sx={{ marginTop: '15px' }}
+    >
+      {Array.isArray(nodes.childCategories)
+        ? nodes.childCategories.map((items) => renderTree(items))
+        : null}
+      {nodes.childCategories
+        ? nodes.childCategories.map(() => addTree(nodes, true))
+        : nodes.level < 3
+        ? addTree(nodes, false)
+        : ''}
+    </TreeItem>
+  );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <div>
+    <div className={styles.category}>
+      <div className={styles.container}>
+        <div className={styles.search}>
           <input
             type="search"
             value={keyword}
             onChange={filter}
-            placeholder="판매처 검색"
+            placeholder="카테고리 검색"
             className={styles.searchInput}
           />
-          {/* <Button
-            sx={{ color: 'black', marginLeft: '-3rem', paddingTop: '25px' }}
+          <Button
+            sx={{ color: 'black', marginLeft: '-3rem', paddingTop: '31px' }}
           >
             검색
-          </Button> */}
-          <div className={styles.userList}>
-            <div>
-              <TableContainer sx={{ width: '100%' }}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow
-                      sx={{
-                        borderBottom: '1.5px solid black',
-                        backgroundColor: 'lightgray',
-                        '& th': {
-                          fontSize: '14px',
-                        },
-                      }}
-                    >
-                      <TableCell
-                        component="th"
-                        align="left"
-                        sx={{ width: '5%' }}
-                      >
-                        ID
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        align="left"
-                        sx={{ width: '30%' }}
-                      >
-                        카테고리명
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        align="left"
-                        sx={{ width: '20%' }}
-                      >
-                        레벨
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        align="left"
-                        sx={{ width: '30%' }}
-                      >
-                        부모 카테고리 ID
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {categories &&
-                      categories.length > 0 &&
-                      categories.map((item) => (
-                        <TableRow
-                          key={item.id}
-                          className={styles.dataRow}
-                          onClick={(event) => changeDataHandler(event, item)}
-                          sx={{
-                            '& th': {
-                              fontSize: '14px',
-                            },
-                          }}
-                        >
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            sx={{ width: '5%' }}
-                          >
-                            {item.id}
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            align="left"
-                            sx={{ width: '30%' }}
-                          >
-                            {item.name}
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            sx={{ width: '20%' }}
-                          >
-                            {item.level}
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            align="left"
-                            sx={{ width: '30%' }}
-                          >
-                            {item.parentCategoryId}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {categories && categories.length == 0 && (
-                <div className={styles.noResult}>
-                  <div>
-                    <h3>검색결과가 없습니다.</h3>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          </Button>
         </div>
+        <div className={styles.treeContainer}>
+          <TreeView
+            defaultExpanded={expanded}
+            defaultCollapseIcon={<ExpandMore />}
+            defaultExpandIcon={<ChevronRight />}
+            // defaultSelected={[keyword]}
+            multiSelect
+            sx={{
+              height: '85vh',
+              flexGrow: 1,
+              maxWidth: 400,
+              padding: '20px',
+            }}
+          >
+            {categories.map((item) => renderTree(item))}
+            <TreeItem
+              label={<Typography sx={{ fontSize: '14px' }}>대분류 추가하기</Typography>}
+              nodeId={Math.random().toString()}
+              icon={<AddRounded />}
+              sx={{ marginTop: '15px' }}
+              onClick={() => clickAddHandler(null)}
+            />
+          </TreeView>
+        </div>
+      </div>
+      <div style={{ width: '55%' }}>
         <div>
           <div className={styles.infoContent}>
             <Typography
@@ -280,93 +183,38 @@ const SellerPage = () => {
                 marginTop: '20px',
               }}
             >
-              카테고리 정보
+              카테고리 생성
             </Typography>
-            <button className={styles.clearInput} onClick={clearInputs}>
-              비우기
-            </button>
             <div className={styles.list}>
               <div>
                 <div>
-                  <div className={styles.itemWithError}>
-                    <p className={styles.labels}>새 카테고리 이름</p>
-                    <input
-                      value={name}
-                      className={styles.dataInput}
-                      onDoubleClick={doubleClickHandler}
-                      readOnly={clicked}
-                      onChange={(event) =>
-                        changeStoreDataHandler(event, 'name')
-                      }
-                    />
+                  <div className={styles.item}>
+                    <p className={styles.labels}>카테고리 이름</p>
+                    <input className={styles.dataInput} ref={nameInputRef} />
                   </div>
-                  {nameHasError ? (
-                    <p className={styles.errorMessage}>
-                      동일한 카테고리 이름이 이미 존재하고 있습니다.
+                  <div className={styles.item}>
+                    <p className={styles.labels}>
+                      부모 카테고리
+                      <br />
+                      이름
                     </p>
-                  ) : (
-                    <p className={styles.item}></p>
-                  )}
-                  <div className={styles.item}>
-                    <p className={styles.labels}>새 카테고리 레벨</p>
                     <input
-                      value={level}
                       className={styles.dataInput}
-                      onDoubleClick={doubleClickHandler}
-                      readOnly={clicked}
-                      onChange={(event) =>
-                        changeStoreDataHandler(event, 'level')
-                      }
-                    />
-                  </div>
-                  <div className={styles.item}>
-                    <p className={styles.labels}>새 부모 카테고리 ID</p>
-                    <input
-                      value={parentCategoryId}
-                      className={styles.dataInput}
-                      onDoubleClick={doubleClickHandler}
-                      readOnly={clicked}
-                      onChange={(event) =>
-                        changeStoreDataHandler(event, 'parent')
-                      }
+                      value={parentCategoryName}
+                      readOnly
                     />
                   </div>
                 </div>
-                <div className={styles.buttonList}>
-                  {clickedData[0].name.length > 0 ? (
-                    <Button
-                      variant="contained"
-                      size="small"
-                      sx={{ marginLeft: '40px' }}
-                      color="error"
-                      onClick={deleteDataHandler}
-                    >
-                      삭제
-                    </Button>
-                  ) : (
-                    <div></div>
-                  )}
-                  {clickedData[0].name.length > 0 ? (
-                    <Button
-                      variant="contained"
-                      size="small"
-                      sx={{ marginRight: '10px' }}
-                      onClick={udpateDataHandler}
-                      style={{ backgroundColor: 'coral' }}
-                    >
-                      수정
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="contained"
-                      size="small"
-                      sx={{ marginRight: '10px' }}
-                      onClick={addDataHandler}
-                    >
-                      생성
-                    </Button>
-                  )}
-                </div>
+              </div>
+              <div className={styles.buttonList}>
+                <div></div>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ marginRight: '10px' }}
+                >
+                  생성
+                </Button>
               </div>
             </div>
           </div>
@@ -376,4 +224,4 @@ const SellerPage = () => {
   );
 };
 
-export default SellerPage;
+export default CategoryPage;
