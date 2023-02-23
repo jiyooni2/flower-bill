@@ -100,6 +100,8 @@ const createWindow = async () => {
     },
   });
 
+  // mainWindow.loadURL(resolveHtmlPath('login.html'));
+
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {

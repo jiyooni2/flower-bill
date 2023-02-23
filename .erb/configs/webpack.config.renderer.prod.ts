@@ -136,6 +136,17 @@ const configuration: webpack.Configuration = {
       isBrowser: false,
       isDevelopment: process.env.NODE_ENV !== 'production',
     }),
+    // new HtmlWebpackPlugin({
+    //   filename: 'login.html',
+    //   template: path.join(webpackPaths.srcRendererPath, 'login.ejs'),
+    //   minify: {
+    //     collapseWhitespace: true,
+    //     removeAttributeQuotes: true,
+    //     removeComments: true,
+    //   },
+    //   isBrowser: false,
+    //   isDevelopment: process.env.NODE_ENV !== 'production',
+    // }),
 
     new webpack.DefinePlugin({
       'process.type': '"renderer"',
