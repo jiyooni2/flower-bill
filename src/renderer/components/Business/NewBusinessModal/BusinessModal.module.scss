@@ -1,0 +1,31 @@
+.infoContent {
+  margin-top: 10px;
+  position: relative;
+  height: 96vh;
+}
+
+.list {
+  margin-top: 35px;
+}
+.item {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.dataInput {
+  width: 50%;
+  height: 33px;
+  border-radius: 5px;
+  border: 1px solid darkgray;
+  opacity: 0.9;
+  padding-left: 8px;
+  font-size: 14px;
+}
+
+.labels {
+  width: 30%;
+  font-size: 15px;
+  margin-top: 2px;
+}
