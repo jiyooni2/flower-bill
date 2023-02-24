@@ -3,6 +3,7 @@ import { ownerService } from '../main';
 import { CreateOwnerInput } from './dtos/create-owner.dto';
 import { UpdateOwnerInput } from './dtos/update-owner.dto';
 import { authService } from './../main';
+import { LoginInput } from './../../auth/dtos/login.dto';
 
 ipcMain.on(
   'create-owner',
@@ -20,3 +21,9 @@ ipcMain.on(
     event.reply('update-owner', result);
   }
 );
+
+ipcMain.on('login', async (event, loginInput: LoginInput) => {
+  await authService.login(loginInput);
+  const result = await authService.login(loginInput);
+  event.reply('login', result);
+});
