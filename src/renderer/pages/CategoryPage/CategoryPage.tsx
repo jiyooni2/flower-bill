@@ -66,18 +66,6 @@ const CategoryPage = () => {
 
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  // const expanded: string[] = [];
-  // const FindValues = (data: Category[]) => {
-  //   data.map((item) => {
-  //     expanded.push(item.name)
-  //     if (item.childCategories) FindValues(item.childCategories);
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   FindValues(categories)
-  // }, [categories])
-
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
     const word = e.target.value;
     if (word !== '') {
@@ -98,12 +86,12 @@ const CategoryPage = () => {
     else if (item.level === 2) setLevelName('소분류')
 
     if (nameInputRef.current !== null) nameInputRef.current.focus();
-    if (item) {setParentCategoryName(item.name); /* setParentCategoryId(item.id)*/ }
+    if (item) {setParentCategoryName(item.name); setParentCategoryId(item.id) }
     else {setParentCategoryName(''); setParentCategoryId(null)}
   };
 
 
-  const clickeDeleteHandler = (nodes: Category) => {
+  const clickDeleteHandler = (nodes: Category) => {
     console.log(nodes)
   }
 
@@ -114,7 +102,6 @@ const CategoryPage = () => {
       parentCategoryId: parentCategoryId,
     };
 
-    console.log(newCategory)
     window.electron.ipcRenderer.sendMessage('create-category', newCategory);
 
     setCategoryName('');
@@ -128,7 +115,7 @@ const CategoryPage = () => {
       <TreeItem
         label={<Typography sx={{ fontSize: '14px'}}>{text}</Typography>}
         key={item.name}
-        nodeId={item.name}
+        nodeId={`${item.name}${Math.random()}`}
         icon={<AddRounded />}
         sx={{ marginTop: '15px' }}
         onClick={() => clickAddHandler(item)}
@@ -166,7 +153,7 @@ const CategoryPage = () => {
           <Delete
             id="del"
             sx={{ fontSize: '14px', marginTop: '5px', color: 'crimson' }}
-            onClick={() => clickeDeleteHandler(nodes)}
+            onClick={() => clickDeleteHandler(nodes)}
           />
         </div>
       }
@@ -177,11 +164,13 @@ const CategoryPage = () => {
         : null}
       {nodes.childCategories
         ? nodes.childCategories.map(() => addTree(nodes, true))
-        : nodes.level < 3
-        ? addTree(nodes, false)
-        : ''}
+        : nodes.level < 3 ? addTree(nodes, false) : null}
     </TreeItem>
   );
+
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCategoryName(e.target.value);
+  };
 
 
   return (
@@ -203,10 +192,10 @@ const CategoryPage = () => {
         </div>
         <div className={styles.treeContainer}>
           <TreeView
-            // expanded={expanded}
             defaultCollapseIcon={<ExpandMore />}
             defaultExpandIcon={<ChevronRight />}
-            // defaultSelected={[keyword]}
+            defaultSelected={[keyword]}
+            expanded={['국산', '장미과', '빨간 장미', '외국산']}
             multiSelect
             sx={{
               height: '85vh',
@@ -222,7 +211,7 @@ const CategoryPage = () => {
                   대분류 추가하기
                 </Typography>
               }
-              nodeId={`Main${Math.random()}`}
+              nodeId={Math.random().toString()}
               icon={<AddRounded />}
               sx={{ marginTop: '15px' }}
               onClick={() => clickAddHandler(null)}
@@ -254,9 +243,7 @@ const CategoryPage = () => {
                       className={styles.dataInput}
                       ref={nameInputRef}
                       value={categoryName}
-                      onChange={
-                        (e: React.ChangeEvent<HTMLInputElement>) => setCategoryName(e.target.value)
-                      }
+                      onChange={changeHandler}
                     />
                   </div>
                   <div className={styles.item}>
@@ -285,8 +272,7 @@ const CategoryPage = () => {
                   onClick={newCategoryHandler}
                 >
                   생성
-                </Button>
-              </div>
+                </Button> </div>
             </div>
           </div>
         </div>
