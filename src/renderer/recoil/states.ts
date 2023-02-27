@@ -33,9 +33,8 @@ const memoState = atom<string>({
   default: '',
 });
 
-const categoryState = atom<Category[]>({
+const categoryState = atom<Category>({
   key: 'categoryState',
-  default: [],
 });
 
 export { storeState, productsState, orderProductsState, memoState, categoryState };
