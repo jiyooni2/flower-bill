@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import Button from '@mui/material/Button';
-import Modal from 'renderer/components/Modal/Modal';
+import Modal from './Modal';
 import CreateStoreForm from './components/CreateStoreForm/CreateSellerForm';
 
-const StorePage = () => {
+const SellerPage = () => {
   const [isCreateStoreOpen, setIsCreateStoreOpen] = useState<boolean>(false);
   const [isStoreListOpen, setIsStoreListOpen] = useState<boolean>(false);
 
@@ -29,4 +29,4 @@ const StorePage = () => {
   );
 };
 
-export default StorePage;
+export default SellerPage;

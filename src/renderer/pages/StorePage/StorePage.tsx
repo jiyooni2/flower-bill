@@ -36,7 +36,7 @@ const STORE = [
   },
 ];
 
-const SellerPage = () => {
+const StorePage = () => {
   const [name, setName] = useState<string>("");
   const [clicked, setClicked] = useState<boolean>(false);
   const [numberHasError, setNumberHasError] = useState<boolean>(false);
@@ -419,4 +419,4 @@ const SellerPage = () => {
   );
 };
 
-export default SellerPage;
+export default StorePage;
