@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import styles from './BusinessModal.module.scss';
 import Modal from './Modal';
-import { Button, Typography } from '@mui/material';
+import { Button, TextField, Typography } from '@mui/material';
+import useInputs from 'renderer/hooks/useInputs';
+import { CreateStore } from 'renderer/types';
 
 interface IProps {
   isOpen: boolean;
@@ -9,85 +11,88 @@ interface IProps {
 }
 
 const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
-  const [name, setName] = useState<string>('');
-  const [businessNumber, setBusinessNumber] = useState<number>();
-  const [businessOwnerName, setBusinessOwnerName] = useState<string>('');
-  const [address, setAddress] = useState<string>('');
+  const [{ businessNumber, address, name, owner }, handleChange] =
+    useInputs<CreateStore>({
+      businessNumber: '',
+      address: '',
+      name: '',
+      owner: '',
+    });
 
-  const changeNameHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
 
-  const changeNumberHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBusinessNumber(parseInt(e.target.value));
-  };
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-  const changeOwnerHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBusinessOwnerName(e.target.value);
-  };
-
-  const changeAddressHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddress(e.target.value);
-  };
-
-  const handleClick = () => {
-    const newBusiness = {
-      name: name,
-      businessNumber: businessNumber,
-      businessOwnerName: businessOwnerName,
-      adress: address,
-    };
-    if (name === '' || businessNumber === 0 || businessOwnerName === '' || address === ''){
-      window.alert(`새 사업자를 생성할 수 없습니다.${'\n'}모든 빈칸을 채워주세요.`)
-    } else{
-      console.log(newBusiness);
-      if (window.confirm(`'${name}' 을 정말 생성하시겠습니까?`)){
-
-      }
-      window.electron.ipcRenderer.sendMessage('create-business', newBusiness);
-      setIsOpen(false);
-    }
+    window.electron.ipcRenderer.sendMessage('create-store', {
+      businessNumber: Number(businessNumber),
+      address,
+      name,
+      owner,
+    });
   };
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <div className={styles.infoContent}>
-        <Typography
-          variant="h5"
-          sx={{ display: 'flex', justifyContent: 'space-around', fontWeight: '500' }}
-        >
-          새 사업자 추가하기
-        </Typography>
-        <div className={styles.list}>
-          <div className={styles.item}>
-            <p className={styles.labels}>사업자 이름</p>
-            <input
-              className={styles.dataInput}
-              value={name}
-              onChange={changeNameHandler}
-            />
-          </div>
-          <div className={styles.item}>
-            <p className={styles.labels}>사업자 번호</p>
-            <input
-              className={styles.dataInput}
-              value={businessNumber}
-              onChange={changeNumberHandler}
-            />
-          </div>
-          <div className={styles.item}>
-            <p className={styles.labels}>사업자 대표 이름</p>
-            <input className={styles.dataInput} value={businessOwnerName} onChange={changeOwnerHandler} />
-          </div>
-          <div className={styles.item}>
-            <p className={styles.labels}>사업자 주소</p>
-            <input className={styles.dataInput} value={address} onChange={changeAddressHandler} />
-          </div>
-        </div>
-        <div style={{ float: 'right' }}>
-          <Button onClick={handleClick} variant="outlined">생성하기</Button>
-        </div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '20px',
+        }}
+      >
+        <Typography variant="h6">사업장 등록하기</Typography>
       </div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TextField
+              sx={{ width: '90%' }}
+              label="사업자등록번호"
+              name="businessNumber"
+              variant="filled"
+              onChange={handleChange}
+              value={businessNumber}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TextField
+              sx={{ width: '90%' }}
+              label="상호"
+              name="name"
+              variant="filled"
+              onChange={handleChange}
+              value={name}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TextField
+              sx={{ width: '90%' }}
+              label="성명"
+              name="owner"
+              variant="filled"
+              onChange={handleChange}
+              value={owner}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TextField
+              sx={{ width: '90%' }}
+              label="사업장 소재지(선택)"
+              name="address"
+              variant="filled"
+              onChange={handleChange}
+              value={address}
+            />
+          </div>
+          <Button
+            type="submit"
+            variant="text"
+            sx={{ marginTop: '30px', float: 'right', marginRight: '5px' }}
+          >
+            제출하기
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 };
