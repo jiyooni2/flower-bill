@@ -3,11 +3,14 @@ import { atom } from 'recoil';
 import { Product } from './../../main/product/entities/product.entity';
 import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 import { Category } from 'main/category/entities/category.entity';
+import { Business } from 'main/business/entities/business.entity';
 
 const storeState = atom<Store>({
   key: 'storeState',
   default: {
     id: 0,
+    businessId: 0,
+    business: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     name: '',
@@ -37,4 +40,14 @@ const categoryState = atom<Category>({
   key: 'categoryState',
 });
 
-export { storeState, productsState, orderProductsState, memoState, categoryState };
+const businessState = atom({
+  key: 'businessState',
+  default: {
+    name: '',
+    businessNumber: 0n,
+    businessOwnerName: '',
+    address: '',
+  }
+})
+
+export { storeState, productsState, orderProductsState, memoState, categoryState, businessState };
