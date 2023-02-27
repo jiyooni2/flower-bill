@@ -6,10 +6,10 @@ import BillPage from './pages/BillPage/BillPage';
 import HomePage from './pages/HomePage/HomePage';
 import StorePage from './pages/StorePage/StorePage';
 import UserPage from './pages/UserPage/UserPage';
-import SellerPage from './pages/SellerPage/SellerPage';
 import Layout from './components/Layout/Layout';
 import ROUTES from './constants/routes';
 import CategoryPage from './pages/CategoryPage/CategoryPage';
+import BusinessPage from './pages/BusinessPage/BusinessPage';
 
 export default function App() {
   return (
@@ -21,7 +21,7 @@ export default function App() {
             <Route path={ROUTES.BILL} element={<BillPage />} />
             <Route path={ROUTES.STORE} element={<StorePage />} />
             <Route path={ROUTES.USER} element={<UserPage />} />
-            <Route path={ROUTES.SELLER} element={<SellerPage />} />
+            <Route path={ROUTES.SELLER} element={<BusinessPage />} />
             <Route path={ROUTES.CATEGORY} element={<CategoryPage />} />
           </Routes>
         </Layout>

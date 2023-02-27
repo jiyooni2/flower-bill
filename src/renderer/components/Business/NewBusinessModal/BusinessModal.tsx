@@ -1,16 +1,17 @@
-import { useState } from 'react';
-import styles from './BusinessModal.module.scss';
 import Modal from './Modal';
 import { Button, TextField, Typography } from '@mui/material';
+import { useRecoilState } from 'recoil';
 import useInputs from 'renderer/hooks/useInputs';
+import { businessState } from 'renderer/recoil/states';
 import { CreateStore } from 'renderer/types';
 
 interface IProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
+//name' | 'businessNumber' | 'businessOwnerName' | 'address
 const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
+  const [currentBusiness, setCurrentBusiness] = useRecoilState(businessState);
   const [{ businessNumber, address, name, owner }, handleChange] =
     useInputs<CreateStore>({
       businessNumber: '',
@@ -23,13 +24,26 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    window.electron.ipcRenderer.sendMessage('create-store', {
-      businessNumber: Number(businessNumber),
-      address,
+    const newBusiness = {
       name,
-      owner,
-    });
+      businessNumber: BigInt(businessNumber),
+      businessOwnerName: owner,
+      address,
+    };
+
+    if (name == '' || businessNumber == '' || owner == '' || name == '') {
+      window.alert('사업자를 생성할 수 없습니다.\n모든 입력 사항을 작성해주시기 바랍니다.')
+    } else {
+      if (window.confirm('정말 생성하시겠습니까?')){
+        window.electron.ipcRenderer.sendMessage('create-business', newBusiness);
+        setCurrentBusiness(newBusiness)
+        console.log(newBusiness)
+        setIsOpen(false);
+      }
+    }
   };
+
+  console.log(currentBusiness);
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -40,7 +54,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
           marginBottom: '20px',
         }}
       >
-        <Typography variant="h6">사업장 등록하기</Typography>
+        <Typography variant="h6">사업자 등록하기</Typography>
       </div>
       <form onSubmit={handleSubmit}>
         <div>
