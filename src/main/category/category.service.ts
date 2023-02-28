@@ -1,3 +1,7 @@
+import {
+  GetCategoriesInput,
+  GetCategoriesOutput,
+} from './dtos/get-categories.dto';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
 import { AppDataSource, productService, authService } from './../main';
@@ -101,6 +105,25 @@ export class CategoryService {
         return { ok: false, error: '존재하지 않는 카테고리입니다.' };
       }
       return { ok: true, category };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async getCategories({
+    token,
+    businessId,
+  }: GetCategoriesInput): Promise<GetCategoriesOutput> {
+    try {
+      await authService.checkBusinessAuth(token, businessId);
+
+      const categories = await this.categoryRepository
+        .createQueryBuilder()
+        .select()
+        .orderBy('category.id')
+        .getMany();
+
+      return { ok: true, categories };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }
