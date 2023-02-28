@@ -50,14 +50,19 @@ const categoriesState = atom<Category[]>({
   default: [],
 });
 
-const businessState = atom({
+const businessState = atom<Business>({
   key: 'businessState',
   default: {
+    id: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
     name: '',
     businessNumber: 0n,
     businessOwnerName: '',
     address: '',
-  }
-})
+    owner: null,
+    ownerId: 0,
+  },
+});
 
 export { storeState, storesState, productsState, orderProductsState, memoState, categoryState, categoriesState, businessState };
