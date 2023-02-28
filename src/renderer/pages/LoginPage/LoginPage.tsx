@@ -6,6 +6,8 @@ import useInputs from 'renderer/hooks/useInputs';
 import { LoginInput } from 'renderer/types';
 import './components/AuthForm.scss';
 import { LoginOutput } from 'auth/dtos/login.dto';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { loginState, tokenState } from 'renderer/recoil/states';
 
 const LoginPage = () => {
   const [isSignUpPageOpen, setIsSignUpPageOpen] = useState<boolean>(false);
@@ -13,6 +15,10 @@ const LoginPage = () => {
     ownerId: '',
     password: '',
   });
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
+  const [token, setToken] = useRecoilState(tokenState);
+  const a = useRecoilValue(loginState);
+  const b = useRecoilValue(tokenState);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -22,10 +28,19 @@ const LoginPage = () => {
       password,
     });
 
-    window.electron.ipcRenderer.on('login', (loginOutput: LoginOutput) => {
-      console.log(loginOutput);
-      //set token, businessId
-    });
+    window.electron.ipcRenderer.on(
+      'login',
+      ({ ok, token, error }: LoginOutput) => {
+        if (ok) {
+          setIsLoggedIn(true);
+          setToken(token);
+        } else {
+          console.error(error);
+        }
+        console.log(a, b);
+        //set token, businessId
+      }
+    );
   };
 
   return (

@@ -38,4 +38,22 @@ const categoryState = atom<Category[]>({
   default: [],
 });
 
-export { storeState, productsState, orderProductsState, memoState, categoryState };
+const loginState = atom<boolean>({
+  key: 'loginState',
+  default: false,
+});
+
+const tokenState = atom<String>({
+  key: 'tokenState',
+  default: '',
+});
+
+export {
+  storeState,
+  productsState,
+  orderProductsState,
+  memoState,
+  categoryState,
+  loginState,
+  tokenState,
+};
