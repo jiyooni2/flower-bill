@@ -75,15 +75,21 @@ const businessState = atom<Business>({
   },
 });
 
+const businessesState = atom<Business[]>({
+  key: 'businessesState',
+  default: [],
+})
+
 export {
+  loginState,
+  tokenState,
+  memoState,
   storeState,
   storesState,
   productsState,
   orderProductsState,
-  memoState,
   categoryState,
   categoriesState,
-  loginState,
-  tokenState,
   businessState,
+  businessesState,
 };
