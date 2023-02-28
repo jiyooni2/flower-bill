@@ -1,3 +1,7 @@
+import {
+  GetBusinessesInput,
+  GetBusinessesOutput,
+} from './dtos/get-businesses.dto';
 import { Repository } from 'typeorm';
 import { Business } from './entities/business.entity';
 import { AppDataSource, authService } from './../main';
@@ -47,6 +51,26 @@ export class BusinessService {
         .execute();
 
       return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async getBusinesses({
+    token,
+  }: GetBusinessesInput): Promise<GetBusinessesOutput> {
+    try {
+      const owner = await authService.getAuthOwner(token);
+
+      if (!owner) {
+        return { ok: false, error: '없는 사용자입니다.' };
+      }
+
+      const businesses = await this.businessRepository.find({
+        where: { ownerId: owner.id },
+      });
+
+      return { ok: true, businesses };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }
