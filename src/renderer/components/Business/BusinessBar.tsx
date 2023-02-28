@@ -2,11 +2,41 @@
 import styles from './BusinessBar.module.scss';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BusinessModal from './NewBusinessModal/BusinessModal';
+import { businessesState, tokenState } from 'renderer/recoil/states';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
+import { Business } from 'main/business/entities/business.entity';
 
 const BusinessBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [businesses, setBusinesses] = useRecoilState(businessesState);
+  const token = useRecoilValue(tokenState);
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-businesses', {
+      token,
+      businessId: 1,
+    });
+
+    window.electron.ipcRenderer.on(
+      'get-businesses',
+      ({ ok, error, businesses }: GetBusinessesOutput) => {
+        if (ok) {
+          setBusinesses(businesses);
+          console.log(businesses);
+        } else {
+          console.error(error);
+        }
+      }
+    );
+    console.log(businesses);
+  }, [])
+
+  const clickHandler = (business: Business) => {
+    console.log(business)
+  };
 
   return (
     <>
@@ -14,10 +44,16 @@ const BusinessBar = () => {
       <div className={styles.bar}>
         <div className={styles.container}>
           <div className={styles.content}>
-            {/* data.map(() => (<div></di>)) */}
-            <div className={styles.box}>
-              <img src="https://raw.githubusercontent.com/hashdog/node-identicon-github/master/examples/images/github.png" />
-            </div>
+            {businesses.map((business) => (
+              <div key={business.id}>
+                <div
+                  className={styles.box}
+                  onClick={() => clickHandler(business)}
+                >
+                  <img src="https://raw.githubusercontent.com/hashdog/node-identicon-github/master/examples/images/github.png" />
+                </div>
+              </div>
+            ))}
             <div className={styles.addBusiness}>
               <AddRoundedIcon
                 sx={{ width: '60%', height: '70%', color: '#73777B' }}
