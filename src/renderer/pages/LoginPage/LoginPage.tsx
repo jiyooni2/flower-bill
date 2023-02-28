@@ -37,7 +37,6 @@ const LoginPage = () => {
         } else {
           console.error(error);
         }
-        console.log(a, b);
         //set token, businessId
       }
     );
