@@ -21,6 +21,11 @@ const storeState = atom<Store>({
   },
 });
 
+const storesState = atom<Store[]>({
+  key: 'storesState',
+  default: [],
+})
+
 const productsState = atom<Product[]>({
   key: 'productsState',
   default: [],
@@ -50,4 +55,4 @@ const businessState = atom({
   }
 })
 
-export { storeState, productsState, orderProductsState, memoState, categoryState, businessState };
+export { storeState, storesState, productsState, orderProductsState, memoState, categoryState, businessState };
