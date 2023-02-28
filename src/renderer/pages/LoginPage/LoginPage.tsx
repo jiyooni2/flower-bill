@@ -17,8 +17,6 @@ const LoginPage = () => {
   });
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
   const [token, setToken] = useRecoilState(tokenState);
-  const a = useRecoilValue(loginState);
-  const b = useRecoilValue(tokenState);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

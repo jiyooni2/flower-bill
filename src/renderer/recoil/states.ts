@@ -38,7 +38,7 @@ const categoryState = atom<Category[]>({
   default: [],
 });
 
-const loginState = atom<boolean>({
+const loginState = atom<Boolean>({
   key: 'loginState',
   default: false,
 });
@@ -46,6 +46,11 @@ const loginState = atom<boolean>({
 const tokenState = atom<String>({
   key: 'tokenState',
   default: '',
+});
+
+const businessState = atom<Number>({
+  key: 'businessState',
+  default: -1,
 });
 
 export {
@@ -56,4 +61,5 @@ export {
   categoryState,
   loginState,
   tokenState,
+  businessState,
 };
