@@ -13,8 +13,7 @@ export interface Store {
   bills: Bill[];
 }
 
-export interface CreateStore
-  extends Pick<Store, 'name' | 'owner' | 'address'> {
+export interface CreateStore extends Pick<Store, 'name' | 'owner' | 'address'> {
   businessNumber: string;
 }
 
@@ -38,4 +37,15 @@ export interface Category {
   parentCategory: Category;
   childCategories: Category[];
   products: Product[];
+}
+
+export interface Owner {
+  nickname: string;
+  ownerId: string;
+  password: string;
+}
+
+export interface LoginInput {
+  ownerId: string;
+  password: string;
 }

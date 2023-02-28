@@ -24,7 +24,7 @@ const storeState = atom<Store>({
 const storesState = atom<Store[]>({
   key: 'storesState',
   default: [],
-})
+});
 
 const productsState = atom<Product[]>({
   key: 'productsState',
@@ -50,6 +50,16 @@ const categoriesState = atom<Category[]>({
   default: [],
 });
 
+const loginState = atom<Boolean>({
+  key: 'loginState',
+  default: false,
+});
+
+const tokenState = atom<String>({
+  key: 'tokenState',
+  default: '',
+});
+
 const businessState = atom({
   key: 'businessState',
   default: {
@@ -57,7 +67,18 @@ const businessState = atom({
     businessNumber: 0n,
     businessOwnerName: '',
     address: '',
-  }
-})
+  },
+});
 
-export { storeState, storesState, productsState, orderProductsState, memoState, categoryState, categoriesState, businessState };
+export {
+  storeState,
+  storesState,
+  productsState,
+  orderProductsState,
+  memoState,
+  categoryState,
+  categoriesState,
+  loginState,
+  tokenState,
+  businessState,
+};

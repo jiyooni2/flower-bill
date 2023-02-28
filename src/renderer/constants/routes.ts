@@ -4,7 +4,8 @@ const ROUTES = {
   STORE: '/store',
   USER: '/user',
   SELLER: '/seller',
-  CATEGORY: '/cateogory'
+  CATEGORY: '/cateogory',
+  LOGIN: '/login',
 };
 
 export default ROUTES;

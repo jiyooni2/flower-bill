@@ -39,9 +39,18 @@ const NavBar = () => {
           사업자 관리
         </p>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', marginLeft: '28.5px', marginTop: '60px' }}>
-        <SettingsOutlinedIcon sx={{fontSize: '20px', color: 'dimgray'}} />
-        <span style={{ marginTop: '3.5px', marginLeft: '5px'}}>사용자 관리</span>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          marginLeft: '28.5px',
+          marginTop: '60px',
+        }}
+      >
+        <SettingsOutlinedIcon sx={{ fontSize: '20px', color: 'dimgray' }} />
+        <span style={{ marginTop: '3.5px', marginLeft: '5px' }}>
+          사용자 관리
+        </span>
       </div>
     </nav>
   );
