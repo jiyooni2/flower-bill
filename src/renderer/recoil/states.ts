@@ -45,6 +45,11 @@ const categoryState = atom<Category>({
   key: 'categoryState',
 });
 
+const categoriesState = atom<Category[]>({
+  key: 'categoriesState',
+  default: [],
+});
+
 const businessState = atom({
   key: 'businessState',
   default: {
@@ -55,4 +60,4 @@ const businessState = atom({
   }
 })
 
-export { storeState, storesState, productsState, orderProductsState, memoState, categoryState, businessState };
+export { storeState, storesState, productsState, orderProductsState, memoState, categoryState, categoriesState, businessState };
