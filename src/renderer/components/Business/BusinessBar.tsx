@@ -4,7 +4,7 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { useEffect, useState } from 'react';
 import BusinessModal from './NewBusinessModal/BusinessModal';
-import { businessesState, tokenState } from 'renderer/recoil/states';
+import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
@@ -12,6 +12,7 @@ import { Business } from 'main/business/entities/business.entity';
 const BusinessBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
+  const [business, setBusiness] = useRecoilState(businessState)
   const token = useRecoilValue(tokenState);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const BusinessBar = () => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
-          console.log(businesses);
+          setBusiness(businesses[0])
         } else {
           console.error(error);
         }
@@ -35,7 +36,7 @@ const BusinessBar = () => {
   }, [])
 
   const clickHandler = (business: Business) => {
-    console.log(business)
+    setBusiness(business);
   };
 
   return (
@@ -50,7 +51,7 @@ const BusinessBar = () => {
                   className={styles.box}
                   onClick={() => clickHandler(business)}
                 >
-                  <img src="https://raw.githubusercontent.com/hashdog/node-identicon-github/master/examples/images/github.png" />
+                  <span style={{ fontSize: '35px', color: 'black', marginTop: '2px'}}>{business.name.slice(0, 1)}</span>
                 </div>
               </div>
             ))}
