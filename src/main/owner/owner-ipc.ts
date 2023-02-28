@@ -23,7 +23,6 @@ ipcMain.on(
 );
 
 ipcMain.on('login', async (event, loginInput: LoginInput) => {
-  await authService.login(loginInput);
   const result = await authService.login(loginInput);
   event.reply('login', result);
 });

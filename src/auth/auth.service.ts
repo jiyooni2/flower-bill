@@ -1,3 +1,4 @@
+import { AppDataSource } from './../main/main';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import * as jwt from 'jsonwebtoken';
 import { Owner } from './../main/owner/entities/owner.entity';
@@ -9,7 +10,9 @@ export class AuthService {
   private readonly ownerRepository: Repository<Owner>;
   private readonly ACCESS_KEY = 'AAA';
 
-  constructor() {}
+  constructor() {
+    this.ownerRepository = AppDataSource.getRepository(Owner);
+  }
 
   async login({ ownerId, password }: LoginInput): Promise<LoginOutput> {
     try {
@@ -25,6 +28,7 @@ export class AuthService {
 
       const token = jwt.sign({ data: owner.id?.toString() }, this.ACCESS_KEY);
 
+      console.log(token);
       return { ok: true, token };
     } catch (error: any) {
       return { ok: false, error: error.message };
