@@ -3,64 +3,16 @@ import Button from '@mui/material/Button';
 import styles from './CategoryPage.module.scss';
 import { TreeItem, TreeView } from '@mui/lab';
 import { useRecoilState } from 'recoil';
-import { categoryState } from 'renderer/recoil/states';
-import { GetCategoryOutput } from 'main/category/dtos/get-category.dto';
+import { categoriesState } from 'renderer/recoil/states';
+import { CreateCategoryOutput } from 'main/category/dtos/create-category.dto';
 import { Category } from 'main/category/entities/category.entity';
 import { ChevronRight, ExpandMore, AddRounded, Delete } from '@mui/icons-material';
 import { Typography } from '@mui/material';
-
-// const data: Category[] = [
-//   {
-//     name: '국산',
-//     level: 1,
-//     parentCategory: null,
-//     parentCategoryId: null,
-//     childCategories: [
-//       {
-//         name: '장미과',
-//         level: 2,
-//         parentCategory: {
-//           name: '국산',
-//           level: 1,
-//           parentCategory: null,
-//           childCategories: null,
-//           products: null,
-//         },
-//         parentCategoryId: 1,
-//         childCategories: [
-//           {
-//             name: '빨간 장미',
-//             level: 3,
-//             parentCategory: {
-//               name: '장미과',
-//               level: 2,
-//               parentCategory: {
-//                 name: '국산',
-//                 level: 1,
-//                 parentCategory: null,
-//                 childCategories: null,
-//                 products: null,
-//               },
-//               parentCategoryId: null,
-//               childCategories: null,
-//               products: null,
-//             },
-//             childCategories: null,
-//             products: null,
-//           },
-//         ],
-//         products: null,
-//       },
-//     ],
-//     products: null,
-//   },
-// ];
+import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 
 
 const CategoryPage = () => {
-  const [categories, setCategories] = useRecoilState(categoryState);
-
-  // const [categories, setCategories] = useState<Category>(data);
+  const [categories, setCategories] = useRecoilState(categoriesState);
   const [keyword, setKeyWord] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
   const [categoryName, setCategoryName] = useState<string>('');
@@ -70,15 +22,17 @@ const CategoryPage = () => {
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-category', {});
+    window.electron.ipcRenderer.sendMessage('get-categories', {
+      token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMiIsImlhdCI6MTY3NzU1OTE5OH0.z_h_BCDdrQcuRgLJ7oimI5E1mn65LjfzH-zBzJRHrC0',
+    });
     window.electron.ipcRenderer.on(
-      'get-category',
-      (args: GetCategoryOutput) => {
-        setCategories(args.category as Category);
+      'get-categories',
+      (args: GetCategoriesOutput) => {
+        setCategories(args.categories as Category[]);
       }
     );
     console.log(categories);
-
   }, []);
 
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
@@ -105,6 +59,33 @@ const CategoryPage = () => {
       if (nameInputRef.current !== null) nameInputRef.current.focus();
       if (item) {setParentCategoryName(item.name); setParentCategoryId(item.id) }
       else {setParentCategoryName(''); setParentCategoryId(null)}
+
+
+      const newData = {
+        name: categoryName,
+        parentCategoryId: parentCategoryId,
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMiIsImlhdCI6MTY3NzU1OTE5OH0.z_h_BCDdrQcuRgLJ7oimI5E1mn65LjfzH-zBzJRHrC0',
+        businessId: 1,
+      }
+
+      window.electron.ipcRenderer.sendMessage('create-category', newData);
+      window.electron.ipcRenderer.on(
+        'create-category',
+        ({ ok, error }: CreateCategoryOutput) => {
+          if (ok) {
+            window.electron.ipcRenderer.sendMessage('get-stores', {});
+            window.electron.ipcRenderer.on(
+              'get-categories',
+              (args: GetCategoriesOutput) => {
+                setCategories(args.categories as Category[]);
+              }
+            );
+          }
+          if (error) {
+            console.log(error);
+          }
+        }
+      );
     } else if (name === "item") {
       setClicked(true);
 

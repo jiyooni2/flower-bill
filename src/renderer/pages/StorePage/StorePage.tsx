@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import styles from './StorePage.module.scss';
 import {
@@ -10,56 +10,59 @@ import {
   TableBody,
   Typography,
 } from '@mui/material';
-import { Store } from '../../types/index';
-
-const STORE = [
-  {
-    businessNumber: 123,
-    address: '서울시 성동구 마장동',
-    name: '마장동에서 제일 잘나가는 꽃집',
-    owner: '홍길동1',
-    bills: null,
-  },
-  {
-    businessNumber: 456,
-    address: '서울시 강동구 고덕동',
-    name: '꽃집1',
-    owner: '홍길동2',
-    bills: null,
-  },
-  {
-    businessNumber: 789,
-    address: '경기도 군포시 산본동',
-    name: '집2',
-    owner: '홍길동3',
-    bills: null,
-  },
-];
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { storesState } from 'renderer/recoil/states';
+import { Store } from 'main/store/entities/store.entity';
+import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
+// import { CreateStoreInput } from 'main/store/dtos/create-store.dto';
 
 const StorePage = () => {
+  const storeData = useRecoilValue(storesState)
+  const [stores, setStores] = useRecoilState(storesState);
+  // const [stores, setStores] = useState<Store[]>([]);
   const [name, setName] = useState<string>("");
   const [clicked, setClicked] = useState<boolean>(false);
   const [numberHasError, setNumberHasError] = useState<boolean>(false);
   const [addressHasError, setAddressHasError] = useState<boolean>(false);
-  const [storeData, setStoreData] = useState < Store[]>(STORE);
   const [StoreNumber, setStoreNumber] = useState<number>();
   const [StoreName, setStoreName] = useState<string>('');
   const [Owner, setOwner] = useState<string>('');
   const [Address, setAddress] = useState<string>('');
-  const [clickedStore, setClickedStore] = useState<Store[]>([
-    { businessNumber: 0, name: '', owner: '', address: '', bills: null },
-  ]);
+  const [clickedStore, setClickedStore] = useState<Store>({
+    business: null,
+    businessId: null,
+    businessNumber: 0,
+    name: '',
+    owner: '',
+    address: '',
+    bills: null,
+  });
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-stores', {
+      token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMiIsImlhdCI6MTY3NzU1OTE5OH0.z_h_BCDdrQcuRgLJ7oimI5E1mn65LjfzH-zBzJRHrC0',
+    });
+    window.electron.ipcRenderer.on(
+      'get-stores',
+      (args: GetStoresOutput) => {
+        setStores(args.stores as Store[]);
+      }
+    );
+
+    console.log(storeData);
+  }, []);
 
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
 
     if (keyword !== '') {
-      const results = STORE.filter((store) => {
+      const results = stores.filter((store) => {
         return store.name.toLowerCase().startsWith(keyword.toLowerCase());
       });
-      setStoreData(results);
+      setStores(results);
     } else {
-      setStoreData(STORE);
+      setStores(stores);
     }
 
     setName(keyword);
@@ -69,29 +72,29 @@ const StorePage = () => {
   const changeDataHandler = (event: React.MouseEvent<unknown>, data: Store ) => {
     setClicked(true)
 
-    storeData.forEach((item) => {
+    stores.forEach((item) => {
       if (item.name === data.name) {
         setStoreNumber(item.businessNumber);
         setStoreName(item.name);
         setOwner(item.owner);
         setAddress(item.address);
-        setClickedStore([
+        setClickedStore(
           {
+            business: item.business,
+            businessId: item.businessId,
             businessNumber: item.businessNumber,
             name: item.name,
             owner: item.owner,
             address: item.address,
-            bills: null,
+            bills: item.bills,
           },
-        ]);
+        );
       }
     });
   };
 
   const deleteDataHandler = () => {
-    setStoreData(
-      storeData.filter((user) => user.name !== clickedStore[0].name)
-    );
+    setStores(stores.filter((store) => store.name !== clickedStore.name));
   };
 
   const changeStoreDataHandler = (event: React.ChangeEvent<HTMLInputElement>, dataName:string) => {
@@ -119,37 +122,57 @@ const StorePage = () => {
     setStoreName('')
     setOwner('')
     setAddress('')
-    setClickedStore([
+    setClickedStore(
       {
+        business: null,
+        businessId: null,
         businessNumber: 0,
         name: '',
         owner: '',
         address: '',
         bills: null,
       },
-    ]);
+    );
   };
 
   const addDataHandler = () => {
     if (
-      storeData.findIndex((data) => data.businessNumber == StoreNumber) != -1
+      stores.findIndex((data) => data.businessNumber == StoreNumber) != -1
     ) {
       setNumberHasError(true);
-    } else if (storeData.findIndex((data) => data.address == Address) != -1) {
+    } else if (stores.findIndex((data) => data.address == Address) != -1) {
       setAddressHasError(true);
-    } else if (
-      storeData.findIndex((data) => data.businessNumber == StoreNumber) == -1 &&
-      storeData.findIndex((data) => data.address == Address) == -1
-    ) {
+    } else {
       if (StoreName != '' && StoreNumber != 0 && Owner != '' && Address != '') {
         const newData = {
           name: StoreName,
           businessNumber: StoreNumber,
           owner: Owner,
           address: Address,
-          bills: null,
+          bills: [],
+          business: null,
+          businessId: null,
         };
-        setStoreData((data) => [...data, newData]);
+
+        window.electron.ipcRenderer.sendMessage('create-store', newData);
+
+        window.electron.ipcRenderer.on(
+          'create-store',
+          ({ ok, error }: GetStoresOutput) => {
+            if (ok) {
+              window.electron.ipcRenderer.sendMessage('get-stores', {});
+              window.electron.ipcRenderer.on(
+                'get-stores',
+                (args: GetStoresOutput) => {
+                  setStores(args.stores as Store[]);
+                }
+              );
+            }
+            if (error) {
+              console.log(error);
+            }
+          }
+        )
         clearInputs();
       }
     }
@@ -157,21 +180,21 @@ const StorePage = () => {
 
   const doubleClickHandler = () => {
     setClicked(false);
-    console.log(clickedStore[0])
+    console.log(clickedStore)
   };
 
   const updateDataHandler = () => {
-    const findIndex = storeData.findIndex(
-      (element) => element.businessNumber == clickedStore[0].businessNumber
+    const findIndex = stores.findIndex(
+      (element) => element.businessNumber == clickedStore.businessNumber
     );
-      storeData[findIndex] = {
-        ...storeData[findIndex],
+      stores[findIndex] = {
+        ...stores[findIndex],
         businessNumber: StoreNumber,
         name: StoreName,
         owner: Owner,
         address: Address,
       };
-      setStoreData(storeData);
+      setStores(stores);
     setClicked(true)
   };
 
@@ -210,7 +233,7 @@ const StorePage = () => {
                         align="left"
                         sx={{ width: '15%' }}
                       >
-                        가게 번호
+                        사업자 번호
                       </TableCell>
                       <TableCell
                         component="th"
@@ -236,9 +259,9 @@ const StorePage = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {storeData &&
-                      storeData.length > 0 &&
-                      storeData.map((store) => (
+                    {stores &&
+                      stores.length > 0 &&
+                      stores.map((store) => (
                         <TableRow
                           key={store.businessNumber}
                           className={styles.dataRow}
@@ -283,7 +306,7 @@ const StorePage = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              {storeData && storeData.length == 0 && (
+              {stores && stores.length == 0 && (
                 <div className={styles.noResult}>
                   <div>
                     <h3>검색결과가 없습니다.</h3>
@@ -316,7 +339,7 @@ const StorePage = () => {
                   <div className={styles.itemWithError}>
                     <p className={styles.labels}>사업자 번호</p>
                     <input
-                      value={StoreNumber}
+                      value={StoreNumber || 0}
                       className={styles.dataInput}
                       onDoubleClick={doubleClickHandler}
                       readOnly={clicked}
@@ -378,7 +401,7 @@ const StorePage = () => {
                 </div>
               </div>
               <div className={styles.buttonList}>
-                {clickedStore[0].businessNumber > 0 ? (
+                {clickedStore.businessNumber > 0 ? (
                   <Button
                     variant="contained"
                     size="small"
@@ -391,7 +414,7 @@ const StorePage = () => {
                 ) : (
                   <div></div>
                 )}
-                {clickedStore[0].businessNumber > 0 ? (
+                {clickedStore ? (
                   <Button
                     variant="contained"
                     size="small"
