@@ -10,6 +10,7 @@ import SellerPage from './pages/SellerPage/SellerPage';
 import Layout from './components/Layout/Layout';
 import ROUTES from './constants/routes';
 import CategoryPage from './pages/CategoryPage/CategoryPage';
+import LoginPage from './pages/LoginPage/LoginPage';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
             <Route path={ROUTES.USER} element={<UserPage />} />
             <Route path={ROUTES.SELLER} element={<SellerPage />} />
             <Route path={ROUTES.CATEGORY} element={<CategoryPage />} />
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
           </Routes>
         </Layout>
       </Router>
