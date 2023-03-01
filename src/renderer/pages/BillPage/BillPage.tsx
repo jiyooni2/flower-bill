@@ -2,25 +2,26 @@ import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import {
-  storeState,
   productsState,
   orderProductsState,
-  memoState,
+  tokenState,
+  businessState,
 } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
-// import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import styles from './BillPage.module.scss';
 import StoreSearchModal from './components/StoreSearchModal/StoreSearchModal';
 import OrderProductBox from './components/OrderProductBox/OrderProductBox';
-import MemoModal from './components/MemoModal/MemoModal';
+// import MemoModal from './components/MemoModal/MemoModal';
 import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
-import DiscountModal from './components/DiscountModal/DiscountModal';
+// import DiscountModal from './components/DiscountModal/DiscountModal';
 import BillModal from './components/BillModal/BillModal';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
+  const token = useRecoilValue(tokenState)
+  const business = useRecoilValue(businessState)
   const orderProducts = useRecoilValue(orderProductsState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
@@ -30,8 +31,11 @@ const BillPage = () => {
   // console.log(orderProducts);
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-products', {});
-    window.electron.ipcRenderer.on(
+    window.electron.ipcRenderer.sendMessage('get-products', {
+      token,
+      businessId: business.id,
+    });
+     window.electron.ipcRenderer.on(
       'get-products',
       (args: GetProductsOutput) => {
         setProducts(args.products as Product[]);
@@ -96,28 +100,36 @@ const BillPage = () => {
               </TableRow>
             </TableHead>
           </Table>
-          <div className={`${styles.orderProducts_list}`}>
-            {orderProducts
-              .slice((page - 1) * 4, page * 4)
-              .map((orderProduct) => (
-                <OrderProductBox
-                  key={orderProduct.product.id}
-                  orderProduct={orderProduct}
-                />
-              ))}
-          </div>
-          <div style={{ margin: '0 auto' }}>
-            <Pagination
-              count={LAST_PAGE}
-              size="small"
-              color="standard"
-              defaultPage={1}
-              boundaryCount={1}
-              onChange={(event) => handlePage(event)}
-            />
+          <div style={{ display: 'flex', flexDirection: 'column'}}>
+            <div className={styles.orderProducts_list}>
+              {orderProducts
+                .slice((page - 1) * 4, page * 4)
+                .map((orderProduct) => (
+                  <OrderProductBox
+                    key={orderProduct.product.id}
+                    orderProduct={orderProduct}
+                  />
+                ))}
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                height: '100px'
+              }}
+            >
+              <Pagination
+                count={LAST_PAGE}
+                size="small"
+                color="standard"
+                defaultPage={1}
+                boundaryCount={1}
+                onChange={(event) => handlePage(event)}
+              />
+            </div>
           </div>
           <div style={{ marginLeft: '10px', marginRight: '10px' }}>
-            <div style={{ marginTop: '30px' }}>
+            <div>
               <div className={styles.total}>
                 <p className={styles.totalName}>과세&nbsp;물품</p>
                 <h6 className={styles.totalNum}>
