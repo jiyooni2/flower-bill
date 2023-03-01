@@ -58,6 +58,7 @@ export class CategoryService {
           name,
           parentCategoryId: parentCategory ? parentCategory.id : undefined,
           level: parentCategory ? parentCategory.level + 1 : 1,
+          businessId,
         })
         .execute();
 
