@@ -1,4 +1,8 @@
 import {
+  DeleteBusinessInput,
+  DeleteBusinessOutput,
+} from './dtos/delete-business.dto';
+import {
   UpdateBusinessInput,
   UpdateBusinessOutPut,
 } from './dtos/update-busiess.dto';
@@ -100,6 +104,21 @@ export class BusinessService {
           name,
         }
       );
+
+      return { ok: true };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async deleteBusiness({
+    businessId,
+    token,
+  }: DeleteBusinessInput): Promise<DeleteBusinessOutput> {
+    try {
+      await authService.checkBusinessAuth(token, businessId);
+
+      await this.businessRepository.delete({ id: businessId });
 
       return { ok: true };
     } catch (error: any) {

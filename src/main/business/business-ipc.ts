@@ -1,3 +1,4 @@
+import { DeleteBusinessInput } from './dtos/delete-business.dto';
 import { UpdateBusinessInput } from './dtos/update-busiess.dto';
 import { GetBusinessesInput } from './dtos/get-businesses.dto';
 import { ipcMain } from 'electron';
@@ -29,5 +30,14 @@ ipcMain.on(
     authService.checkAuth(updateBusinessInput.token);
     const result = await businessService.updateBusiness(updateBusinessInput);
     event.reply('update-business', result);
+  }
+);
+
+ipcMain.on(
+  'delete-business',
+  async (event, deleteBusinessInput: DeleteBusinessInput) => {
+    authService.checkAuth(deleteBusinessInput.token);
+    const result = await businessService.deleteBusiness(deleteBusinessInput);
+    event.reply('delete-business', result);
   }
 );
