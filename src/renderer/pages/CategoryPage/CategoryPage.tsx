@@ -2,37 +2,46 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import styles from './CategoryPage.module.scss';
 import { TreeItem, TreeView } from '@mui/lab';
-import { useRecoilState } from 'recoil';
-import { categoriesState } from 'renderer/recoil/states';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { businessState, categoriesState, tokenState } from 'renderer/recoil/states';
 import { CreateCategoryOutput } from 'main/category/dtos/create-category.dto';
 import { Category } from 'main/category/entities/category.entity';
 import { ChevronRight, ExpandMore, AddRounded, Delete } from '@mui/icons-material';
 import { Typography } from '@mui/material';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
+import { DeleteCategoryOutput } from 'main/category/dtos/delete-category.dto';
 
 
 const CategoryPage = () => {
   const [categories, setCategories] = useRecoilState(categoriesState);
+  const business = useRecoilValue(businessState)
+  const token = useRecoilValue(tokenState);
   const [keyword, setKeyWord] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
   const [categoryName, setCategoryName] = useState<string>('');
   const [levelName, setLevelName] = useState<string>('');
+  const [level, setLevel] = useState<number>(0);
   const [parentCategoryName, setParentCategoryName] = useState<string>('');
   const [parentCategoryId, setParentCategoryId] = useState<number>(0);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
+  console.log(business.id)
+
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
-      token:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMiIsImlhdCI6MTY3NzU1OTE5OH0.z_h_BCDdrQcuRgLJ7oimI5E1mn65LjfzH-zBzJRHrC0',
+      token,
+      business: business.id,
     });
     window.electron.ipcRenderer.on(
       'get-categories',
-      (args: GetCategoriesOutput) => {
-        setCategories(args.categories as Category[]);
+      ({ ok, error, categories }: GetCategoriesOutput) => {
+        if (ok) {
+          setCategories(categories)
+        } else if (error) {
+          console.log(error);
+        }
       }
     );
-    console.log(categories);
   }, []);
 
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
@@ -52,92 +61,146 @@ const CategoryPage = () => {
   const clickAddHandler = (item: Category, name: string) => {
     if (name === "add"){
       setClicked(false);
-      if (!item) setLevelName('대분류')
-      else if (item.level === 1) setLevelName('중분류')
-      else if (item.level === 2) setLevelName('소분류')
+      if (!item) {setLevelName('대분류'); setLevel(1)}
+      else if (item.level === 1) {setLevelName('중분류'); setLevel(2)}
+      else if (item.level === 2) {setLevelName('소분류'); setLevel(3)}
 
       if (nameInputRef.current !== null) nameInputRef.current.focus();
       if (item) {setParentCategoryName(item.name); setParentCategoryId(item.id) }
       else {setParentCategoryName(''); setParentCategoryId(null)}
-
-
-      const newData = {
-        name: categoryName,
-        parentCategoryId: parentCategoryId,
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMiIsImlhdCI6MTY3NzU1OTE5OH0.z_h_BCDdrQcuRgLJ7oimI5E1mn65LjfzH-zBzJRHrC0',
-        businessId: 1,
-      }
-
-      window.electron.ipcRenderer.sendMessage('create-category', newData);
-      window.electron.ipcRenderer.on(
-        'create-category',
-        ({ ok, error }: CreateCategoryOutput) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-stores', {});
-            window.electron.ipcRenderer.on(
-              'get-categories',
-              (args: GetCategoriesOutput) => {
-                setCategories(args.categories as Category[]);
-              }
-            );
-          }
-          if (error) {
-            console.log(error);
-          }
-        }
-      );
-    } else if (name === "item") {
+    } else {
       setClicked(true);
 
-      if (item.level === 1) setLevelName('대분류');
-      else if (item.level === 2) setLevelName('중분류');
-      else if (!item) setLevelName('소분류');
+      if (item.level === 1) {setLevelName('대분류'); setLevel(1)}
+      else if (item.level === 2) {setLevelName('중분류'); setLevel(2)}
+      else if (!item) {setLevelName('소분류'); setLevel(3)}
 
       if (item.parentCategory === null) {
-        setParentCategoryName('')
+        setParentCategoryName('');
       } else {
-        setParentCategoryName(item.parentCategory.name);
+        setParentCategoryName(item.parentCategory?.name);
       }
       setCategoryName(item.name);
     }
-
-
-    const newCategory = {
-      name: categoryName,
-      parentCategoryId: parentCategoryId,
-    };
-
-    window.electron.ipcRenderer.sendMessage('create-category', newCategory);
   };
 
 
-  const clickDeleteHandler = (nodes: Category) => {
-    console.log(nodes)
+  const updateDataHandler = () => {
+      const newData = {
+        name: categoryName,
+        parentCategoryId: parentCategoryId,
+      };
 
-    const delCategory = {
-      id: nodes.id
-    };
-
-    window.electron.ipcRenderer.sendMessage('delete-category', delCategory);
+      // window.electron.ipcRenderer.sendMessage('update-category', {
+      //   ...newData,
+      //   token,
+      //   business: business.id,
+      // });
+      // window.electron.ipcRenderer.on(
+      //   'update-category',
+      //   ({ ok, error }: UpdateCategoryOutput) => {
+      //     if (ok) {
+      //       window.electron.ipcRenderer.sendMessage('get-categories', {
+      //         token,
+      //         business: business.id,
+      //       });
+      //       window.electron.ipcRenderer.on(
+      //         'get-categories',
+      //         ({ ok, error, categories }: GetCategoriesOutput) => {
+      //           if (ok) {
+      //             setCategories(categories);
+      //           } else if (error) {
+      //             console.log(error);
+      //           }
+      //         }
+      //       );
+      //     } else if (error) {
+      //       console.log(error);
+      //     }
+      //   }
+      // );
   }
 
 
+  // const clickDeleteHandler = (nodes: Category) => {
+  //   console.log(nodes)
+
+  //   const delCategory = {
+  //     id: nodes.id
+  //   };
+
+  //   window.electron.ipcRenderer.sendMessage('delete-category', {
+  //     ...delCategory,
+  //     token,
+  //     business: business.id,
+  //   });
+  //     window.electron.ipcRenderer.on(
+  //       'delete-category',
+  //       ({ ok, error }: DeleteCategoryOutput) => {
+  //         if (ok) {
+  //           window.electron.ipcRenderer.sendMessage('get-categories', {
+  //             token,
+  //             business: business.id,
+  //           });
+  //           window.electron.ipcRenderer.on(
+  //             'get-categories',
+  //             ({ ok, error, categories }: GetCategoriesOutput) => {
+  //               if (ok) {
+  //                 setCategories(categories);
+  //               } else if (error) {
+  //                 console.log(error);
+  //               }
+  //             }
+  //           );
+  //         } else if (error) {
+  //           console.log(error);
+  //         }
+  //       }
+  //     )
+  // }
+
   const newCategoryHandler = () => {
-    const newCategory = {
+    const newData = {
+      businessId: business.id,
       name: categoryName,
       parentCategoryId: parentCategoryId,
     };
 
-    window.electron.ipcRenderer.sendMessage('create-category', newCategory);
+    window.electron.ipcRenderer.sendMessage('create-category', {
+      ...newData,
+      token,
+      businessId: business.id,
+    });
+
+    window.electron.ipcRenderer.on(
+      'create-category',
+      ({ ok, error }: CreateCategoryOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-categories', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-categories',
+            ({ok, error, categories}: GetCategoriesOutput) => {
+              if (ok) {
+                setCategories(categories)
+              } else {
+                console.error(error);
+              }
+            }
+          )
+          console.log('done!')
+        } else if (error) {
+          console.log(error);
+        }
+      }
+    );
 
     setCategoryName('');
     setLevelName('');
     setParentCategoryName('');
   };
-
-  // const updateCategoryHandler = () => {
-
-  // };
 
 
   const addTreeItem = (item: Category, text: string) => {
@@ -183,7 +246,7 @@ const CategoryPage = () => {
           <Delete
             id="del"
             sx={{ fontSize: '14px', marginTop: '5px', color: 'crimson' }}
-            onClick={() => clickDeleteHandler(nodes)}
+            // onClick={() => clickDeleteHandler(nodes)}
           />
         </div>
       }
@@ -312,7 +375,7 @@ const CategoryPage = () => {
                     variant="contained"
                     size="small"
                     sx={{ marginRight: '10px', backgroundColor: 'coral' }}
-                    // onClick={updateCategoryHandler}
+                    onClick={updateDataHandler}
                   >
                     수정
                   </Button>
