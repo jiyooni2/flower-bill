@@ -31,8 +31,9 @@ export type Channels =
   | 'create-owner'
   | 'update-owner'
   | 'create-business'
-  | 'login'
-  | 'get-businesses';
+  | 'update-business'
+  | 'get-businesses'
+  | 'login';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

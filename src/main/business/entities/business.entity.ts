@@ -8,7 +8,7 @@ export class Business extends CoreEntity {
   name: string;
 
   @Column({ type: 'bigint' })
-  businessNumber: bigint;
+  businessNumber: number;
 
   @Column()
   businessOwnerName: string;

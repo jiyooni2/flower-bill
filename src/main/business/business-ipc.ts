@@ -1,3 +1,4 @@
+import { UpdateBusinessInput } from './dtos/update-busiess.dto';
 import { GetBusinessesInput } from './dtos/get-businesses.dto';
 import { ipcMain } from 'electron';
 import { businessService } from '../main';
@@ -19,5 +20,14 @@ ipcMain.on(
     authService.checkAuth(getBusinessesInput.token);
     const result = await businessService.getBusinesses(getBusinessesInput);
     event.reply('get-businesses', result);
+  }
+);
+
+ipcMain.on(
+  'update-business',
+  async (event, updateBusinessInput: UpdateBusinessInput) => {
+    authService.checkAuth(updateBusinessInput.token);
+    const result = await businessService.updateBusiness(updateBusinessInput);
+    event.reply('update-business', result);
   }
 );

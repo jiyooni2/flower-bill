@@ -1,4 +1,8 @@
 import {
+  UpdateBusinessInput,
+  UpdateBusinessOutPut,
+} from './dtos/update-busiess.dto';
+import {
   GetBusinessesInput,
   GetBusinessesOutput,
 } from './dtos/get-businesses.dto';
@@ -71,6 +75,33 @@ export class BusinessService {
       });
 
       return { ok: true, businesses };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async updateBusiness({
+    businessId,
+    token,
+    businessNumber,
+    businessOwnerName,
+    address,
+    name,
+  }: UpdateBusinessInput): Promise<UpdateBusinessOutPut> {
+    try {
+      await authService.checkBusinessAuth(token, businessId);
+
+      await this.businessRepository.update(
+        { id: businessId },
+        {
+          businessNumber,
+          businessOwnerName,
+          address,
+          name,
+        }
+      );
+
+      return { ok: true };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }

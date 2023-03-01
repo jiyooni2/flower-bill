@@ -50,12 +50,12 @@ const categoriesState = atom<Category[]>({
   default: [],
 });
 
-const loginState = atom<Boolean>({
+const loginState = atom<boolean>({
   key: 'loginState',
   default: false,
 });
 
-const tokenState = atom<String>({
+const tokenState = atom<string>({
   key: 'tokenState',
   default: '',
 });
@@ -78,7 +78,7 @@ const businessState = atom<Business>({
 const businessesState = atom<Business[]>({
   key: 'businessesState',
   default: [],
-})
+});
 
 export {
   loginState,
