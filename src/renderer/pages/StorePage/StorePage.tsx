@@ -11,15 +11,16 @@ import {
   Typography,
 } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { storesState } from 'renderer/recoil/states';
+import { businessState, storesState, tokenState } from 'renderer/recoil/states';
 import { Store } from 'main/store/entities/store.entity';
 import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
-// import { CreateStoreInput } from 'main/store/dtos/create-store.dto';
+import { CreateStoreOutput } from 'main/store/dtos/create-store.dto';
+
 
 const StorePage = () => {
-  const storeData = useRecoilValue(storesState)
+  const business = useRecoilValue(businessState)
+  const token = useRecoilValue(tokenState)
   const [stores, setStores] = useRecoilState(storesState);
-  // const [stores, setStores] = useState<Store[]>([]);
   const [name, setName] = useState<string>("");
   const [clicked, setClicked] = useState<boolean>(false);
   const [numberHasError, setNumberHasError] = useState<boolean>(false);
@@ -40,17 +41,12 @@ const StorePage = () => {
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-stores', {
-      token:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMiIsImlhdCI6MTY3NzU1OTE5OH0.z_h_BCDdrQcuRgLJ7oimI5E1mn65LjfzH-zBzJRHrC0',
+      token,
+      businessId: business.id,
     });
-    window.electron.ipcRenderer.on(
-      'get-stores',
-      (args: GetStoresOutput) => {
-        setStores(args.stores as Store[]);
-      }
-    );
-
-    console.log(storeData);
+    window.electron.ipcRenderer.on('get-stores', (args: GetStoresOutput) => {
+      setStores(args.stores as Store[]);
+    });
   }, []);
 
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
@@ -144,23 +140,30 @@ const StorePage = () => {
       setAddressHasError(true);
     } else {
       if (StoreName != '' && StoreNumber != 0 && Owner != '' && Address != '') {
-        const newData = {
+        const newData: Store = {
           name: StoreName,
           businessNumber: StoreNumber,
           owner: Owner,
           address: Address,
-          bills: [],
-          business: null,
-          businessId: null,
+          bills: null,
+          business: business,
+          businessId: business.id,
         };
 
-        window.electron.ipcRenderer.sendMessage('create-store', newData);
+        window.electron.ipcRenderer.sendMessage('create-store', {
+          ...newData,
+          token,
+          businessId: business.id
+        });
 
         window.electron.ipcRenderer.on(
           'create-store',
-          ({ ok, error }: GetStoresOutput) => {
+          ({ ok, error }: CreateStoreOutput) => {
             if (ok) {
-              window.electron.ipcRenderer.sendMessage('get-stores', {});
+              window.electron.ipcRenderer.sendMessage('get-stores', {
+                token,
+                businessId: business.id
+              });
               window.electron.ipcRenderer.on(
                 'get-stores',
                 (args: GetStoresOutput) => {
