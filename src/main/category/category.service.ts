@@ -1,4 +1,8 @@
 import {
+  UpdateCategoryInput,
+  UpdateCategoryOutput,
+} from './dtos/update-category.dto';
+import {
   GetCategoriesInput,
   GetCategoriesOutput,
 } from './dtos/get-categories.dto';
@@ -125,6 +129,22 @@ export class CategoryService {
         .getMany();
 
       return { ok: true, categories };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async updateCategory({
+    token,
+    businessId,
+    name,
+  }: UpdateCategoryInput): Promise<UpdateCategoryOutput> {
+    try {
+      await authService.checkBusinessAuth(token, businessId);
+
+      await this.categoryRepository.update({ id: businessId }, { name });
+
+      return { ok: true };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }

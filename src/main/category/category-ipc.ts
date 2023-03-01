@@ -1,3 +1,4 @@
+import { UpdateCategoryInput } from './dtos/update-category.dto';
 import { GetCategoriesInput } from './dtos/get-categories.dto';
 import { ipcMain } from 'electron';
 import { CreateCategoryInput } from './dtos/create-category.dto';
@@ -29,5 +30,14 @@ ipcMain.on(
     await authService.checkAuth(getCategoriesInput.token);
     const result = await categoryService.getCategories(getCategoriesInput);
     event.reply('get-categories', result);
+  }
+);
+
+ipcMain.on(
+  'update-category',
+  async (event, updateCategoryInput: UpdateCategoryInput) => {
+    await authService.checkAuth(updateCategoryInput.token);
+    const result = await categoryService.updateCategory(updateCategoryInput);
+    event.reply('update-category', result);
   }
 );
