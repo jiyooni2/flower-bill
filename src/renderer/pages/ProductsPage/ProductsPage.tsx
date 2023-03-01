@@ -18,7 +18,6 @@ const ProductsPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<number>(0);
   const [categoryId, setCategoryId] = useState<number>(0);
@@ -223,7 +222,6 @@ const ProductsPage = () => {
 
   return (
     <>
-      <CreateProductModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={styles.container}>
         <div className={styles.content}>
           <div>
