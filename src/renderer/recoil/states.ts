@@ -4,6 +4,7 @@ import { Product } from './../../main/product/entities/product.entity';
 import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 import { Category } from 'main/category/entities/category.entity';
 import { Business } from 'main/business/entities/business.entity';
+import { Bill } from 'main/bill/entities/bill.entity';
 
 const storeState = atom<Store>({
   key: 'storeState',
@@ -67,7 +68,7 @@ const businessState = atom<Business>({
     createdAt: new Date(),
     updatedAt: new Date(),
     name: '',
-    businessNumber: 0n,
+    businessNumber: 0,
     businessOwnerName: '',
     address: '',
     owner: null,
@@ -77,6 +78,11 @@ const businessState = atom<Business>({
 
 const businessesState = atom<Business[]>({
   key: 'businessesState',
+  default: [],
+});
+
+const billsState = atom<Bill[]>({
+  key: 'billsState',
   default: [],
 });
 
@@ -92,4 +98,5 @@ export {
   categoriesState,
   businessState,
   businessesState,
+  billsState,
 };
