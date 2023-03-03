@@ -51,7 +51,7 @@ const BusinessBar = () => {
                   className={styles.box}
                   onClick={() => clickHandler(business)}
                 >
-                  <span style={{ fontSize: '35px', color: 'black', marginTop: '2px'}}>{business.name.slice(0, 1)}</span>
+                  <span style={{ fontSize: '30px', color: 'black', marginTop: '2px'}}>{business.name.slice(0, 1)}</span>
                 </div>
               </div>
             ))}

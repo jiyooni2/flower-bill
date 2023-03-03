@@ -24,9 +24,10 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      width: 60px;
-      height: 60px;
+      width: 53px;
+      height: 53px;
       margin-top: 35px;
+      margin-left: 7px;
       cursor: pointer;
 
       & > img {
@@ -45,6 +46,7 @@
       width: 100%;
       height: 53px;
       margin-top: 35px;
+      margin-left: 2px;
       cursor: pointer;
     }
   }
