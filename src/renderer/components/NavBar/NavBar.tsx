@@ -23,7 +23,7 @@ const NavBar = () => {
       </div>
       <div>
         <p className={styles.menuTitle}>상품 관리</p>
-        <p className={styles.menu} onClick={() => navigate(ROUTES.USER)}>
+        <p className={styles.menu} onClick={() => navigate(ROUTES.PRODUCTS)}>
           상품 정보 관리
         </p>
         <p className={styles.menu} onClick={() => navigate(ROUTES.CATEGORY)}>
