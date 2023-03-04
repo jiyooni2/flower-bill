@@ -1,39 +1,41 @@
-import { ChangeEvent, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import styles from './BusinessPage.module.scss'
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Typography,
-} from '@mui/material';
-import { Business } from 'main/business/entities/business.entity';
-import { useRecoilState } from 'recoil';
-import { businessState } from 'renderer/recoil/states';
+import { Typography } from '@mui/material';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
 import PasswordConfirmModal from './components/ConfirmModal/PasswordConfirmModal';
-
-const BUSINESS: Business =
-  {
-    name: '이름',
-    businessNumber: 101010101n,
-    businessOwnerName: '오너이름',
-    address: '서울시 종로구',
-    owner: null,
-    ownerId: null,
-  };
+import { LoginOutput } from 'auth/dtos/login.dto';
+import { UpdateBusinessInput, UpdateBusinessOutPut } from 'main/business/dtos/update-busiess.dto';
+import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
+import { Business } from 'main/business/entities/business.entity';
 
 const BuisnessPage = () => {
-  // const [currentBusiness, setCurrentBusiness] = useRecoilState(businessState)
-  const [currentBusiness, setCurrentBusiness] = useState<Business>(BUSINESS);
-  const [businessNumber, setBusinessNumber] = useState<string>(currentBusiness.businessNumber.toString());
-  const [name, setName] = useState<string>(currentBusiness.name);
-  const [businessOwnerName, setBusinessOwnerName] = useState<string>(currentBusiness.businessOwnerName)
-  const [address, setAddress] = useState<string>(currentBusiness.address);
-  const [clicked, setClicked] = useState<boolean>(false);
+  const business = useRecoilValue(businessState);
+  const [businesses, setBusinesses] = useRecoilState(businessesState);
+  const token = useRecoilValue(tokenState);
+  const [loginInfo, setLoginInfo] = useState({});
+  const [businessNumber, setBusinessNumber] = useState<number>(
+    business.businessNumber
+  );
+  const [name, setName] = useState<string>(business.name);
+  const [businessOwnerName, setBusinessOwnerName] = useState<string>(
+    business.businessOwnerName
+  );
+  const [address, setAddress] = useState<string>(business.address);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    // window.electron.ipcRenderer.sendMessage('login', {
+    //   token,
+    //   businessId: business.id,
+    // });
+    // window.electron.ipcRenderer.on('login', (args: LoginOutput) => {
+    //   setLoginInfo(args.login as Store[]);
+    // });
+    console.log(businesses);
+  }, [businesses]);
+
 
   const deleteDataHandler = () => {
     if (window.confirm('정말 삭제하시겠습니까?')){
@@ -41,19 +43,48 @@ const BuisnessPage = () => {
     }
   };
 
-  console.log(currentBusiness)
-
   const updateDataHandler = () => {
-    currentBusiness['name'] = name;
-    currentBusiness['businessNumber'] = BigInt(businessNumber);
-    currentBusiness['businessOwnerName'] = businessOwnerName;
-    currentBusiness['address'] = address;
+    const newData: UpdateBusinessInput = {
+      businessNumber,
+      address,
+      name,
+      businessOwnerName,
+      token,
+      businessId: business.id
+    };
+
+    if (window.confirm('정말 수정하시겠습니까?')){
+      window.electron.ipcRenderer.sendMessage('update-business', {
+        ...newData,
+      });
+
+      window.electron.ipcRenderer.on(
+        'update-business',
+        ({ ok, error }: UpdateBusinessOutPut) => {
+          if (ok) {
+            window.electron.ipcRenderer.sendMessage('get-businesses', {
+              token,
+              businessId: business.id,
+            });
+            window.electron.ipcRenderer.on(
+              'get-businesses',
+              (args: GetBusinessesOutput) => {
+                setBusinesses(args.businesses as Business[]);
+              }
+            );
+          }
+          if (error) {
+            console.log(error);
+          }
+        }
+      );
+    }
   };
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>, dataName: string) => {
     const value = event.target.value;
 
-    if (dataName === 'number') setBusinessNumber(value);
+    if (dataName === 'number') setBusinessNumber(parseInt(value));
     else if (dataName === 'name') setName(value);
     else if (dataName === 'owner') setBusinessOwnerName(value);
     else if (dataName === 'address') setAddress(value);
@@ -61,7 +92,7 @@ const BuisnessPage = () => {
 
   return (
     <>
-      <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} purpose="enter" />
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles.infoContent}>
