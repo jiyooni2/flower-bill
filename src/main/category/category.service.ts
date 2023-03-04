@@ -122,11 +122,12 @@ export class CategoryService {
     try {
       await authService.checkBusinessAuth(token, businessId);
 
-      const categories = await this.categoryRepository
-        .createQueryBuilder()
-        .select()
-        .orderBy('category.id')
-        .getMany();
+      const categories = await this.categoryRepository.find({
+        relations: {
+          childCategories: true,
+          parentCategory: true,
+        },
+      });
 
       return { ok: true, categories };
     } catch (error: any) {
