@@ -8,9 +8,11 @@ import { businessState, businessesState, tokenState } from 'renderer/recoil/stat
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
+import StoreModal from './StoreModal/StoreModal';
 
 const BusinessBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [storeIsOpen, setStoreIsOpen] = useState<boolean>(false);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
   const [business, setBusiness] = useRecoilState(businessState)
   const token = useRecoilValue(tokenState);
@@ -37,10 +39,12 @@ const BusinessBar = () => {
 
   const clickHandler = (business: Business) => {
     setBusiness(business);
+    setStoreIsOpen(true);
   };
 
   return (
     <>
+      <StoreModal isOpen={storeIsOpen} setIsOpen={setStoreIsOpen} />
       <BusinessModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={styles.bar}>
         <div className={styles.container}>
@@ -51,7 +55,15 @@ const BusinessBar = () => {
                   className={styles.box}
                   onClick={() => clickHandler(business)}
                 >
-                  <span style={{ fontSize: '30px', color: 'black', marginTop: '2px'}}>{business.name.slice(0, 1)}</span>
+                  <span
+                    style={{
+                      fontSize: '30px',
+                      color: 'black',
+                      marginTop: '2px',
+                    }}
+                  >
+                    {business.name.slice(0, 1)}
+                  </span>
                 </div>
               </div>
             ))}
