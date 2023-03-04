@@ -1,13 +1,23 @@
 import { Button } from '@mui/material';
 // import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 import styles from './BillModal.module.scss';
-import { useRecoilValue } from 'recoil';
-import { businessState, memoState, orderProductsState, storeState, tokenState } from 'renderer/recoil/states';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  billState,
+  businessState,
+  memoState,
+  orderProductsState,
+  storeState,
+  tokenState,
+} from 'renderer/recoil/states';
 import Modal from './Modal';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CreateBillInput, CreateBillOutput } from 'main/bill/dtos/create-bill.dto';
 import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
-import { Printer } from 'react-thermal-printer';
+// import { Printer } from 'react-thermal-printer';
+import MemoModal from '../MemoModal/MemoModal';
+import { Bill } from 'main/bill/entities/bill.entity';
+import { GetStoreOutput } from 'main/store/dtos/get-store.dto';
 
 interface IProps {
   isOpen: boolean;
@@ -19,13 +29,16 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
   const orderProducts = useRecoilValue(orderProductsState);
   const memo = useRecoilValue(memoState);
-  const store = useRecoilValue(storeState);
+  const [store, setStore] = useRecoilState(storeState);
+  const [bill, setBill] = useRecoilState(billState);
+  const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
   const printRef = useRef();
 
 
   const handleClick = async () => {
     setIsOpen(false);
     const orderProductInputs = orderProducts.map((orderProduct) => ({
+      key: orderProduct.id,
       count: orderProduct.count,
       productId: orderProduct.product.id,
       orderPrice: orderProduct.orderPrice,
@@ -39,16 +52,24 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
       orderProductInputs,
     };
 
-    window.electron.ipcRenderer.sendMessage('create-bill', {
-      ...newBill,
-    });
+    window.electron.ipcRenderer.sendMessage('create-bill', newBill);
     window.electron.ipcRenderer.on(
       'create-bill',
-      ({ ok, error, bill }: GetBillOutput) => {
+      ({ ok, error }: CreateBillOutput) => {
         if (ok) {
-          console.log(bill)
-        } else if (error) {
-          console.log(error);
+          window.electron.ipcRenderer.sendMessage('get-bill', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-bill',
+            (args: GetBillOutput) => {
+              setBill(args.bill as Bill);
+            }
+          );
+        }
+        if (error) {
+          window.alert(error);
         }
       }
     );
@@ -65,8 +86,10 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const day = date.getDate()
 
   return (
-    <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <div ref={printRef} style={{ height: '375px' }}>
+    <>
+      <MemoModal isOpen={isMemoOpen} setIsOpen={setIsMemoOpen} />
+      <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
+        <div ref={printRef} style={{ height: '430px' }}>
           <table
             style={{ width: '100%', border: '0' }}
             cellPadding="0"
@@ -92,7 +115,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             <tr>
               <td style={{ width: '45%' }}>
                 <span style={{ fontSize: '10px', fontWeight: '400' }}>
-                  {' '}
                   (공급받는자용)
                 </span>
               </td>
@@ -184,9 +206,9 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               <th>단가</th>
               <th>금액</th>
             </tr>
-            {orderProducts.map((orderProduct) => {
+            {orderProducts.map((orderProduct, index) => {
               return (
-                <tr key={orderProduct.id}>
+                <tr key={index}>
                   <td className={styles.item}>{`${month} / ${day}`}</td>
                   <td className={styles.item}>{orderProduct.product.name}</td>
                   <td className={styles.article}>{orderProduct.count}</td>
@@ -203,23 +225,31 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             </td>
           </div>
         </div>
-      <div>
-        <Button
-          variant="contained"
-          onClick={handleClick}
-          style={{
-            height: '30px',
-            width: '90px',
-            float: 'right',
-            display: 'flex',
-            bottom: '-10px',
-            right: 0,
-          }}
-        >
-          발행하기
-        </Button>
-      </div>
-    </Modal>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button
+            onClick={() => setIsMemoOpen(true)}
+            style={{
+              height: '30px',
+              width: '100px',
+              left: 0,
+            }}
+          >
+            메모 추가하기
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleClick}
+            style={{
+              height: '30px',
+              width: '90px',
+              right: 0,
+            }}
+          >
+            발행하기
+          </Button>
+        </div>
+      </Modal>
+    </>
   );
 };
 

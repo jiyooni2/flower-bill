@@ -17,6 +17,7 @@ import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 // import DiscountModal from './components/DiscountModal/DiscountModal';
 import BillModal from './components/BillModal/BillModal';
+import DiscountModal from './components/DiscountModal/DiscountModal';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -74,7 +75,7 @@ const BillPage = () => {
 
   return (
     <>
-      {/* <DiscountModal isOpen={isDiscountOpen} setIsOpen={setIsDiscountOpen} /> */}
+      <DiscountModal isOpen={isDiscountOpen} setIsOpen={setIsDiscountOpen} />
       <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
       <StoreSearchModal
         isOpen={isSearchStoreOpen}

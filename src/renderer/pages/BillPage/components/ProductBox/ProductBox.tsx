@@ -1,7 +1,7 @@
 import { Product } from 'main/product/entities/product.entity';
 import styles from './ProductBox.module.scss';
-import { useRecoilState } from 'recoil';
-import { orderProductsState } from 'renderer/recoil/states';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { businessState, orderProductsState } from 'renderer/recoil/states';
 import { Typography } from '@mui/material';
 
 interface IProps {
@@ -10,6 +10,7 @@ interface IProps {
 
 const ProductBox = ({ product }: IProps) => {
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
+  const business = useRecoilValue(businessState)
 
   const onProductClick = () => {
     const orderProduct = orderProducts.find(
@@ -23,6 +24,8 @@ const ProductBox = ({ product }: IProps) => {
     setOrderProducts((prev) => [
       ...prev,
       {
+        business: business,
+        businessId: business.id,
         product,
         count: 1,
         orderPrice: product.price,
