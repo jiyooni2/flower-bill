@@ -81,9 +81,8 @@ const businessesState = atom<Business[]>({
   default: [],
 });
 
-const billsState = atom<Bill[]>({
+const billState = atom<Bill>({
   key: 'billsState',
-  default: [],
 });
 
 export {
@@ -98,5 +97,5 @@ export {
   categoriesState,
   businessState,
   businessesState,
-  billsState,
+  billState,
 };
