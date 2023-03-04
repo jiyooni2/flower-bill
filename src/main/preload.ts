@@ -34,6 +34,7 @@ export type Channels =
   | 'update-business'
   | 'delete-business'
   | 'get-businesses'
+  | 'check-password'
   | 'login';
 
 contextBridge.exposeInMainWorld('electron', {

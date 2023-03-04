@@ -1,3 +1,4 @@
+import { CheckPasswordInput } from './../../auth/dtos/check-password.dto';
 import { ipcMain } from 'electron';
 import { ownerService } from '../main';
 import { CreateOwnerInput } from './dtos/create-owner.dto';
@@ -26,3 +27,12 @@ ipcMain.on('login', async (event, loginInput: LoginInput) => {
   const result = await authService.login(loginInput);
   event.reply('login', result);
 });
+
+ipcMain.on(
+  'check-password',
+  async (event, checkPasswordInput: CheckPasswordInput) => {
+    await authService.checkAuth(checkPasswordInput.token);
+    const result = await authService.checkPassword(checkPasswordInput);
+    event.reply('check-password', result);
+  }
+);

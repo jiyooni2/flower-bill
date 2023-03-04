@@ -1,3 +1,7 @@
+import {
+  CheckPasswordInput,
+  CheckPasswordOutput,
+} from './dtos/check-password.dto';
 import { AppDataSource } from './../main/main';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import * as jwt from 'jsonwebtoken';
@@ -30,6 +34,29 @@ export class AuthService {
 
       console.log(token);
       return { ok: true, token };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async checkPassword({
+    token,
+    password,
+  }: CheckPasswordInput): Promise<CheckPasswordOutput> {
+    try {
+      const owner = await this.getAuthOwner(token);
+
+      if (!owner) {
+        return { ok: false, error: '로그인 상태를 확인해주세요' };
+      }
+
+      const isMatched = await bcrypt.compare(password, owner.password);
+
+      if (!isMatched) {
+        return { ok: false, error: '비밀번호가 일치하지 않습니다.' };
+      }
+
+      return { ok: true };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }
