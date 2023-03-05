@@ -15,6 +15,7 @@ import { businessState, storesState, tokenState } from 'renderer/recoil/states';
 import { Store } from 'main/store/entities/store.entity';
 import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
 import { CreateStoreOutput } from 'main/store/dtos/create-store.dto';
+import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 
 
 const StorePage = () => {
@@ -50,18 +51,28 @@ const StorePage = () => {
   }, []);
 
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
-    const keyword = e.target.value;
+    setName(e.target.value);
+  };
 
-    if (keyword !== '') {
-      const results = stores.filter((store) => {
-        return store.name.toLowerCase().startsWith(keyword.toLowerCase());
+  const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Enter' && event.nativeEvent.isComposing === false) {
+      window.electron.ipcRenderer.sendMessage('search-store', {
+        keyword: name,
+        businessId: business.id,
+        token,
       });
-      setStores(results);
-    } else {
-      setStores(stores);
-    }
 
-    setName(keyword);
+      window.electron.ipcRenderer.on(
+        'search-store',
+        ({ ok, error, stores }: SearchStoreOutput) => {
+          if (ok) {
+            setStores(stores);
+          } else {
+            alert(error);
+          }
+        }
+      );
+    }
   };
 
 
@@ -210,13 +221,9 @@ const StorePage = () => {
             value={name}
             onChange={filter}
             placeholder="판매처 검색"
+            onKeyDown={keyHandler}
             className={styles.searchInput}
           />
-          <Button
-            sx={{ color: 'black', marginLeft: '-3rem', paddingTop: '25px' }}
-          >
-            검색
-          </Button>
           <div className={styles.userList}>
             <div>
               <TableContainer sx={{ width: '100%' }}>
@@ -331,7 +338,7 @@ const StorePage = () => {
                 marginTop: '20px',
               }}
             >
-              판매자 정보
+              판매처 정보
             </Typography>
             <button className={styles.clearInput} onClick={clearInputs}>
               비우기
@@ -404,7 +411,7 @@ const StorePage = () => {
                 </div>
               </div>
               <div className={styles.buttonList}>
-                {clickedStore.businessNumber > 0 ? (
+                {clicked ? (
                   <Button
                     variant="contained"
                     size="small"
@@ -417,7 +424,7 @@ const StorePage = () => {
                 ) : (
                   <div></div>
                 )}
-                {clickedStore ? (
+                {!clicked ? (
                   <Button
                     variant="contained"
                     size="small"
@@ -430,7 +437,7 @@ const StorePage = () => {
                   <Button
                     variant="contained"
                     size="small"
-                    sx={{ marginRight: '10px' }}
+                    sx={{ marginRight: '10px', backgroundColor: 'coral' }}
                     onClick={updateDataHandler}
                   >
                     수정
