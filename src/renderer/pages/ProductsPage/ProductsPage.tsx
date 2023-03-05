@@ -1,31 +1,31 @@
 import { useEffect, useState } from 'react';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import Button from '@mui/material/Button';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, productsState, tokenState } from 'renderer/recoil/states';
+import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
-import CreateProductModal from './components/CreateProductModal/CreateProductModal';
 import styles from './ProductsPage.module.scss';
 import { CreateProductInput, CreateProductOutput } from 'main/product/dtos/create-product.dto';
 import { DeleteProductOutput } from 'main/product/dtos/delete-product.dto';
 import { UpdateProductInput, UpdateProductOutput } from 'main/product/dtos/update-product.dto';
+import { Category } from 'main/category/entities/category.entity';
+import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
+import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 
 
 const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
+  const [categories, setCategories] = useRecoilState(categoriesState);
   const [products, setProducts] = useRecoilState(productsState);
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
+  const [id, setId] = useState<number>();
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<number>(0);
   const [categoryId, setCategoryId] = useState<number>(0);
-  const [clickedProduct, setClickedProduct] = useState({
-    name: '',
-    price: 0,
-    categoryId: 0,
-  });
+
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -38,31 +38,43 @@ const ProductsPage = () => {
         setProducts(args.products as Product[]);
       }
     );
+
+    window.electron.ipcRenderer.sendMessage('get-categories', {
+      token,
+      businessId: business.id,
+    });
+    window.electron.ipcRenderer.on(
+      'get-categories',
+      (args: GetCategoriesOutput) => {
+        setCategories(args.categories as Category[]);
+      }
+    );
   }, []);
 
 
   const filter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const word = e.target.value;
+    setKeyword(e.target.value);
+  };
 
-    if (keyword !== '') {
-      const results = products.filter((product) => {
-        return product.name.startsWith(word);
-      });
-      setProducts(results);
-    } else {
-      window.electron.ipcRenderer.sendMessage('get-products', {
-        token,
+  const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Enter' && event.nativeEvent.isComposing === false) {
+      window.electron.ipcRenderer.sendMessage('search-product', {
+        keyword: name,
         businessId: business.id,
+        token,
       });
+
       window.electron.ipcRenderer.on(
-        'get-products',
-        (args: GetProductsOutput) => {
-          setProducts(args.products as Product[]);
+        'search-product',
+        ({ ok, error, products }: SearchProductOutput) => {
+          if (ok) {
+            setProducts(products);
+          } else {
+            alert(error);
+          }
         }
       );
     }
-
-    setKeyword(word);
   };
 
   const changeDataHandler = (
@@ -73,14 +85,10 @@ const ProductsPage = () => {
 
     products.forEach((item) => {
       if (item.name === data.name) {
+        setId(item.id)
         setName(item.name);
         setPrice(item.price);
         setCategoryId(item.categoryId);
-        setClickedProduct({
-          name: item.name,
-          price: item.price,
-          categoryId: item.categoryId,
-        });
       }
     });
   };
@@ -94,7 +102,7 @@ const ProductsPage = () => {
 
     window.electron.ipcRenderer.on(
       'delete-product',
-      ({ ok, error }: DeleteProduct) => {
+      ({ ok, error }: DeleteProductOutput) => {
         if (ok) {
           window.electron.ipcRenderer.sendMessage('get-products', {
             token,
@@ -116,7 +124,7 @@ const ProductsPage = () => {
 
   const updateDataHandler = () => {
     const newData: UpdateProductInput = {
-      id: products.length + 1,
+      id,
       name,
       price,
       categoryId,
@@ -124,9 +132,7 @@ const ProductsPage = () => {
       businessId: business.id
     };
 
-      window.electron.ipcRenderer.sendMessage('update-product', {
-        ...newData,
-      });
+      window.electron.ipcRenderer.sendMessage('update-product', newData);
 
       window.electron.ipcRenderer.on(
         'update-product',
@@ -161,7 +167,7 @@ const ProductsPage = () => {
     } else if (dataName === 'price') {
       setPrice(parseInt(value));
     } else if (dataName === 'categoryId') {
-      setCategoryId(parseInt(value));
+      setCategoryId(Number(value));
     }
   };
 
@@ -171,13 +177,6 @@ const ProductsPage = () => {
     setName('')
     setPrice(0)
     setCategoryId(0)
-    setClickedProduct(
-      {
-        name: '',
-        price: 0,
-        categoryId: 0,
-      },
-    );
   };
 
 
@@ -220,6 +219,18 @@ const ProductsPage = () => {
   };
 
 
+  const idToName = (categoryId: number) => {
+    const idx = categories.findIndex((item) => item.id === categoryId)
+    if (categoryId != 0){
+      try {
+        if (categories[idx].name != '') return categories[idx].name;
+      } catch {
+        return ''
+      }
+    }
+    else return null
+  };
+
   return (
     <>
       <div className={styles.container}>
@@ -229,14 +240,10 @@ const ProductsPage = () => {
               type="search"
               value={keyword}
               onChange={filter}
-              placeholder="판매처 검색"
+              placeholder="상품 검색"
               className={styles.searchInput}
+              onKeyDown={keyHandler}
             />
-            <Button
-              sx={{ color: 'black', marginLeft: '-3rem', paddingTop: '25px' }}
-            >
-              검색
-            </Button>
             <div className={styles.userList}>
               <div>
                 <TableContainer sx={{ width: '100%' }}>
@@ -277,7 +284,7 @@ const ProductsPage = () => {
                           align="left"
                           sx={{ width: '35%' }}
                         >
-                          분류번호
+                          카테고리
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -351,7 +358,7 @@ const ProductsPage = () => {
                   marginTop: '20px',
                 }}
               >
-                판매자 정보
+                상품 정보
               </Typography>
               <button className={styles.clearInput} onClick={clearInputs}>
                 비우기
@@ -379,15 +386,25 @@ const ProductsPage = () => {
                         }
                       />
                     </div>
-                    <div className={styles.item}>
-                      <p className={styles.labels}>카테고리 번호</p>
+                    <div className={styles.categoryItem}>
+                      <p className={styles.labels}>카테고리</p>
                       <input
                         value={categoryId}
-                        className={styles.dataInput}
+                        className={styles.shortInput}
                         onChange={(event) =>
                           changeStoreDataHandler(event, 'categoryId')
                         }
                       />
+                      <span
+                        style={{
+                          width: '55px',
+                          color: 'darkslategrey',
+                          fontWeight: '450',
+                        }}
+                        className={styles.cutText}
+                      >
+                        {idToName(categoryId)}
+                      </span>
                     </div>
                   </div>
                 </div>
