@@ -16,8 +16,8 @@ import OrderProductBox from './components/OrderProductBox/OrderProductBox';
 import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 // import DiscountModal from './components/DiscountModal/DiscountModal';
-import BillModal from './components/BillModal/BillModal';
 import DiscountModal from './components/DiscountModal/DiscountModal';
+import BillModal from './components/BillModal/BillModal';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -28,8 +28,6 @@ const BillPage = () => {
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-
-  // console.log(orderProducts);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -67,6 +65,7 @@ const BillPage = () => {
 
   const billClickHandler = () => {
     setIsBillOpen(true);
+    // setIsSearchStoreOpen(true);
   };
 
   const discountClickHandler = () => {
@@ -101,7 +100,7 @@ const BillPage = () => {
               </TableRow>
             </TableHead>
           </Table>
-          <div style={{ display: 'flex', flexDirection: 'column'}}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div className={styles.orderProducts_list}>
               {orderProducts
                 .slice((page - 1) * 4, page * 4)
@@ -116,7 +115,7 @@ const BillPage = () => {
               style={{
                 display: 'flex',
                 justifyContent: 'center',
-                height: '100px'
+                height: '100px',
               }}
             >
               <Pagination

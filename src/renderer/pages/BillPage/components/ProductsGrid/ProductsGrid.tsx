@@ -7,6 +7,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, categoriesState, categoryState, productsState, tokenState } from 'renderer/recoil/states';
 import { Category } from 'main/category/entities/category.entity';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
+import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 
 
 const ProductsGrid = () => {
@@ -66,20 +67,28 @@ const ProductsGrid = () => {
   };
 
   const searchFilterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const keyword = e.target.value;
+    setSearchWord(e.target.value);
+  }
 
-    if (keyword !== '') {
-      const results = products.filter((product) => {
-        return product.name
-          .toLowerCase()
-          .startsWith(keyword.toLowerCase());
-      });
-      setProducts(results);
-    } else {
-      setProducts(products);
-    }
+  const searchHandler = () => {
+    window.electron.ipcRenderer.sendMessage('search-product', {
+      searchWord,
+      token,
+      businessId: business.id,
+      page: 1,
+    });
 
-    setSearchWord(keyword);
+    window.electron.ipcRenderer.on(
+      'search-product',
+      ({ ok, error, products }: SearchProductOutput) => {
+        if (ok) {
+          setProducts(products);
+        } else {
+          console.log(error)
+          alert(error);
+        }
+      }
+    );
   };
 
   return (
@@ -91,6 +100,9 @@ const ProductsGrid = () => {
           style={{
             margin: '20px',
             float: 'right',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'right'
           }}
         >
           <input
@@ -100,8 +112,8 @@ const ProductsGrid = () => {
             value={searchWord}
             onChange={searchFilterHandler}
           />
+          <Button size='small' sx={{ height: '35px', width: '70px', marginTop: '25px', right: 0}} onClick={searchHandler}>검색</Button>
         </div>
-
         <Box sx={{ width: '95%', display: 'flex', justifyContent: 'center', margin: '0 auto' }}>
           <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
             <InputLabel>대분류</InputLabel>

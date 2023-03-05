@@ -23,15 +23,22 @@ const MemoModal = ({ isOpen, setIsOpen }: IProps) => {
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <TextField
-        placeholder="메모를 입력하세요."
-        multiline
-        minRows={8}
-        className={styles.memo}
-        value={memo}
-        onChange={handleChange}
-      />
-      <Button variant="contained" onClick={handleClick} className={styles.okbutton}>
+      <div style={{ height: '90%'}}>
+        <TextField
+          placeholder="메모를 입력하세요."
+          multiline
+          minRows={8}
+          className={styles.memo}
+          value={memo}
+          onChange={handleChange}
+        />
+      </div>
+      <Button
+        variant="contained"
+        onClick={handleClick}
+        className={styles.okbutton}
+        sx={{ width: '80px'}}
+      >
         확인
       </Button>
     </Modal>
