@@ -302,7 +302,7 @@ const CategoryPage = () => {
             defaultCollapseIcon={<ExpandMore />}
             defaultExpandIcon={<ChevronRight />}
             sx={{
-              height: '540px',
+              height: '530px',
               flexGrow: 1,
               maxWidth: 400,
               overflow: 'auto',
