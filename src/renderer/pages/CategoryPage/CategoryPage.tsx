@@ -82,6 +82,7 @@ const CategoryPage = () => {
       }
     } else if (name === 'item') {
       setClicked(true);
+      console.log(item)
 
       if (item.level === 1) {
         setLevelName('대분류');
@@ -146,40 +147,40 @@ const CategoryPage = () => {
     setParentCategoryName('');
   };
 
-  const updateDataHandler = () => {
-    const newData: UpdateCategoryInput = {
-      name: categoryName,
-      token,
-      businessId: business.id,
-    };
+  // const updateDataHandler = () => {
+  //   const newData: UpdateCategoryInput = {
+  //     name: categoryName,
+  //     token,
+  //     businessId: business.id,
+  //   };
 
-    window.electron.ipcRenderer.sendMessage('update-category', {
-      ...newData,
-    });
-    window.electron.ipcRenderer.on(
-      'update-category',
-      ({ ok, error }: UpdateCategoryOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-categories', {
-            token,
-            business: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-categories',
-            ({ ok, error, categories }: GetCategoriesOutput) => {
-              if (ok) {
-                setCategories(categories);
-              } else if (error) {
-                window.alert(error);
-              }
-            }
-          );
-        } else if (error) {
-          console.log(error);
-        }
-      }
-    );
-  };
+  //   window.electron.ipcRenderer.sendMessage('update-category', {
+  //     ...newData,
+  //   });
+  //   window.electron.ipcRenderer.on(
+  //     'update-category',
+  //     ({ ok, error }: UpdateCategoryOutput) => {
+  //       if (ok) {
+  //         window.electron.ipcRenderer.sendMessage('get-categories', {
+  //           token,
+  //           business: business.id,
+  //         });
+  //         window.electron.ipcRenderer.on(
+  //           'get-categories',
+  //           ({ ok, error, categories }: GetCategoriesOutput) => {
+  //             if (ok) {
+  //               setCategories(categories);
+  //             } else if (error) {
+  //               window.alert(error);
+  //             }
+  //           }
+  //         );
+  //       } else if (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   );
+  // };
 
   // const clickDeleteHandler = (nodes: Category) => {
   //   if ( window.confirm('정말 삭제하시겠습니까?') ){
@@ -269,7 +270,7 @@ const CategoryPage = () => {
           return renderTree(item);
         }
       })}
-      {nodes.childCategories
+      {!nodes.childCategories
         ? nodes.childCategories.map(() => addTree(nodes, true))
         : nodes.level < 4 ? addTree(nodes, false) : null}
     </TreeItem>
@@ -300,18 +301,17 @@ const CategoryPage = () => {
           <TreeView
             defaultCollapseIcon={<ExpandMore />}
             defaultExpandIcon={<ChevronRight />}
-            selected={[keyword]}
-            multiSelect
             sx={{
-              height: '85vh',
+              height: '540px',
               flexGrow: 1,
               maxWidth: 400,
-              padding: '20px',
+              overflow: 'auto',
+              padding: '20px'
             }}
           >
             {categories.map((item) => {
               if (item.level == 1) {
-                return renderTree(item)
+                return renderTree(item);
               }
             })}
             <TreeItem
@@ -388,7 +388,7 @@ const CategoryPage = () => {
                     variant="contained"
                     size="small"
                     sx={{ marginRight: '10px', backgroundColor: 'coral' }}
-                    onClick={updateDataHandler}
+                    // onClick={updateDataHandler}
                   >
                     수정
                   </Button>
