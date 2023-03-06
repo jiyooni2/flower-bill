@@ -1,3 +1,4 @@
+import { GetBillsInput } from './dtos/get-bills.dto';
 import { ipcMain } from 'electron';
 import { billService } from '../main';
 import { CreateBillInput } from './dtos/create-bill.dto';
@@ -39,3 +40,9 @@ ipcMain.on(
     event.reply('get-bill-by-store', result);
   }
 );
+
+ipcMain.on('get-bills', async (event, getBillsInput: GetBillsInput) => {
+  await authService.checkAuth(getBillsInput.token);
+  const result = await billService.getBills(getBillsInput);
+  event.reply('get-bills', result);
+});

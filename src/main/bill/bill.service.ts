@@ -1,3 +1,4 @@
+import { GetBillsInput, GetBillsOutput } from './dtos/get-bills.dto';
 import {
   AppDataSource,
   authService,
@@ -198,6 +199,29 @@ export class BillService {
         .createQueryBuilder()
         .select()
         .where('storeId=:storeId', { storeId: store.id })
+        .orderBy('bill.id')
+        .offset(page)
+        .limit(10)
+        .getMany();
+
+      return { ok: true, bills };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async getBills({
+    token,
+    businessId,
+    page,
+  }: GetBillsInput): Promise<GetBillsOutput> {
+    try {
+      await authService.checkBusinessAuth(token, businessId);
+
+      const bills = await this.billRepository
+        .createQueryBuilder()
+        .select()
+        .where('businessId=:businessId', { businessId })
         .orderBy('bill.id')
         .offset(page)
         .limit(10)
