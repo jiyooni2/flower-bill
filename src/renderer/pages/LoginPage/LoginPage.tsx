@@ -64,6 +64,7 @@ const LoginPage = () => {
               label="비밀번호"
               name="password"
               variant="filled"
+              type="password"
               onChange={handleChange}
               value={password}
             />
