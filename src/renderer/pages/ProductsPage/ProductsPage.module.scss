@@ -67,12 +67,44 @@
       margin-bottom: 30px;
     }
 
+    .lastItem {
+      justify-content: center;
+      display: flex;
+      align-items: center;
+    }
+
     .labels {
       width: 30%;
       font-size: 15px;
       margin-top: 2px;
     }
   }
+}
+
+.toCategory {
+  width: 30%;
+  font-size: 15px;
+  margin-top: 2px;
+  cursor: pointer;
+  text-decoration: underline;
+  color: midnightblue;
+  text-underline-position: under;
+
+  &:hover {
+    color: gray;
+  }
+}
+
+.option {
+  display: flex;
+  justify-content: center;
+  width: 30%;
+  height: 33px;
+  border-radius: 5px;
+  border: 1px solid darkgray;
+  opacity: 0.9;
+  padding-left: 8px;
+  font-size: 14px;
 }
 
 .categoryItem {

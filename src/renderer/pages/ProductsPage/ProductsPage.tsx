@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import Button from '@mui/material/Button';
-import { Box, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
@@ -95,31 +95,34 @@ const ProductsPage = () => {
 
   const deleteDataHandler = () => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
-    window.electron.ipcRenderer.sendMessage('delete-product', {
-      token,
-      businessId: business.id
-    });
+      window.electron.ipcRenderer.sendMessage('delete-product', {
+        id: id,
+        token,
+        businessId: business.id
+      });
 
-    window.electron.ipcRenderer.on(
-      'delete-product',
-      ({ ok, error }: DeleteProductOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-products', {
-            token,
-            businessId: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-products',
-            (args: GetProductsOutput) => {
-              setProducts(args.products as Product[]);
-            }
-          );
+      window.electron.ipcRenderer.on(
+        'delete-product',
+        ({ ok, error }: DeleteProductOutput) => {
+          if (ok) {
+            window.electron.ipcRenderer.sendMessage('get-products', {
+              token,
+              businessId: business.id,
+            });
+            window.electron.ipcRenderer.on(
+              'get-products',
+              (args: GetProductsOutput) => {
+                setProducts(args.products as Product[]);
+              }
+            );
+          }
+          if (error) {
+            window.alert(error);
+          }
         }
-        if (error) {
-          window.alert(error);
-        }
-      }
-    )}
+      )
+    }
+    clearInputs();
   };
 
   const updateDataHandler = () => {
@@ -181,7 +184,11 @@ const ProductsPage = () => {
 
 
   const addDataHandler = () => {
-    if (name != '' && price != 0 && categoryId != 0) {
+    if (name == '' || price == 0 || categoryId == 0) {
+      if (name == '') window.alert('상품명을 작성해주세요.');
+      else if (price == 0) window.alert('판매가를 작성해주세요.');
+    } else {
+      console.log(name, price, categoryId)
         const newData: CreateProductInput = {
           name,
           price,
@@ -190,9 +197,7 @@ const ProductsPage = () => {
           token
         };
 
-        window.electron.ipcRenderer.sendMessage('create-product', {
-          ...newData,
-        });
+        window.electron.ipcRenderer.sendMessage('create-product', newData);
 
         window.electron.ipcRenderer.on(
           'create-product',
@@ -204,8 +209,13 @@ const ProductsPage = () => {
               });
               window.electron.ipcRenderer.on(
                 'get-products',
-                (args: GetProductsOutput) => {
-                  setProducts(args.products as Product[]);
+                ({ ok, error, products }: GetProductsOutput) => {
+                  if (ok) {
+                    setProducts(products)
+                  }
+                  if (error) {
+                    window.alert(error);
+                  }
                 }
               );
             }
@@ -261,28 +271,24 @@ const ProductsPage = () => {
                         <TableCell
                           component="th"
                           align="left"
-                          sx={{ width: '10%' }}
                         >
                           ID
                         </TableCell>
                         <TableCell
                           component="th"
                           align="left"
-                          sx={{ width: '30%' }}
                         >
                           상품명
                         </TableCell>
                         <TableCell
                           component="th"
                           align="left"
-                          sx={{ width: '30%' }}
                         >
                           판매가
                         </TableCell>
                         <TableCell
                           component="th"
                           align="left"
-                          sx={{ width: '35%' }}
                         >
                           카테고리
                         </TableCell>
@@ -312,14 +318,14 @@ const ProductsPage = () => {
                             <TableCell
                               component="th"
                               align="left"
-                              sx={{ width: '30%' }}
+                              sx={{ width: '25%' }}
                             >
                               {item.name}
                             </TableCell>
                             <TableCell
                               component="th"
                               align="left"
-                              sx={{ width: '30%' }}
+                              sx={{ width: '28%' }}
                             >
                               ₩ {item.price}
                             </TableCell>
@@ -327,9 +333,20 @@ const ProductsPage = () => {
                               component="th"
                               align="left"
                               className={styles.cutText}
-                              sx={{ width: '35%' }}
+                              sx={{ width: '45%' }}
                             >
-                              {item.categoryId}
+                              {/* {item.categoryId} */}
+                              {categories.map((cat) => {
+                                if (cat.id === item.categoryId) {
+                                  if (cat.parentCategory.parentCategory) {
+                                    return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
+                                  } else if (cat.parentCategory) {
+                                    return `${cat.parentCategory.name}/${cat.name}`;
+                                  } else {
+                                    return cat.name
+                                  }
+                                }
+                              })}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -386,26 +403,29 @@ const ProductsPage = () => {
                         }
                       />
                     </div>
-                    <div className={styles.categoryItem}>
-                      <p className={styles.labels}>카테고리</p>
+                    <div className={styles.lastItem}>
+                      <p className={styles.labels}>카테고리 번호</p>
                       <input
                         value={categoryId}
-                        className={styles.shortInput}
+                        className={styles.dataInput}
                         onChange={(event) =>
                           changeStoreDataHandler(event, 'categoryId')
                         }
                       />
-                      <span
-                        style={{
-                          width: '55px',
-                          color: 'darkslategrey',
-                          fontWeight: '450',
-                        }}
-                        className={styles.cutText}
-                      >
-                        {idToName(categoryId)}
-                      </span>
                     </div>
+                    <span
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'left',
+                        marginTop: '15px',
+                        color: 'darkslategrey',
+                        fontWeight: '450',
+                        fontSize: '13px',
+                        marginLeft: '10%'
+                      }}
+                    >
+                      카테고리명: {idToName(categoryId)}
+                    </span>
                   </div>
                 </div>
                 <div className={styles.buttonList}>
