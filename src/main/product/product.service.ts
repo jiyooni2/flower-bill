@@ -160,7 +160,7 @@ export class ProductService {
         .createQueryBuilder()
         .select()
         .where(`name LIKE "%${keyword}%"`)
-        .andWhere(`businessId:=businessId`, { businessId })
+        .andWhere(`businessId=:businessId`, { businessId })
         .orderBy('product.id')
         .offset(page)
         .limit(10)
