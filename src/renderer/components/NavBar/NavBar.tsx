@@ -17,7 +17,7 @@ const NavBar = () => {
         <p className={styles.menu} onClick={() => navigate(ROUTES.BILL)}>
           계산서 생성
         </p>
-        <p className={styles.menu} onClick={() => navigate(ROUTES.BILL)}>
+        <p className={styles.menu} onClick={() => navigate(ROUTES.BILLS)}>
           계산서 목록
         </p>
       </div>
