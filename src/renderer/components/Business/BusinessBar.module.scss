@@ -1,16 +1,12 @@
 .bar {
   display: flex;
   flex-direction: column;
-
-  .settingsIcon {
-    background-color: #f1f1f1;
-  }
 }
 
 .container {
   padding: 30px;
   width: 120px;
-  height: 95vh;
+  height: 100vh;
   background-color: #f1f1f1;
 
   .content {

@@ -71,16 +71,6 @@ const BusinessBar = () => {
             </div>
           </div>
         </div>
-        <div className={styles.settingsIcon}>
-          <SettingsOutlinedIcon
-            sx={{
-              color: 'gray',
-              marginLeft: '13px',
-              marginBottom: '7px',
-              cursor: 'pointer',
-            }}
-          />
-        </div>
       </div>
     </>
   );
