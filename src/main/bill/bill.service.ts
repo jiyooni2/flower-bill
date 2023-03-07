@@ -65,8 +65,9 @@ export class BillService {
         const orderProduct = new OrderProduct();
         orderProduct.count = count;
         orderProduct.productId = productId;
-        orderProduct.bill = bill;
+        orderProduct.billId = bill.id;
         orderProduct.orderPrice = orderPrice;
+        orderProduct.businessId = businessId;
         orderProducts.push(orderProduct);
       }
 
