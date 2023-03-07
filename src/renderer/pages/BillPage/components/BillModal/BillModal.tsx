@@ -11,7 +11,7 @@ import Modal from './Modal';
 import { useRef, useState } from 'react';
 import {
   CreateBillInput,
-  CreateBillOutput,
+  // CreateBillOutput,
 } from 'main/bill/dtos/create-bill.dto';
 import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import { Button } from '@mui/material';
@@ -35,6 +35,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const handleClick = async () => {
     setIsOpen(false);
     const orderProductInputs = orderProducts.map((orderProduct) => ({
+      businessId: business.id,
       count: orderProduct.count,
       productId: orderProduct.product.id,
       orderPrice: orderProduct.orderPrice,
@@ -74,16 +75,20 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
 
   return (
     <>
-      <MemoModal isOpen={memoIsOpen} setIsOpen={setMemoIsOpen} />
+      <MemoModal
+        isOpen={memoIsOpen}
+        setIsOpen={setMemoIsOpen}
+        key={business.id}
+      />
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <div ref={printRef} style={{ height: '400px' }}>
+        <div ref={printRef} style={{ height: '410px' }}>
           <table
             style={{ width: '100%', border: '0' }}
             cellPadding="0"
             cellSpacing="0"
             className="title"
           >
-            <thead>
+            <tbody>
               <tr>
                 <td align="center">
                   <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
@@ -91,24 +96,26 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   </span>
                 </td>
               </tr>
-            </thead>
+            </tbody>
           </table>
           <table
-            style={{ width: '100%', border: '0' }}
+            style={{ width: '100%', border: '0', marginTop: '20px' }}
             cellPadding="0"
             cellSpacing="0"
             className={styles.ownerData}
           >
-            <tr>
-              <td style={{ width: '45%' }}>
-                <span style={{ fontSize: '10px', fontWeight: '400' }}>
-                  {' '}
-                  (공급받는자용)
-                </span>
-              </td>
-              <td className={styles.name}>{/* 구매자 */} 님</td>
-              <td className={styles.for}>&ensp;귀하</td>
-            </tr>
+            <tbody>
+              <tr>
+                <td style={{ width: '45%' }}>
+                  <span style={{ fontSize: '10px', fontWeight: '400' }}>
+                    {' '}
+                    (공급받는자용)
+                  </span>
+                </td>
+                <td className={styles.name}>{store.owner} 님</td>
+                <td className={styles.for}>&ensp;귀하</td>
+              </tr>
+            </tbody>
           </table>
           <table
             style={{ width: '100%' }}
@@ -116,52 +123,55 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             cellSpacing="0"
             className={styles.tbl}
           >
-            <tr>
-              <td
-                style={{ width: '7%' }}
-                rowSpan={5}
-                align="center"
-                className={styles.owner}
-              >
-                공 급 자
-              </td>
-              <th>
-                <span className={styles.number}>
+            <tbody>
+              <tr>
+                <td
+                  style={{ width: '8%' }}
+                  rowSpan={5}
+                  align="center"
+                  className={styles.owner}
+                >
+                  공 급 자
+                </td>
+                <th style={{ width: '22%' }}>
                   사업자
                   <br />
                   등록번호
-                </span>
-              </th>
-              <td colSpan={3} className={styles.businessNumberDiv}>
-                {business.businessNumber}
-              </td>
-            </tr>
-            <tr>
-              <th>상호</th>
-              <td style={{ width: '25%', fontSize: '15px' }} align="center">
-                {business.name}
-              </td>
-              <th style={{ width: '14%' }}>성명</th>
-              <td style={{ width: '20%', fontSize: '15px' }} align="center">
-                {business.businessOwnerName}
-              </td>
-            </tr>
-            <tr>
-              <th>
-                사업자
-                <br />
-                소재지
-              </th>
-              <td colSpan={3} style={{ fontSize: '15px', textAlign: 'center' }}>
-                {business.address}
-              </td>
-            </tr>
-            <tr>
-              <th>업태</th>
-              <td align="center">{/* 업태 */}</td>
-              <th>종목</th>
-              <td align="center">{/* 업종 */}</td>
-            </tr>
+                </th>
+                <td colSpan={3}>
+                  {business.businessNumber}
+                </td>
+              </tr>
+              <tr>
+                <th>상호</th>
+                <td style={{ width: '25%', fontSize: '15px' }} align="center">
+                  {store.name}
+                </td>
+                <th style={{ width: '14%' }}>성명</th>
+                <td style={{ width: '20%', fontSize: '15px' }} align="center">
+                  {store.owner}
+                </td>
+              </tr>
+              <tr>
+                <th>
+                  사업자
+                  <br />
+                  소재지
+                </th>
+                <td
+                  colSpan={3}
+                  style={{ fontSize: '15px', textAlign: 'center' }}
+                >
+                  {store.address}
+                </td>
+              </tr>
+              <tr>
+                <th>업태</th>
+                <td align="center">{/* 업태 */}</td>
+                <th>종목</th>
+                <td align="center">{/* 업종 */}</td>
+              </tr>
+            </tbody>
           </table>
           <table
             width="100%"
@@ -169,19 +179,21 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             cellPadding="0"
             className={styles.tbl}
           >
-            <tr>
-              <th>작성년월일</th>
-              <th>공급대가총액</th>
-              <th>비고</th>
-            </tr>
-            <tr>
-              <td className={styles.date}>{`${year} . ${month} . ${day}`}</td>
-              <td className={styles.total}>
-                <span style={{ fontWeight: 'bold' }}>₩</span>{' '}
-                {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              </td>
-              <td> </td>
-            </tr>
+            <tbody>
+              <tr>
+                <th>작성년월일</th>
+                <th>공급대가총액</th>
+                <th>비고</th>
+              </tr>
+              <tr>
+                <td className={styles.date}>{`${year} . ${month} . ${day}`}</td>
+                <td className={styles.total}>
+                  <span style={{ fontWeight: 'bold' }}>₩</span>{' '}
+                  {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                </td>
+                <td> </td>
+              </tr>
+            </tbody>
           </table>
           <table
             width="100%"
@@ -189,22 +201,28 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             cellPadding="0"
             className={styles.tbl}
           >
-            <tr>
-              <th>월일</th>
-              <th>품목</th>
-              <th>수량</th>
-              <th>단가</th>
-              <th>금액</th>
-            </tr>
+            <tbody>
+              <tr>
+                <th>월일</th>
+                <th>품목</th>
+                <th>수량</th>
+                <th>단가</th>
+                <th>금액</th>
+              </tr>
+            </tbody>
             {orderProducts.map((orderProduct) => {
               return (
-                <tr key={orderProduct.id}>
-                  <td className={styles.item}>{`${month} / ${day}`}</td>
-                  <td className={styles.item}>{orderProduct.product.name}</td>
-                  <td className={styles.article}>{orderProduct.count}</td>
-                  <td className={styles.price}>{orderProduct.product.price}</td>
-                  <td className={styles.sum}>{orderProduct.orderPrice}</td>
-                </tr>
+                <tbody key={orderProduct.productId}>
+                  <tr>
+                    <td className={styles.item}>{`${month} / ${day}`}</td>
+                    <td className={styles.item}>{orderProduct.product.name}</td>
+                    <td className={styles.article}>{orderProduct.count}</td>
+                    <td className={styles.price}>
+                      {orderProduct.product.price}
+                    </td>
+                    <td className={styles.sum}>{orderProduct.orderPrice}</td>
+                  </tr>
+                </tbody>
               );
             })}
           </table>
