@@ -85,6 +85,11 @@ const billState = atom<Bill>({
   key: 'billsState',
 });
 
+const billsState = atom<Bill[]>({
+  key: 'billsState',
+  default: [],
+})
+
 export {
   loginState,
   tokenState,
@@ -98,4 +103,5 @@ export {
   businessState,
   businessesState,
   billState,
+  billsState,
 };
