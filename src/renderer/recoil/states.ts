@@ -82,13 +82,34 @@ const businessesState = atom<Business[]>({
 });
 
 const billState = atom<Bill>({
-  key: 'billsState',
+  key: 'billState',
+  default: {
+    memo: '',
+    store: {
+      businessNumber: 0,
+      name: '',
+      owner: '',
+      bills: [],
+      business: null,
+      businessId: 0,
+    },
+    orderProducts: [],
+    business: {
+      name: '',
+      businessNumber: 0,
+      businessOwnerName: '',
+      address: '',
+      owner: null,
+      ownerId: 0,
+    },
+    businessId: 0,
+  },
 });
 
-const billsState = atom<Bill[]>({
-  key: 'billsState',
+const billListState = atom<Bill[]>({
+  key: 'billListState',
   default: [],
-})
+});
 
 export {
   loginState,
@@ -103,5 +124,5 @@ export {
   businessState,
   businessesState,
   billState,
-  billsState,
+  billListState,
 };
