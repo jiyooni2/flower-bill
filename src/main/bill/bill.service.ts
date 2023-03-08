@@ -94,7 +94,14 @@ export class BillService {
     try {
       await authService.checkBusinessAuth(token, businessId);
 
-      const bill = await this.billRepository.findOne({ where: { id } });
+      const bill = await this.billRepository.findOne({
+        where: { id },
+        relations: {
+          orderProducts: true,
+          store: true,
+          business: true,
+        },
+      });
 
       if (!bill) {
         return { ok: false, error: '존재하지 않는 계산서입니다.' };
@@ -220,13 +227,16 @@ export class BillService {
       await authService.checkBusinessAuth(token, businessId);
 
       const bills = await this.billRepository
-        .createQueryBuilder()
-        .select()
-        .where('businessId=:businessId', { businessId })
+        .createQueryBuilder('bill')
+        .leftJoinAndSelect('bill.store', 'store')
+        .leftJoinAndSelect('bill.business', 'business')
+        .where('bill.businessId=:businessId', { businessId })
         .orderBy('bill.id')
         .offset(page)
         .limit(10)
         .getMany();
+
+      console.log(bills);
 
       return { ok: true, bills };
     } catch (error: any) {
