@@ -1,12 +1,9 @@
-// import { Bill } from 'main/bill/entities/bill.entity';
-import styles from './DetailBillPage.module.scss';
-import { Button, Card, CardActionArea, CardContent, InputLabel, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BillPartPage from '../BillPart/BillPartPage';
 import { useRecoilValue } from 'recoil';
 import { billState } from 'renderer/recoil/states';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { Link } from 'react-router-dom';
-// import RealBillPage from './RealBillPage/RealBillPage';
 
 const DetailBillPage = () => {
   const bill = useRecoilValue(billState);
@@ -38,7 +35,7 @@ const DetailBillPage = () => {
           <div style={{ width: '7cm', margin: '1%' }}>
             <BillPartPage />
           </div>
-          <div style={{ width: '57%' }}>
+          <div style={{ width: '468px' }}>
             <div
               style={{
                 height: '100px',
