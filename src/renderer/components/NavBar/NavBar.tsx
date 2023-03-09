@@ -30,6 +30,7 @@ const NavBar = () => {
     );
 
     if (businesses.length == 0) setHasBusinesses(false);
+    else setHasBusinesses(true);
   }, []);
 
   return (
