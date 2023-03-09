@@ -22,8 +22,8 @@ const BillPartPage = () => {
 
   return (
     <>
-      <Paper style={{ width: '100%', height: '103%', padding: '9px', marginLeft: '10px' }}>
-        <div style={{ height: '500px', marginTop: '15px' }}>
+      <Paper style={{ width: '7.8cm', height: '103%', padding: '15px', marginLeft: '10px' }}>
+        <div style={{ width: '7cm', height: '490px', marginTop: '15px' }}>
           <table
             style={{ width: '100%', border: '0' }}
             cellPadding="0"
