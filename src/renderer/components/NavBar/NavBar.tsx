@@ -12,6 +12,8 @@ const NavBar = () => {
   const [businesses, setBusinesses] = useRecoilState(businessesState)
   const [hasBusinesses, setHasBusinesses] = useState<boolean>(false);
 
+  console.log(hasBusinesses)
+
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-businesses', {
       token,
@@ -23,7 +25,8 @@ const NavBar = () => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
-          setHasBusinesses(true);
+          if (businesses.length == 0) setHasBusinesses(false);
+          else setHasBusinesses(true);
         } else {
           console.error(error);
         }
@@ -41,15 +44,13 @@ const NavBar = () => {
         <p className={styles.menuTitle}>계산서</p>
         <p
           className={styles.menu}
-          onClick={() => navigate(ROUTES.BILL)}
-          aria-disabled={hasBusinesses}
+          onClick={() => (hasBusinesses ? navigate(ROUTES.BILL) : undefined)}
         >
           계산서 생성
         </p>
         <p
           className={styles.menu}
-          onClick={() => navigate(ROUTES.BILLS)}
-          aria-disabled={hasBusinesses}
+          onClick={() => (hasBusinesses ? navigate(ROUTES.BILLS) : undefined)}
         >
           계산서 목록
         </p>
@@ -58,15 +59,19 @@ const NavBar = () => {
         <p className={styles.menuTitle}>상품 관리</p>
         <p
           className={styles.menu}
-          onClick={() => navigate(ROUTES.PRODUCTS)}
-          aria-disabled={hasBusinesses}
+          onClick={() =>
+            hasBusinesses ? navigate(ROUTES.PRODUCTS) : undefined
+          }
         >
           상품 정보 관리
         </p>
         <p
           className={styles.menu}
-          onClick={() => navigate(ROUTES.CATEGORY)}
-          aria-disabled={hasBusinesses}
+          onClick={() => {
+            hasBusinesses && hasBusinesses
+              ? navigate(ROUTES.CATEGORY)
+              : undefined;
+          }}
         >
           카테고리 관리
         </p>
@@ -75,15 +80,13 @@ const NavBar = () => {
         <p className={styles.menuTitle}>사업 관리</p>
         <p
           className={styles.menu}
-          onClick={() => navigate(ROUTES.STORE)}
-          aria-disabled={hasBusinesses}
+          onClick={() => (hasBusinesses ? navigate(ROUTES.STORE) : undefined)}
         >
           판매처 관리
         </p>
         <p
           className={styles.menu}
-          onClick={() => navigate(ROUTES.SELLER)}
-          aria-disabled={hasBusinesses}
+          onClick={() => (hasBusinesses ? navigate(ROUTES.SELLER) : undefined)}
         >
           사업자 관리
         </p>
