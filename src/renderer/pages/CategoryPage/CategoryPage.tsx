@@ -6,18 +6,18 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, categoriesState, tokenState } from 'renderer/recoil/states';
 import { CreateCategoryInput, CreateCategoryOutput } from 'main/category/dtos/create-category.dto';
 import { Category } from 'main/category/entities/category.entity';
-import { ChevronRight, ExpandMore, AddRounded, Delete } from '@mui/icons-material';
+import { ChevronRight, ExpandMore, AddRounded } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Typography } from '@mui/material';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 // import { DeleteCategoryInput, DeleteCategoryOutput } from 'main/category/dtos/delete-category.dto';
-import { UpdateCategoryInput, UpdateCategoryOutput } from 'main/category/dtos/update-category.dto';
+// import { UpdateCategoryInput, UpdateCategoryOutput } from 'main/category/dtos/update-category.dto';
 
 
 const CategoryPage = () => {
   const [categories, setCategories] = useRecoilState(categoriesState);
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
-  const [keyword, setKeyWord] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
   const [categoryId, setCategoryId] = useState<number>(0);
   const [categoryName, setCategoryName] = useState<string>('');
@@ -43,19 +43,6 @@ const CategoryPage = () => {
       }
     );
   }, []);
-
-  const filter = (e: ChangeEvent<HTMLInputElement>) => {
-    // const word = e.target.value;
-    // if (word !== '') {
-    //   const results = categories.filter((item) => {
-    //     return item.name.toLowerCase().startsWith(word.toLowerCase());
-    //   });
-    //   setCategories(results);
-    // } else {
-    //   setCategories(categories);
-    // }
-    setKeyWord(e.target.value);
-  };
 
   const clickAddHandler = (item: Category, name: string) => {
     setCategoryId(0);
@@ -224,7 +211,7 @@ const CategoryPage = () => {
       <TreeItem
         label={<Typography sx={{ fontSize: '14px' }}>{text}</Typography>}
         key={item.name}
-        nodeId={`${item.name}${Math.random()}`}
+        nodeId={`add${item.name}`}
         icon={<AddRounded />}
         sx={{ marginTop: '15px' }}
         onClick={() => clickAddHandler(item, 'add')}
@@ -257,11 +244,6 @@ const CategoryPage = () => {
           <Typography sx={{ fontSize: '17px', fontWeight: '500' }}>
             {nodes.name}
           </Typography>
-          <Delete
-            id="del"
-            sx={{ fontSize: '14px', marginTop: '5px', color: 'crimson' }}
-            // onClick={() => clickDeleteHandler(nodes)}
-          />
         </div>
       }
       onClick={() => clickAddHandler(nodes, 'item')}
@@ -285,20 +267,7 @@ const CategoryPage = () => {
   return (
     <div className={styles.category}>
       <div className={styles.container}>
-        <div className={styles.search}>
-          <input
-            type="search"
-            value={keyword}
-            onChange={filter}
-            placeholder="카테고리 검색"
-            className={styles.searchInput}
-          />
-          <Button
-            sx={{ color: 'black', marginLeft: '-3rem', paddingTop: '31px' }}
-          >
-            검색
-          </Button>
-        </div>
+        <div className={styles.search}></div>
         <div className={styles.treeContainer}>
           <TreeView
             defaultCollapseIcon={<ExpandMore />}
@@ -352,7 +321,7 @@ const CategoryPage = () => {
                     <p className={styles.labels}>카테고리 번호</p>
                     <input
                       className={styles.dataInput}
-                      value={categoryId}
+                      defaultValue={categoryId}
                     />
                   </div>
                   <div className={styles.item}>
@@ -382,7 +351,18 @@ const CategoryPage = () => {
                 </div>
               </div>
               <div className={styles.buttonList}>
-                <div></div>
+                {clicked ? (
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{ marginLeft: '30px' }}
+                    color="error"
+                  >
+                    <DeleteIcon sx={{ fontSize: '23px'}} />
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
                 {!clicked ? (
                   <Button
                     variant="contained"
