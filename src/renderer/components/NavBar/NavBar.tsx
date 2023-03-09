@@ -36,11 +36,7 @@ const NavBar = () => {
     <nav className={styles.container}>
       <p
         className={styles.title}
-        onClick={() => {
-          hasBusinesses
-            ? navigate(ROUTES.HOME)
-            : window.alert('사업자 등록이 완료되어야 접속이 가능합니다.');
-        }}
+        onClick={() => navigate(ROUTES.HOME)}
       >
         Flower Bill
       </p>
