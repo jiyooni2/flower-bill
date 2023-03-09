@@ -2,16 +2,22 @@ import { GetBillsOutput } from "main/bill/dtos/get-bills.dto";
 import { Bill } from "main/bill/entities/bill.entity";
 import { Suspense, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { billsState, businessState, businessesState, storesState, tokenState } from "renderer/recoil/states";
+import { billListState, billState, businessState, businessesState, storesState, tokenState } from "renderer/recoil/states";
 import styles from './BillsPage.module.scss'
 import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
+import { GetBillOutput } from "main/bill/dtos/get-bill.dto";
+import DetailBillPage from "./DetailBillPage/DetailBillPage";
+import { Link } from "react-router-dom";
+import { BrowserWindow } from "electron";
 
 const BillsPage = () => {
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
   const businesses = useRecoilValue(businessesState)
   const stores = useRecoilValue(storesState)
-  const [bills, setBills] = useRecoilState(billsState)
+  const [bills, setBills] = useRecoilState(billListState)
+  const [currentBill, setCurrentBill] = useRecoilState(billState)
+  // const [isOpen, setIsOpen] = useState<boolean>(false);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
@@ -41,73 +47,85 @@ const BillsPage = () => {
     );
   }
 
-  const convertStore = (storeId: number) => {
-    stores.map((item) => {
-      if (item.id === storeId) {
-        console.log('Store', item)
-        return item
-      }
+  const detailHandler = (id: number) => {
+    window.electron.ipcRenderer.sendMessage('get-bill', {
+      token,
+      id,
+      businessId: business.id
     });
-  }
+
+    window.electron.ipcRenderer.on(
+      'get-bill',
+      ({ ok, error, bill }: GetBillOutput) => {
+        if (ok) {
+          setCurrentBill(bill);
+        } else {
+          alert(error);
+        }
+      }
+    );
+  };
 
   return (
-    <div className={styles.container}>
-      <div style={{ marginTop: '-1.5%', marginBottom: '25px' }}>
-        <input
-          type="search"
-          // value={name}
-          // onChange={filter}
-          placeholder="판매처 검색"
-          className={styles.searchInput}
-        />
+    <>
+      <div className={styles.container}>
+        <div style={{ marginTop: '-1.5%', marginBottom: '25px' }}>
+          <input
+            type="search"
+            // value={name}
+            // onChange={filter}
+            placeholder="판매처 검색"
+            className={styles.searchInput}
+          />
+        </div>
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+          <TableContainer sx={{ maxHeight: 440 }}>
+            <Table stickyHeader size="small" aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  <TableCell width={'10%'} />
+                  <TableCell>발행 날짜</TableCell>
+                  <TableCell>판매처</TableCell>
+                  <TableCell>구매처</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {bills.slice(page * 10, page * 10 + 10).map((bill) => {
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={bill.id}>
+                      <TableCell>
+                        <Link
+                          to={'/detail-bills'}
+                          style={{
+                            marginBottom: '-20px',
+                            fontSize: '13px',
+                            color: '#0971f1',
+                            fontWeight: '500',
+                          }}
+                          onClick={() => detailHandler(bill.id)}
+                        >
+                          자세히 보기
+                        </Link>
+                      </TableCell>
+                      <TableCell>{convertTime(bill.createdAt)}</TableCell>
+                      <TableCell>{bill.business.name}</TableCell>
+                      <TableCell>{bill.store.name}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={bills.length}
+            rowsPerPage={10}
+            page={page}
+            onPageChange={handleChangePage}
+          />
+        </Paper>
       </div>
-      {/* <div>
-        <Grid container sm={12}>
-          {bills.map((bill) => (
-            <Grid item key={bill.id} className={styles.content}>
-              {bill.memo}
-            </Grid>
-          ))}
-        </Grid>
-      </div> */}
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader size="small" aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <TableCell width={'10%'} />
-                <TableCell>발행 날짜</TableCell>
-                <TableCell>판매처</TableCell>
-                <TableCell>구매처</TableCell>
-                <TableCell>판매 상품 수</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bills.slice(page * 10, page * 10 + 10).map((bill) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={bill.id}>
-                    <TableCell>
-                      <Button sx={{ marginBottom: '-20px', fontSize: '13px'}}>자세히 보기</Button>
-                    </TableCell>
-                    <TableCell>{convertTime(bill.createdAt)}</TableCell>
-                    <TableCell>{bill.businessId}</TableCell>
-                    <TableCell>{bill.storeId}</TableCell>
-                    <TableCell>{console.log(bill.orderProducts)}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          component="div"
-          count={bills.length}
-          rowsPerPage={10}
-          page={page}
-          onPageChange={handleChangePage}
-        />
-      </Paper>
-    </div>
+    </>
   );
 }
 
