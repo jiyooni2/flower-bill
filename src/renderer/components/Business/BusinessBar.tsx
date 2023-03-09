@@ -32,10 +32,6 @@ const BusinessBar = () => {
         }
       }
     );
-
-    if (businesses.length == 0) {
-      setIsOpen(true);
-    }
   }, [])
 
   const clickHandler = (business: Business) => {
