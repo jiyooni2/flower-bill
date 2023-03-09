@@ -1,4 +1,4 @@
-import { CreateBusinessOutput } from 'main/business/dtos/create-business.dto';
+import { CreateBusinessInput, CreateBusinessOutput } from 'main/business/dtos/create-business.dto';
 import Modal from './Modal';
 import { Button, TextField, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -43,11 +43,9 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       window.alert('사업자를 생성할 수 없습니다.\n모든 입력 사항을 작성해주시기 바랍니다.')
     } else {
       if (window.confirm('정말 생성하시겠습니까?')){
-        console.log(newBusiness)
         window.electron.ipcRenderer.sendMessage('create-business', {
           ...newBusiness,
           token,
-          businessId: business.id,
         });
 
         window.electron.ipcRenderer.on(
@@ -64,6 +62,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
                   setBusinesses(args.businesses as Business[]);
                 }
               );
+              location.href = location.href;
             } else if (error) {
               console.log(error);
             }

@@ -23,22 +23,17 @@ const NavBar = () => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
+          setHasBusinesses(true);
         } else {
           console.error(error);
         }
       }
     );
-
-    if (businesses.length == 0) setHasBusinesses(false);
-    else setHasBusinesses(true);
   }, []);
 
   return (
     <nav className={styles.container}>
-      <p
-        className={styles.title}
-        onClick={() => navigate(ROUTES.HOME)}
-      >
+      <p className={styles.title} onClick={() => navigate(ROUTES.HOME)}>
         Flower Bill
       </p>
       <hr />
@@ -46,21 +41,15 @@ const NavBar = () => {
         <p className={styles.menuTitle}>계산서</p>
         <p
           className={styles.menu}
-          onClick={() => {
-            hasBusinesses
-              ? navigate(ROUTES.BILL)
-              : window.alert('사업자 등록이 완료되어야 접속이 가능합니다.');
-          }}
+          onClick={() => navigate(ROUTES.BILL)}
+          aria-disabled={hasBusinesses}
         >
           계산서 생성
         </p>
         <p
           className={styles.menu}
-          onClick={() => {
-            hasBusinesses
-              ? navigate(ROUTES.BILLS)
-              : window.alert('사업자 등록이 완료되어야 접속이 가능합니다.');
-          }}
+          onClick={() => navigate(ROUTES.BILLS)}
+          aria-disabled={hasBusinesses}
         >
           계산서 목록
         </p>
@@ -69,21 +58,15 @@ const NavBar = () => {
         <p className={styles.menuTitle}>상품 관리</p>
         <p
           className={styles.menu}
-          onClick={() => {
-            hasBusinesses
-              ? navigate(ROUTES.PRODUCTS)
-              : window.alert('사업자 등록이 완료되어야 접속이 가능합니다.');
-          }}
+          onClick={() => navigate(ROUTES.PRODUCTS)}
+          aria-disabled={hasBusinesses}
         >
           상품 정보 관리
         </p>
         <p
           className={styles.menu}
-          onClick={() => {
-            hasBusinesses
-              ? navigate(ROUTES.CATEGORY)
-              : window.alert('사업자 등록이 완료되어야 접속이 가능합니다.');
-          }}
+          onClick={() => navigate(ROUTES.CATEGORY)}
+          aria-disabled={hasBusinesses}
         >
           카테고리 관리
         </p>
@@ -92,21 +75,15 @@ const NavBar = () => {
         <p className={styles.menuTitle}>사업 관리</p>
         <p
           className={styles.menu}
-          onClick={() =>
-            hasBusinesses
-              ? navigate(ROUTES.STORE)
-              : window.alert('사업자 등록이 완료되어야 접속이 가능합니다.')
-          }
+          onClick={() => navigate(ROUTES.STORE)}
+          aria-disabled={hasBusinesses}
         >
           판매처 관리
         </p>
         <p
           className={styles.menu}
-          onClick={() => {
-            hasBusinesses
-              ? navigate(ROUTES.SELLER)
-              : window.alert('사업자 등록이 완료되어야 접속이 가능합니다.');
-          }}
+          onClick={() => navigate(ROUTES.SELLER)}
+          aria-disabled={hasBusinesses}
         >
           사업자 관리
         </p>
