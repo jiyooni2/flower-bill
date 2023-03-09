@@ -19,6 +19,7 @@ const CategoryPage = () => {
   const token = useRecoilValue(tokenState);
   const [keyword, setKeyWord] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
+  const [categoryId, setCategoryId] = useState<number>(0);
   const [categoryName, setCategoryName] = useState<string>('');
   const [levelName, setLevelName] = useState<string>('');
   const [parentCategoryName, setParentCategoryName] = useState<string>('');
@@ -57,6 +58,7 @@ const CategoryPage = () => {
   };
 
   const clickAddHandler = (item: Category, name: string) => {
+    setCategoryId(0);
     setCategoryName('');
     setLevelName('');
     setParentCategoryName('');
@@ -82,7 +84,6 @@ const CategoryPage = () => {
       }
     } else if (name === 'item') {
       setClicked(true);
-      console.log(item)
 
       if (item.level === 1) {
         setLevelName('대분류');
@@ -93,6 +94,7 @@ const CategoryPage = () => {
       }
 
       if (item) {
+        setCategoryId(item.id);
         categories.map(cat => {
           if (cat.id == item.parentCategoryId) {
             setParentCategoryName(cat.name)
@@ -306,7 +308,7 @@ const CategoryPage = () => {
               flexGrow: 1,
               maxWidth: 400,
               overflow: 'auto',
-              padding: '20px'
+              padding: '20px',
             }}
           >
             {categories.map((item) => {
@@ -346,6 +348,13 @@ const CategoryPage = () => {
             <div className={styles.list}>
               <div>
                 <div>
+                  <div className={styles.item}>
+                    <p className={styles.labels}>카테고리 번호</p>
+                    <input
+                      className={styles.dataInput}
+                      value={categoryId}
+                    />
+                  </div>
                   <div className={styles.item}>
                     <p className={styles.labels}>카테고리명</p>
                     <input
