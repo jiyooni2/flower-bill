@@ -11,7 +11,8 @@ import { DeleteProductOutput } from 'main/product/dtos/delete-product.dto';
 import { UpdateProductInput, UpdateProductOutput } from 'main/product/dtos/update-product.dto';
 import { Category } from 'main/category/entities/category.entity';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
+import CategoryModal from './CategoryModal/CategoryModal';
+import { SearchProductInput, SearchProductOutput } from 'main/product/dtos/search-product.dto';
 
 
 const ProductsPage = () => {
@@ -21,6 +22,7 @@ const ProductsPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [id, setId] = useState<number>();
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<number>(0);
@@ -54,28 +56,54 @@ const ProductsPage = () => {
 
   const filter = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
-  };
+  }
 
   const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter' && event.nativeEvent.isComposing === false) {
-      window.electron.ipcRenderer.sendMessage('search-product', {
-        keyword: name,
-        businessId: business.id,
-        token,
-      });
+      if (keyword != '') {
+        const searchData: SearchProductInput = {
+          token,
+          businessId: business.id,
+          keyword: keyword,
+          page: 0,
+        };
 
-      window.electron.ipcRenderer.on(
-        'search-product',
-        ({ ok, error, products }: SearchProductOutput) => {
-          if (ok) {
-            setProducts(products);
-          } else {
-            alert(error);
+        window.electron.ipcRenderer.sendMessage('search-product', searchData);
+        window.electron.ipcRenderer.on(
+          'search-product',
+          ({ ok, error, products }: SearchProductOutput) => {
+            if (ok) {
+              setProducts(products);
+            } else {
+              window.electron.ipcRenderer.sendMessage('get-products', {
+                token,
+                businessId: business.id,
+              });
+              window.electron.ipcRenderer.on(
+                'get-products',
+                (args: GetProductsOutput) => {
+                  setProducts(args.products as Product[]);
+                }
+              );
+              console.log(error);
+            }
           }
-        }
-      );
+        );
+      } else if (keyword == '') {
+        window.electron.ipcRenderer.sendMessage('get-products', {
+          token,
+          businessId: business.id,
+        });
+        window.electron.ipcRenderer.on(
+          'get-products',
+          (args: GetProductsOutput) => {
+            setProducts(args.products as Product[]);
+          }
+        );
+      }
     }
   };
+
 
   const changeDataHandler = (
     event: React.MouseEvent<unknown>,
@@ -228,21 +256,13 @@ const ProductsPage = () => {
       }
   };
 
-
-  const idToName = (categoryId: number) => {
-    const idx = categories.findIndex((item) => item.id === categoryId)
-    if (categoryId != 0){
-      try {
-        if (categories[idx].name != '') return categories[idx].name;
-      } catch {
-        return ''
-      }
-    }
-    else return null
-  };
+  const categoryClickHandler = () => {
+    setIsOpen(true);
+  }
 
   return (
     <>
+      <CategoryModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={styles.container}>
         <div className={styles.content}>
           <div>
@@ -268,28 +288,16 @@ const ProductsPage = () => {
                           },
                         }}
                       >
-                        <TableCell
-                          component="th"
-                          align="left"
-                        >
+                        <TableCell component="th" align="left">
                           ID
                         </TableCell>
-                        <TableCell
-                          component="th"
-                          align="left"
-                        >
+                        <TableCell component="th" align="left">
                           상품명
                         </TableCell>
-                        <TableCell
-                          component="th"
-                          align="left"
-                        >
+                        <TableCell component="th" align="left">
                           판매가
                         </TableCell>
-                        <TableCell
-                          component="th"
-                          align="left"
-                        >
+                        <TableCell component="th" align="left">
                           카테고리
                         </TableCell>
                       </TableRow>
@@ -343,7 +351,7 @@ const ProductsPage = () => {
                                   } else if (cat.parentCategory) {
                                     return `${cat.parentCategory.name}/${cat.name}`;
                                   } else {
-                                    return cat.name
+                                    return cat.name;
                                   }
                                 }
                               })}
@@ -404,7 +412,7 @@ const ProductsPage = () => {
                       />
                     </div>
                     <div className={styles.lastItem}>
-                      <p className={styles.labels}>카테고리 번호</p>
+                      <p className={styles.labels}>카테고리</p>
                       <input
                         value={categoryId}
                         className={styles.dataInput}
@@ -413,7 +421,15 @@ const ProductsPage = () => {
                         }
                       />
                     </div>
-                    <span
+                    <div style={{ display: 'flex', justifyContent: 'right', marginRight: '20%', marginTop: '10px'}}>
+                      <button
+                        className={styles.buttons}
+                        onClick={categoryClickHandler}
+                      >
+                        카테고리 보기
+                      </button>
+                    </div>
+                    {/* <span
                       style={{
                         display: 'flex',
                         justifyContent: 'left',
@@ -425,7 +441,7 @@ const ProductsPage = () => {
                       }}
                     >
                       카테고리명: {idToName(categoryId)}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
                 <div className={styles.buttonList}>

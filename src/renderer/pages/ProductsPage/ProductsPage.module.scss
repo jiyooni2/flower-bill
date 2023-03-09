@@ -81,6 +81,24 @@
   }
 }
 
+.buttons {
+  width: 38%;
+  height: 25px;
+  border-radius: 5px;
+  border: 1px solid darkgray;
+  opacity: 0.9;
+  padding-left: 8px;
+  font-size: 13px;
+  background-color: white;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(246, 246, 246);
+    font-weight: 450;
+    box-shadow: 0.5px 0.5px 1px 0 rgba(0, 0, 0, 0.2);
+  }
+}
+
 .toCategory {
   width: 30%;
   font-size: 15px;
