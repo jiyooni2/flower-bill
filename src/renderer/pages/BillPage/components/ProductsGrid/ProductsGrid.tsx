@@ -1,5 +1,5 @@
 import styles from './ProductsGrid.module.scss';
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, Typography } from '@mui/material';
 import ProductBox from '../ProductBox/ProductBox';
 import { useEffect, useState } from 'react';
 import MemoModal from '../MemoModal/MemoModal';
@@ -8,6 +8,8 @@ import { businessState, categoriesState, categoryState, productsState, tokenStat
 import { Category } from 'main/category/entities/category.entity';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
+import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
+import { GetProductByCategoryInput, GetProductByCategoryOutput } from 'main/product/dtos/get-product-by-category.dto';
 
 
 const ProductsGrid = () => {
@@ -17,8 +19,11 @@ const ProductsGrid = () => {
   const business = useRecoilValue(businessState)
   const [searchWord, setSearchWord] = useState('');
   const [page, setPage] = useState<number>(1);
-  const [mainCat, setMainCat] = useState<Category>();
-  const [subCat, setSubCat] = useState<Category>();
+  const [mainId, setMainId] = useState<number>(0);
+  const [mainName, setMainName] = useState<string>('');
+  const [subId, setSubId] = useState<number>(0);
+  const [subName, setSubName] = useState<string>('');
+  const [groupName, setGroupName] = useState<string>('');
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -47,45 +52,73 @@ const ProductsGrid = () => {
       ? Math.round(products.length / 9)
       : Math.floor(products.length / 9) + 1;
 
-
-  const handleClick = (data: Category, name: string) => {
-    if (name === 'main') setMainCat(data);
-    else if (name === 'subs') setSubCat(data);
-
-    // if (mainCat || subCat){
-    //   const results = products.filter((product) => {
-    //     if (
-    //       product.categoryId.toString() === mainCat?.id ||
-    //       product.categoryId.toString() === subCat?.id
-    //     )
-    //       return product;
-    //   });
-    //   setProducts(results);
-    // } else {
-    //   setProducts(products)
-    // }
-  };
-
   const searchFilterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
-  }
+    if (e.target.value == '') {
+      window.electron.ipcRenderer.sendMessage('get-products', {
+        token,
+        business: business.id,
+      });
+      window.electron.ipcRenderer.on(
+        'get-products',
+        ({ ok, error, products }: GetProductsOutput) => {
+          if (ok) {
+            setProducts(products);
+          } else if (error) {
+            window.alert(error);
+          }
+        }
+      );
+    } else {
+      window.electron.ipcRenderer.sendMessage('search-product', {
+        keyword: e.target.value,
+        page: 0,
+        token,
+        business: business.id,
+      });
+      window.electron.ipcRenderer.on(
+        'search-product',
+        ({ ok, error, products }: SearchProductOutput) => {
+          if (ok) {
+            setProducts(products);
+          } else if (error) {
+            window.alert(error);
+          }
+        }
+      );
+    }
+  };
 
-  const searchHandler = () => {
-    window.electron.ipcRenderer.sendMessage('search-product', {
-      searchWord,
+  const changeHandler = (e: SelectChangeEvent<unknown>, dataName: string) => {
+    if (dataName === 'main') setMainName(e.target.value as string);
+    else if (dataName === 'sub') setSubName(e.target.value as string);
+    else if (dataName === 'group') setGroupName(e.target.value as string);
+  };
+
+
+  const categoryChangeHandler = (id: number, dataName: string) => {
+    if (dataName === 'main') {
+      setMainId(id);
+      setGroupName('none');
+    } else if (dataName === 'sub'){
+      setSubId(id);
+    }
+
+    const data: GetProductByCategoryInput = {
       token,
       businessId: business.id,
-      page: 1,
-    });
+      categoryId: id,
+      page: page - 1,
+    };
 
+    window.electron.ipcRenderer.sendMessage('get-product-by-category', data);
     window.electron.ipcRenderer.on(
-      'search-product',
-      ({ ok, error, products }: SearchProductOutput) => {
+      'get-product-by-category',
+      ({ ok, error, products }: GetProductByCategoryOutput) => {
         if (ok) {
           setProducts(products);
-        } else {
-          console.log(error)
-          alert(error);
+        } else if (error) {
+          window.alert(error);
         }
       }
     );
@@ -102,7 +135,7 @@ const ProductsGrid = () => {
             float: 'right',
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'right'
+            justifyContent: 'right',
           }}
         >
           <input
@@ -112,75 +145,108 @@ const ProductsGrid = () => {
             value={searchWord}
             onChange={searchFilterHandler}
           />
-          <Button size='small' sx={{ height: '35px', width: '70px', marginTop: '25px', right: 0}} onClick={searchHandler}>검색</Button>
         </div>
-        <Box sx={{ width: '95%', display: 'flex', justifyContent: 'center', margin: '0 auto' }}>
-          <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
-            <InputLabel>대분류</InputLabel>
-            <Select label="대분류" defaultValue="">
-              {categories.map((item) => {
-                if (item.level === 1) {
-                  return (
-                    <MenuItem
-                      key={item.id}
-                      value={item.name}
-                      onClick={() => handleClick(item, 'main')}
-                    >
-                      {item.name}
-                    </MenuItem>
-                  );
-                }
-              })}
-            </Select>
-          </FormControl>
-          <FormControl size="small" sx={{ width: '30%', marginRight: '15px' }}>
-            <InputLabel>중분류</InputLabel>
-            <Select label="중분류" defaultValue="">
-              {mainCat &&
-                mainCat.childCategories.map((subs) => (
-                  <MenuItem
-                    key={subs.id}
-                    value={subs.name}
-                    onClick={() => handleClick(subs, 'subs')}
-                  >
-                    {subs.name}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-          <FormControl size="small" sx={{ width: '30%' }}>
-            <InputLabel>소분류</InputLabel>
-            <Select label="소분류" defaultValue="">
-              {/* {subCat ? (
-                subCat.childCategories.map((groups) => (
-                  <MenuItem
-                    key={groups.id}
-                    value={groups.name}
-                    onClick={() => handleClick(groups, 'groups')}
-                  >
-                    {groups.name}
-                  </MenuItem>
-                ))
-                ) : (
-                  <MenuItem
-                    // value={groups.name}
-                    // onClick={() => handleClick(groups, 'groups')}
-                  >
-                    {/* {groups.name}
-                  </MenuItem>
-                )
-              } */}
-            </Select>
-          </FormControl>
-        </Box>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            width: '100%',
+            gap: '27px',
+          }}
+        >
+          <Box sx={{ width: '27%' }}>
+            <FormControl fullWidth>
+              <InputLabel id="main">대분류</InputLabel>
+              <Select
+                labelId="main"
+                value={mainName}
+                label="대분류"
+                onChange={(event) => changeHandler(event, 'main')}
+                defaultValue={'none'}
+                className={styles.selects}
+              >
+                <MenuItem value={'none'}>---------------</MenuItem>
+                {categories.map((item) => {
+                  if (item.level === 1) {
+                    return (
+                      <MenuItem
+                        key={item.id}
+                        value={item.name}
+                        onClick={() => categoryChangeHandler(item.id, 'main')}
+                      >
+                        {item.name}
+                      </MenuItem>
+                    );
+                  }
+                })}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ width: '27%' }}>
+            <FormControl fullWidth>
+              <InputLabel id="sub">중분류</InputLabel>
+              <Select
+                labelId="sub"
+                value={subName}
+                label="중분류"
+                onChange={(event) => changeHandler(event, 'sub')}
+                defaultValue={'none'}
+                className={styles.selects}
+              >
+                <MenuItem value={'none'}>---------------</MenuItem>
+                {categories.map((item) => {
+                  if (item.level === 2 && item.parentCategoryId === mainId) {
+                    return (
+                      <MenuItem
+                        key={item.id}
+                        value={item.name}
+                        onClick={() => categoryChangeHandler(item.id, 'sub')}
+                      >
+                        {item.name}
+                      </MenuItem>
+                    );
+                  }
+                })}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ width: '27%' }}>
+            <FormControl fullWidth>
+              <InputLabel id="sub">소분류</InputLabel>
+              <Select
+                labelId="group"
+                value={groupName}
+                label="소분류"
+                onChange={(event) => changeHandler(event, 'group')}
+                defaultValue={'none'}
+                className={styles.selects}
+              >
+                <MenuItem value={'none'}>---------------</MenuItem>
+                {categories.map((item) => {
+                  if (item.level === 3 && item.parentCategoryId === subId) {
+                    return (
+                      <MenuItem
+                        key={item.id}
+                        value={item.name}
+                        onClick={() => categoryChangeHandler(item.id, 'group')}
+                      >
+                        {item.name}
+                      </MenuItem>
+                    );
+                  }
+                })}
+              </Select>
+            </FormControl>
+          </Box>
+        </div>
 
-        <div style={{ margin: '20px' }}>
+        <div style={{ margin: '20px', height: '300px' }}>
           {products ? (
             <Grid
               container
               spacing={{ xs: 1, md: 2 }}
               columns={{ xs: 4, sm: 8, md: 12 }}
-              sx={{ marginLeft: '5px', height: '300px', marginBottom: '30px' }}
+              sx={{ marginLeft: '5px', height: '200px', marginBottom: '30px' }}
             >
               {Array.from(products)
                 .slice((page - 1) * 9, page * 9)
