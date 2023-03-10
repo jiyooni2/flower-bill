@@ -7,6 +7,7 @@ import { useState } from 'react';
 import MiniModal from './MiniModal';
 import { useRecoilValue } from 'recoil';
 import { orderProductsState } from 'renderer/recoil/states';
+import TrendingFlatOutlinedIcon from '@mui/icons-material/TrendingFlatOutlined';
 
 interface IProps {
   isOpen: boolean;
@@ -63,8 +64,20 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
                     size="small"
                     sx={{ display: 'flex', flexDirection: 'row' }}
                   >
-                    <input className={styles.dataInput} />
-                    <span>%</span>
+                    <div style={{ marginLeft: '5px' }}>
+                      <input
+                        className={styles.dataInput}
+                        value={discount}
+                        onChange={handleChange}
+                      />
+                      <span style={{ marginTop: '4px', marginLeft: '5px' }}>
+                        원
+                      </span>
+                      <span style={{ marginLeft: '10px' }}>→</span>
+                      <span style={{ marginLeft: '10px' }}>
+                        {Number(discount) / item.product.price} %
+                      </span>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
