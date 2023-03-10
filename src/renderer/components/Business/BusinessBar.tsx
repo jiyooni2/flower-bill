@@ -26,7 +26,6 @@ const BusinessBar = () => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
-          setBusiness(businesses[0])
         } else {
           console.error(error);
         }
@@ -62,12 +61,12 @@ const BusinessBar = () => {
                 </div>
               </div>
             ))}
-            <div className={styles.addBusiness}>
-              <AddRoundedIcon
-                sx={{ width: '60%', height: '70%', color: '#73777B' }}
-                onClick={() => setIsOpen(true)}
-              />
-            </div>
+          </div>
+          <div className={styles.addBusiness}>
+            <AddRoundedIcon
+              sx={{ width: '60%', height: '70%', color: '#73777B', marginLeft: '13px', cursor: 'pointer', marginTop: '25px' }}
+              onClick={() => setIsOpen(true)}
+            />
           </div>
         </div>
       </div>

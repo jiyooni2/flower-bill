@@ -62,7 +62,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
                   setBusinesses(args.businesses as Business[]);
                 }
               );
-              location.href = location.href;
             } else if (error) {
               console.log(error);
             }
