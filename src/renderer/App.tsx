@@ -12,6 +12,7 @@ import BusinessPage from './pages/BusinessPage/BusinessPage';
 import ProductsPage from './pages/ProductsPage/ProductsPage';
 import BillsPage from './pages/BillsPage/BillsPage';
 import DetailBillPage from './pages/BillsPage/DetailPage/DetailBillPage';
+import UpdateBillPage from './pages/BillsPage/UpdateBillPage/UpdateBIllPage';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
             <Route path={ROUTES.BILL} element={<BillPage />} />
             <Route path={ROUTES.BILLS} element={<BillsPage />} />
             <Route path={ROUTES.DETAIL} element={<DetailBillPage />} />
+            <Route path={ROUTES.UPDATE} element={<UpdateBillPage />} />
             <Route path={ROUTES.STORE} element={<StorePage />} />
             <Route path={ROUTES.PRODUCTS} element={<ProductsPage />} />
             <Route path={ROUTES.SELLER} element={<BusinessPage />} />

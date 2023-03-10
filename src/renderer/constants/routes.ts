@@ -3,6 +3,7 @@ const ROUTES = {
   BILL: '/bill',
   BILLS: '/bills',
   DETAIL: '/detail-bills',
+  UPDATE: '/update-bills',
   STORE: '/store',
   PRODUCTS: '/products',
   SELLER: '/seller',
