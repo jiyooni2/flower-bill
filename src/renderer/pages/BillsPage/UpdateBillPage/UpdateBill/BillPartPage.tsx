@@ -89,8 +89,10 @@ const BillPartPage = () => {
                 </th>
                 <td colSpan={3}>
                   <span style={{ display: 'flex', justifyContent: 'center' }}>
-                    {bill.business.businessNumber}
-                  </span>
+                    {bill.business.businessNumber.toString().slice(0, 3)}-
+                    {bill.business.businessNumber.toString().slice(3, 5)}-
+                    {bill.business.businessNumber.toString().slice(5, 10)}
+                    </span>
                 </td>
               </tr>
               <tr>
@@ -169,9 +171,11 @@ const BillPartPage = () => {
                     <td className={styles.item}>{orderProduct.product.name}</td>
                     <td className={styles.article}>{orderProduct.count}</td>
                     <td className={styles.price}>
-                      {orderProduct.product.price}
+                      {orderProduct.product.price.toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     </td>
-                    <td className={styles.sum}>{orderProduct.orderPrice}</td>
+                    <td className={styles.sum}>{orderProduct.orderPrice.toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
                   </tr>
                 </tbody>
               );
