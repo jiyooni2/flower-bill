@@ -1,14 +1,9 @@
-import { useEffect } from 'react';
 import styles from './BillPartPage.module.scss';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { billState, businessState, productsState, tokenState} from 'renderer/recoil/states';
-import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
-import { Product } from 'main/product/entities/product.entity';
+import { useRecoilValue } from 'recoil';
+import { billState, businessState, tokenState} from 'renderer/recoil/states';
 import { Paper } from '@mui/material';
 
 const BillPartPage = () => {
-  const token = useRecoilValue(tokenState)
-  const business = useRecoilValue(businessState)
   const bill = useRecoilValue(billState);
 
   let sum = 0;
@@ -22,8 +17,8 @@ const BillPartPage = () => {
 
   return (
     <>
-      <Paper style={{ width: '7.8cm', height: '103%', padding: '15px', marginLeft: '10px' }}>
-        <div style={{ width: '7cm', height: '490px', marginTop: '15px' }}>
+      <Paper style={{ width: '7cm', height: '103%', padding: '15px', marginLeft: '10px' }}>
+        <div style={{ width: '6.2cm', height: '490px', marginTop: '15px' }}>
           <table
             style={{ width: '100%', border: '0' }}
             cellPadding="0"
@@ -155,15 +150,14 @@ const BillPartPage = () => {
               </tr>
             </tbody>
             {bill.orderProducts.map((orderProduct) => {
-              console.log(orderProduct);
               return (
                 <tbody key={orderProduct.productId}>
                   <tr>
                     <td className={styles.item}>{`${month} / ${day}`}</td>
-                    <td className={styles.item}>{}</td>
-                    <td className={styles.article}>{}</td>
-                    <td className={styles.price}>{}</td>
-                    <td className={styles.sum}>{}</td>
+                    <td className={styles.item}>{orderProduct.product.name}</td>
+                    <td className={styles.article}>{orderProduct.count}</td>
+                    <td className={styles.price}>{orderProduct.product.price}</td>
+                    <td className={styles.sum}>{orderProduct.orderPrice}</td>
                   </tr>
                 </tbody>
               );

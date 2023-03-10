@@ -1,23 +1,19 @@
 import { GetBillsOutput } from "main/bill/dtos/get-bills.dto";
 import { Bill } from "main/bill/entities/bill.entity";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { billListState, billState, businessState, businessesState, storesState, tokenState } from "renderer/recoil/states";
 import styles from './BillsPage.module.scss'
-import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
 import { GetBillOutput } from "main/bill/dtos/get-bill.dto";
-import DetailBillPage from "./DetailBillPage/DetailBillPage";
 import { Link } from "react-router-dom";
-import { BrowserWindow } from "electron";
+import SettingsSharpIcon from '@mui/icons-material/SettingsSharp';
 
 const BillsPage = () => {
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
-  const businesses = useRecoilValue(businessesState)
-  const stores = useRecoilValue(storesState)
   const [bills, setBills] = useRecoilState(billListState)
   const [currentBill, setCurrentBill] = useRecoilState(billState)
-  // const [isOpen, setIsOpen] = useState<boolean>(false);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
@@ -87,6 +83,7 @@ const BillsPage = () => {
                   <TableCell>발행 날짜</TableCell>
                   <TableCell>판매처</TableCell>
                   <TableCell>구매처</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -110,6 +107,15 @@ const BillsPage = () => {
                       <TableCell>{convertTime(bill.createdAt)}</TableCell>
                       <TableCell>{bill.business.name}</TableCell>
                       <TableCell>{bill.store.name}</TableCell>
+                      <TableCell>
+                        <Link to={'/update-bills'}>
+                          <SettingsSharpIcon
+                            fontSize="small"
+                            sx={{ color: 'gray', marginTop: '4px' }}
+                            onClick={() => detailHandler(bill.id)}
+                          />
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   );
                 })}

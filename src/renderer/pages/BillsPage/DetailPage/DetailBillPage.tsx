@@ -1,12 +1,31 @@
 import { Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BillPartPage from '../BillPart/BillPartPage';
-import { useRecoilValue } from 'recoil';
-import { billState } from 'renderer/recoil/states';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { billState, businessState, categoriesState, tokenState } from 'renderer/recoil/states';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
+import { Category } from 'main/category/entities/category.entity';
 
 const DetailBillPage = () => {
   const bill = useRecoilValue(billState);
+  const token = useRecoilValue(tokenState)
+  const business = useRecoilValue(businessState)
+  const [categories, setCategories] = useRecoilState(categoriesState)
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-categories', {
+      token,
+      businessId: business.id,
+    });
+    window.electron.ipcRenderer.on(
+      'get-categories',
+      (args: GetCategoriesOutput) => {
+        setCategories(args.categories as Category[]);
+      }
+    );
+  }, [])
 
   return (
     <>
@@ -31,11 +50,11 @@ const DetailBillPage = () => {
             />
           </Link>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'row', gap: '30px' }}>
-          <div style={{ width: '7cm', margin: '1%' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '0px' }}>
+          <div style={{ width: '11cm', margin: '1%' }}>
             <BillPartPage />
           </div>
-          <div style={{ width: '468px' }}>
+          <div style={{ width: '100%' }}>
             <div
               style={{
                 height: '100px',
@@ -47,12 +66,13 @@ const DetailBillPage = () => {
                   style={{
                     display: 'flex',
                     justifyContent: 'center',
-                    marginLeft: '25px',
+                    marginLeft: '20px',
+                    marginRight: '0px',
                   }}
                 >
                   <Card
                     sx={{
-                      width: '400px',
+                      width: '95%',
                       backgroundColor: 'floralwhite',
                       height: '100%',
                       marginBottom: '15px',
@@ -94,8 +114,10 @@ const DetailBillPage = () => {
                       >
                         판매일시 :{' '}
                         <span style={{ color: 'black' }}>
-                          {bill.createdAt && (`${bill.createdAt.getFullYear()}년 ${bill.createdAt.getMonth()}월 ${bill.createdAt.getDate()}일 `)}
-                          {bill.createdAt && (`${bill.createdAt.getHours()}시 ${bill.createdAt.getMinutes()}분 ${bill.createdAt.getSeconds()}초`)}
+                          {bill.createdAt &&
+                            `${bill.createdAt.getFullYear()}년 ${bill.createdAt.getMonth()}월 ${bill.createdAt.getDate()}일 `}
+                          {bill.createdAt &&
+                            `${bill.createdAt.getHours()}시 ${bill.createdAt.getMinutes()}분 ${bill.createdAt.getSeconds()}초`}
                         </span>
                       </Typography>
                       <Typography
@@ -112,43 +134,56 @@ const DetailBillPage = () => {
                   </Card>
                 </div>
               </div>
-              <div style={{ marginLeft: '45px', height: '325%', width: '400px' }}>
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow sx={{ backgroundColor: 'lightgray', opacity: '0.6'}}>
-                          <TableCell width={'25%'}>상품명</TableCell>
-                          <TableCell width={'20%'}>판매가</TableCell>
-                          <TableCell width={'20%'}>카테고리</TableCell>
-                          <TableCell width={'10%'}>품절</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {bill.orderProducts.map((item) => (
-                          <TableRow
-                            key={item.productId}
-                            sx={{
-                              '&:last-child td, &:last-child th': { border: 0 },
-                            }}
-                          >
-                            {/* <TableCell component="th" scope="row">
+              <div
+                style={{
+                  height: '320px',
+                  width: '100%',
+                  overflow: 'auto',
+                }}
+              >
+                <TableContainer sx={{ width: '90%', marginLeft: '30px' }}>
+                  <Table size="small" stickyHeader>
+                    <TableHead>
+                      <TableRow
+                        sx={{ backgroundColor: 'lightgray', opacity: '0.6' }}
+                      >
+                        <TableCell width={'20%'} sx={{ fontSize: '13px' }}>
+                          상품명
+                        </TableCell>
+                        <TableCell width={'20%'} sx={{ fontSize: '13px' }}>
+                          판매가
+                        </TableCell>
+                        <TableCell width={'20%'} sx={{ fontSize: '13px' }}>
+                          카테고리
+                        </TableCell>
+                        <TableCell width={'10%'} sx={{ fontSize: '12px' }}>
+                          품절
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {bill.orderProducts.map((item) => (
+                        <TableRow
+                          key={item.productId}
+                          sx={{
+                            '& th': { fontSize: '13px' },
+                          }}
+                        >
+                          <TableCell component="th">
                             {item.product.name}
                           </TableCell>
-                          <TableCell align="right">
-                            {item.product.price}
+                          <TableCell>
+                            {item.product.price} 원
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell>
                             {item.product.categoryId}
                           </TableCell>
-                          <TableCell align="right">
-                            품절 유무
-                          </TableCell> */}
-                            <TableCell>여기 데이터 들어감</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                          <TableCell align="center">X</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </div>
             </div>
           </div>
