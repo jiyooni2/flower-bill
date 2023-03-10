@@ -196,9 +196,11 @@ const ProductsPage = () => {
     if (dataName === 'name') {
       setName(value);
     } else if (dataName === 'price') {
-      setPrice(parseInt(value));
+      if (!Number.isInteger(Number(value))) setPrice(0);
+      else setPrice(Number(value));
     } else if (dataName === 'categoryId') {
-      setCategoryId(Number(value));
+      if (Number.isInteger(value)) setCategoryId(0)
+      else setCategoryId(Number(value));
     }
   };
 
