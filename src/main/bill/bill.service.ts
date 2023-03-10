@@ -97,7 +97,9 @@ export class BillService {
       const bill = await this.billRepository.findOne({
         where: { id },
         relations: {
-          orderProducts: true,
+          orderProducts: {
+            product: true,
+          },
           store: true,
           business: true,
         },
