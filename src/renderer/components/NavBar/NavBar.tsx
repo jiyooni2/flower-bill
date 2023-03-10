@@ -12,8 +12,6 @@ const NavBar = () => {
   const [businesses, setBusinesses] = useRecoilState(businessesState)
   const [hasBusinesses, setHasBusinesses] = useState<boolean>(false);
 
-  console.log(hasBusinesses)
-
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-businesses', {
       token,

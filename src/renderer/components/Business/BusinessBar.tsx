@@ -8,6 +8,7 @@ import { businessState, businessesState, tokenState } from 'renderer/recoil/stat
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
+import { Link } from 'react-router-dom';
 
 const BusinessBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -26,6 +27,7 @@ const BusinessBar = () => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
+          setBusiness(businesses[0])
         } else {
           console.error(error);
         }
@@ -33,8 +35,8 @@ const BusinessBar = () => {
     );
   }, [])
 
-  const clickHandler = (business: Business) => {
-    setBusiness(business);
+  const clickHandler = (item: Business) => {
+    setBusiness(item);
   };
 
   return (
@@ -42,29 +44,38 @@ const BusinessBar = () => {
       <BusinessModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={styles.bar}>
         <div className={styles.container}>
-          <div className={styles.content}>
-            {businesses.map((business) => (
-              <div key={business.id}>
-                <div
-                  className={styles.box}
-                  onClick={() => clickHandler(business)}
-                >
-                  <span
-                    style={{
-                      fontSize: '30px',
-                      color: 'black',
-                      marginTop: '2px',
-                    }}
+          <Link to={'/seller'}>
+            <div className={styles.content}>
+              {businesses.map((business) => (
+                <div key={business.id}>
+                  <div
+                    className={styles.box}
+                    onClick={() => clickHandler(business)}
                   >
-                    {business.name.slice(0, 1)}
-                  </span>
+                    <span
+                      style={{
+                        fontSize: '30px',
+                        color: 'black',
+                        marginTop: '2px',
+                      }}
+                    >
+                      {business.name.slice(0, 1)}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Link>
           <div className={styles.addBusiness}>
             <AddRoundedIcon
-              sx={{ width: '60%', height: '70%', color: '#73777B', marginLeft: '13px', cursor: 'pointer', marginTop: '25px' }}
+              sx={{
+                width: '60%',
+                height: '70%',
+                color: '#73777B',
+                marginLeft: '13px',
+                cursor: 'pointer',
+                marginTop: '25px',
+              }}
               onClick={() => setIsOpen(true)}
             />
           </div>
