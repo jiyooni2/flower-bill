@@ -69,6 +69,7 @@ const CategoryPage = () => {
         setParentCategoryName('');
         setParentCategoryId(null);
       }
+      setCategoryId(categories.length + 1);
     } else if (name === 'item') {
       setClicked(true);
 
@@ -229,6 +230,10 @@ const CategoryPage = () => {
     }
   };
 
+  const idChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCategoryId(parseInt(e.target.value))
+  }
+
   const renderTree = (nodes: Category) => (
     <TreeItem
       key={nodes.name}
@@ -321,7 +326,9 @@ const CategoryPage = () => {
                     <p className={styles.labels}>카테고리 번호</p>
                     <input
                       className={styles.dataInput}
-                      defaultValue={categoryId}
+                      value={categoryId}
+                      onChange={idChangeHandler}
+                      readOnly
                     />
                   </div>
                   <div className={styles.item}>
@@ -358,7 +365,7 @@ const CategoryPage = () => {
                     sx={{ marginLeft: '30px' }}
                     color="error"
                   >
-                    <DeleteIcon sx={{ fontSize: '23px'}} />
+                    <DeleteIcon sx={{ fontSize: '23px' }} />
                   </Button>
                 ) : (
                   <div></div>
