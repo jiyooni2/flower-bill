@@ -1,11 +1,9 @@
 import styles from './ProductsGrid.module.scss';
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { Box, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
 import ProductBox from '../ProductBox/ProductBox';
 import { useEffect, useState } from 'react';
-import MemoModal from '../MemoModal/MemoModal';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, categoryState, productsState, tokenState } from 'renderer/recoil/states';
-import { Category } from 'main/category/entities/category.entity';
+import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
@@ -13,7 +11,7 @@ import { GetProductByCategoryInput, GetProductByCategoryOutput } from 'main/prod
 
 
 const ProductsGrid = () => {
-  const [categories, setCategories] = useRecoilState(categoriesState);  // 카테고리 데이터 가져오기
+  const [categories, setCategories] = useRecoilState(categoriesState)
   const [products, setProducts] = useRecoilState(productsState);
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState)
@@ -52,40 +50,46 @@ const ProductsGrid = () => {
       ? Math.round(products.length / 9)
       : Math.floor(products.length / 9) + 1;
 
-  const searchFilterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const filterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
-    if (e.target.value == '') {
-      window.electron.ipcRenderer.sendMessage('get-products', {
-        token,
-        business: business.id,
-      });
-      window.electron.ipcRenderer.on(
-        'get-products',
-        ({ ok, error, products }: GetProductsOutput) => {
-          if (ok) {
-            setProducts(products);
-          } else if (error) {
-            window.alert(error);
+  };
+
+  const searchHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && e.nativeEvent.isComposing === false) {
+      if (searchWord == '') {
+        window.electron.ipcRenderer.sendMessage('get-products', {
+          token,
+          business: business.id,
+        });
+        window.electron.ipcRenderer.on(
+          'get-products',
+          ({ ok, error, products }: GetProductsOutput) => {
+            if (ok) {
+              setProducts(products);
+            } else if (error) {
+              window.alert(error);
+            }
           }
-        }
-      );
-    } else {
-      window.electron.ipcRenderer.sendMessage('search-product', {
-        keyword: e.target.value,
-        page: 0,
-        token,
-        business: business.id,
-      });
-      window.electron.ipcRenderer.on(
-        'search-product',
-        ({ ok, error, products }: SearchProductOutput) => {
-          if (ok) {
-            setProducts(products);
-          } else if (error) {
-            window.alert(error);
+        );
+      } else {
+        window.electron.ipcRenderer.sendMessage('search-product', {
+          keyword: searchWord,
+          page: page - 1,
+          token,
+          businessId: business.id,
+        });
+        window.electron.ipcRenderer.on(
+          'search-product',
+          ({ ok, error, products }: SearchProductOutput) => {
+            if (ok) {
+              console.log(products)
+              setProducts(products);
+            } else if (error) {
+              window.alert(error);
+            }
           }
-        }
-      );
+        );
+      }
     }
   };
 
@@ -143,7 +147,8 @@ const ProductsGrid = () => {
             className={styles.searchProduct}
             placeholder="상품 검색"
             value={searchWord}
-            onChange={searchFilterHandler}
+            onChange={filterHandler}
+            onKeyDown={searchHandler}
           />
         </div>
         <div

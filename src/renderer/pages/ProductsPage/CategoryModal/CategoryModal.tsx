@@ -25,6 +25,8 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
   const [groupId, setGroupId] = useState<number>(0);
   const [groupName, setGroupName] = useState<string>('');
 
+  console.log(mainName, subName, groupName)
+
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
       token,
@@ -72,7 +74,6 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
               defaultValue={'none'}
               className={styles.selects}
             >
-              <MenuItem value={'none'}>---------------</MenuItem>
               {categories.map((item) => {
                 if (item.level === 1) {
                   return (
@@ -81,7 +82,7 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
                       value={item.name}
                       onClick={() => {
                         setMainId(item.id);
-                        setGroupName('none');
+                        // setGroupName('none');
                       }}
                     >
                       {item.name}
@@ -101,10 +102,8 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
               value={subName}
               label="중분류"
               onChange={subChangeHandler}
-              defaultValue={'none'}
               className={styles.selects}
             >
-              <MenuItem value={'none'}>---------------</MenuItem>
               {categories.map((item) => {
                 if (item.level === 2 && item.parentCategoryId === mainId) {
                   return (
@@ -130,12 +129,11 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
               value={groupName}
               label="소분류"
               onChange={groupChangeHandler}
-              defaultValue={'none'}
               className={styles.selects}
             >
-              <MenuItem value={'none'}>---------------</MenuItem>
+              {/* <MenuItem value="none">------------------</MenuItem> */}
               {categories.map((item) => {
-                if (item.level === 3 && item.parentCategoryId === subId) {
+                if (item.level === 3 && item.parentCategoryId === subId && item.parentCategory.parentCategoryId == mainId) {
                   return (
                     <MenuItem
                       key={item.id}
@@ -162,11 +160,19 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
       >
         <Typography variant="subtitle1">
           선택된 카테고리 :{' '}
-
-            {groupName
-            ? (<span style={{ fontWeight: '500' }}>{groupId}번 {groupName}</span>)
-            : (<span style={{ fontWeight: '500' }}>{subId}번 {subName}</span>)}
-
+          {groupName && groupName != 'none' ? (
+            <span style={{ fontWeight: '500' }}>
+              {groupId}번 {groupName}
+            </span>
+          ) : subName ? (
+            <span style={{ fontWeight: '500' }}>
+              {subId}번 {subName}
+            </span>
+          ) : (
+            <span style={{ fontWeight: '500' }}>
+              {mainId}번 {mainName}
+            </span>
+          )}
         </Typography>
       </div>
     </Modal>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Handlee&family=Nanum+Gothic:wght@700&family=Noto+Sans+KR&family=Pacifico&display=swap');
+
 .container {
   width: 20%;
   min-width: 200px;
@@ -32,12 +34,18 @@ hr {
 }
 
 .title {
+  font-size: 23px;
+  font-weight: bold;
   margin: 20px;
   cursor: pointer;
+  font-family: 'Handlee', cursive;
+  // font-family: 'Noto Sans KR', sans-serif;
 }
 
 .menu {
   margin: 25px;
+  border: none;
   cursor: pointer;
   color: #332C39;
 }
+
