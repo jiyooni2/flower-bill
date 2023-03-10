@@ -17,7 +17,7 @@ import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import { Button } from '@mui/material';
 import MemoModal from '../MemoModal/MemoModal';
 import { useNavigate } from 'react-router-dom';
-// import { Printer } from 'react-thermal-printer';
+import ReactToPrint from 'react-to-print';
 
 interface IProps {
   isOpen: boolean;
@@ -32,11 +32,9 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const store = useRecoilValue(storeState);
   const [memoIsOpen, setMemoIsOpen] = useState<boolean>(false);
   const printRef = useRef();
-
   const movePage = useNavigate();
 
   const handleClick = async () => {
-    setIsOpen(false);
     const orderProductInputs = orderProducts.map((orderProduct) => ({
       businessId: business.id,
       count: orderProduct.count,
@@ -66,6 +64,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
       }
     );
 
+    setIsOpen(false);
     setOrderProducts([]);
     movePage('/bills');
   };
@@ -88,7 +87,10 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
       />
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <div style={{ height: '410px' }}>
-          <div ref={printRef} style={{ height: '97%', overflow: 'auto', marginBottom: '12px'}}>
+          <div
+            ref={printRef}
+            style={{ height: '97%', overflow: 'auto', marginBottom: '12px' }}
+          >
             <table
               style={{ width: '100%', border: '0' }}
               cellPadding="0"
@@ -128,7 +130,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               style={{ width: '100%' }}
               cellPadding="0"
               cellSpacing="0"
-              className={styles.tbl}
+              className={styles.body}
             >
               <tbody>
                 <tr>
@@ -145,15 +147,28 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                     <br />
                     등록번호
                   </th>
-                  <td colSpan={3}>{business.businessNumber}</td>
+                  <td
+                    colSpan={3}
+                    style={{
+                      fontSize: '14px',
+                      height: '100%',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <span style={{ display: 'flex', justifyContent: 'center' }}>
+                      {business.businessNumber.toString().slice(0, 3)}-
+                      {business.businessNumber.toString().slice(3, 5)}-
+                      {business.businessNumber.toString().slice(5, 10)}
+                    </span>
+                  </td>
                 </tr>
                 <tr>
                   <th>상호</th>
-                  <td style={{ width: '25%', fontSize: '15px' }} align="center">
+                  <td style={{ width: '25%', fontSize: '13px' }} align="center">
                     {store.name}
                   </td>
                   <th style={{ width: '14%' }}>성명</th>
-                  <td style={{ width: '20%', fontSize: '15px' }} align="center">
+                  <td style={{ width: '20%', fontSize: '13px' }} align="center">
                     {store.owner}
                   </td>
                 </tr>
@@ -165,7 +180,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   </th>
                   <td
                     colSpan={3}
-                    style={{ fontSize: '15px', textAlign: 'center' }}
+                    style={{ fontSize: '13px', textAlign: 'center' }}
                   >
                     {store.address}
                   </td>
@@ -182,12 +197,12 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               width="100%"
               cellSpacing="0"
               cellPadding="0"
-              className={styles.tbl}
+              className={styles.body}
             >
               <tbody>
                 <tr>
-                  <th>작성년월일</th>
-                  <th>공급대가총액</th>
+                  <th>작성일</th>
+                  <th>공급가 총액</th>
                   <th>비고</th>
                 </tr>
                 <tr>
@@ -206,7 +221,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               width="100%"
               cellSpacing="0"
               cellPadding="0"
-              className={styles.tbl}
+              className={styles.body}
             >
               <tbody>
                 <tr>
@@ -214,7 +229,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   <th>품목</th>
                   <th>수량</th>
                   <th>단가</th>
-                  <th>금액</th>
+                  <th>공급가액</th>
                 </tr>
               </tbody>
               {orderProducts.map((orderProduct) => {
@@ -227,9 +242,15 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                       </td>
                       <td className={styles.article}>{orderProduct.count}</td>
                       <td className={styles.price}>
-                        {orderProduct.product.price}
+                        {orderProduct.product.price
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       </td>
-                      <td className={styles.sum}>{orderProduct.orderPrice}</td>
+                      <td className={styles.sum}>
+                        {orderProduct.orderPrice
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      </td>
                     </tr>
                   </tbody>
                 );
@@ -259,20 +280,25 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             >
               메모 추가하기
             </Button>
-            <Button
-              variant="contained"
-              onClick={handleClick}
-              style={{
-                height: '30px',
-                width: '90px',
-                float: 'right',
-                display: 'flex',
-                bottom: '-10px',
-                right: 0,
-              }}
-            >
-              발행하기
-            </Button>
+            <ReactToPrint
+              trigger={() => (
+                <Button
+                  variant="contained"
+                  onClick={handleClick}
+                  style={{
+                    height: '30px',
+                    width: '90px',
+                    float: 'right',
+                    display: 'flex',
+                    bottom: '-10px',
+                    right: 0,
+                  }}
+                >
+                  발행하기
+                </Button>
+              )}
+              content={() => printRef.current}
+            />
           </div>
         </div>
       </Modal>
