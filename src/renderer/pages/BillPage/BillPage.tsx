@@ -6,6 +6,7 @@ import {
   orderProductsState,
   tokenState,
   businessState,
+  storeState,
 } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
@@ -24,6 +25,8 @@ const BillPage = () => {
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
+  const store = useRecoilValue(storeState);
+
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -60,20 +63,19 @@ const BillPage = () => {
   };
 
   const billClickHandler = () => {
-    setIsBillOpen(true);
+    console.log(store)
+    if (!store.name || store.name == null) {
+      window.alert('판매처를 선택해주세요.')
+    } else setIsBillOpen(true);
   };
 
 
   return (
     <>
-      {isSearchStoreOpen && (
-        <StoreSearchModal
-          isOpen={isSearchStoreOpen}
-          setIsOpen={setIsSearchStoreOpen}
-        />
-      )}
-      {!isSearchStoreOpen && (
-        <>
+          <StoreSearchModal
+            isOpen={isSearchStoreOpen}
+            setIsOpen={setIsSearchStoreOpen}
+          />
           <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
           <div className={styles.container}>
             <div
@@ -211,8 +213,6 @@ const BillPage = () => {
               </div>
             <ProductsGrid />
           </div>
-        </>
-      )}
     </>
   );
 };
