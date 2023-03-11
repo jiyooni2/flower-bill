@@ -14,8 +14,6 @@ import StoreSearchModal from './components/StoreSearchModal/StoreSearchModal';
 import OrderProductBox from './components/OrderProductBox/OrderProductBox';
 import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
-// import DiscountModal from './components/DiscountModal/DiscountModal';
-// import DiscountModal from './components/DiscountModal/DiscountModal';
 import BillModal from './components/BillModal/BillModal';
 
 const BillPage = () => {
@@ -23,8 +21,7 @@ const BillPage = () => {
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
   const orderProducts = useRecoilValue(orderProductsState);
-  const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(true);
-  // const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
+  const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
 
@@ -66,9 +63,6 @@ const BillPage = () => {
     setIsBillOpen(true);
   };
 
-  // const discountClickHandler = () => {
-  //   setIsDiscountOpen(true)
-  // };
 
   return (
     <>
@@ -80,14 +74,11 @@ const BillPage = () => {
       )}
       {!isSearchStoreOpen && (
         <>
-          {/* <DiscountModal
-            isOpen={isDiscountOpen}
-            setIsOpen={setIsDiscountOpen}
-          /> */}
           <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
           <div className={styles.container}>
             <div
               className={`${styles.content_container} ${styles.bill_container}`}
+              style={{ width: '50%' }}
             >
               <Typography
                 variant="h5"
@@ -135,7 +126,16 @@ const BillPage = () => {
                   />
                 </div>
               </div>
-              <div style={{ marginLeft: '10px', marginRight: '10px' }}>
+            </div>
+            <div
+                style={{
+                  marginLeft: '20px',
+                  marginRight: '10px',
+                  position: 'absolute',
+                  bottom: '30px',
+                  width: '30%',
+                }}
+              >
                 <div>
                   <div className={styles.total}>
                     <p className={styles.totalName}>과세&nbsp;물품</p>
@@ -172,41 +172,43 @@ const BillPage = () => {
                   </div>
                   <hr />
                 </div>
-              </div>
-              <div
-                style={{
-                  marginTop: '20px',
-                  display: 'flex',
-                  flexDirection: 'row',
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  sx={{
-                    height: '33px',
-                    width: '40%',
-                    marginLeft: '20px',
-                    marginTop: '10px',
-                  }}
-                  // onClick={discountClickHandler}
-                >
-                  할인 추가
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={billClickHandler}
-                  sx={{
-                    height: '33px',
-                    width: '65%',
-                    marginLeft: '20px',
-                    marginTop: '10px',
+                <div
+                  style={{
+                    width: '100%',
+                    marginTop: '20px',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginLeft: '2px',
                   }}
                 >
-                  계산서 생성
-                </Button>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    sx={{
+                      height: '33px',
+                      width: '60%',
+                      marginLeft: '20px',
+                      marginTop: '10px',
+                    }}
+                    onClick={() => setIsSearchStoreOpen(true)}
+                  >
+                    판매처 선택하기
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={billClickHandler}
+                    sx={{
+                      height: '33px',
+                      width: '65%',
+                      marginLeft: '20px',
+                      marginTop: '10px',
+                    }}
+                  >
+                    계산서 생성
+                  </Button>
+                </div>
               </div>
-            </div>
             <ProductsGrid />
           </div>
         </>
