@@ -44,7 +44,6 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
               if (ok) {
                 setBusiness(businesses[0])
                 setIsOpen(false);
-                window.location.reload();
               }
               if (error) {
                 console.log(error);
