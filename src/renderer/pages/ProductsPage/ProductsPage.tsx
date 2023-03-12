@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import Button from '@mui/material/Button';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, categoriesState, categoryIdState, productsState, tokenState } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
@@ -25,11 +25,9 @@ const ProductsPage = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [id, setId] = useState<number>();
   const [name, setName] = useState<string>('');
-  const [price, setPrice] = useState<number>(0);
-  // const [categoryId, setCategoryId] = useState<number>(0);
+  const [price, setPrice] = useState<string>('');
   const [categoryId, setCategoryId] = useRecoilState(categoryIdState);
-
-  console.log(categoryId)
+  const [page, setPage] = useState<number>(0);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -62,12 +60,13 @@ const ProductsPage = () => {
 
   const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter' && event.nativeEvent.isComposing === false) {
+      console.log(keyword)
       if (keyword != '') {
         const searchData: SearchProductInput = {
           token,
           businessId: business.id,
           keyword: keyword,
-          page: 0,
+          page: page - 1,
         };
 
         window.electron.ipcRenderer.sendMessage('search-product', searchData);
@@ -77,16 +76,6 @@ const ProductsPage = () => {
             if (ok) {
               setProducts(products);
             } else {
-              window.electron.ipcRenderer.sendMessage('get-products', {
-                token,
-                businessId: business.id,
-              });
-              window.electron.ipcRenderer.on(
-                'get-products',
-                (args: GetProductsOutput) => {
-                  setProducts(args.products as Product[]);
-                }
-              );
               console.log(error);
             }
           }
@@ -117,7 +106,7 @@ const ProductsPage = () => {
       if (item.name === data.name) {
         setId(item.id)
         setName(item.name);
-        setPrice(item.price);
+        setPrice(item.price.toString());
         setCategoryId(item.categoryId)
       }
     });
@@ -156,13 +145,14 @@ const ProductsPage = () => {
   };
 
   const updateDataHandler = () => {
+    const prices = Number(price)
     const newData: UpdateProductInput = {
       id,
       name,
-      price,
+      price: prices,
       categoryId,
       token,
-      businessId: business.id
+      businessId: business.id,
     };
 
       window.electron.ipcRenderer.sendMessage('update-product', newData);
@@ -198,8 +188,7 @@ const ProductsPage = () => {
     if (dataName === 'name') {
       setName(value);
     } else if (dataName === 'price') {
-      if (!Number.isInteger(Number(value))) setPrice(0);
-      else setPrice(Number(value));
+      setPrice(value)
     }
   };
 
@@ -207,23 +196,25 @@ const ProductsPage = () => {
     setClicked(false)
 
     setName('')
-    setPrice(0)
+    setPrice('')
     setCategoryId(0);
   };
 
 
   const addDataHandler = () => {
-    if (name == '' || price == 0 || categoryId == 0) {
+    if (name == '' || price == '' || categoryId == 0) {
       if (name == '') window.alert('상품명을 작성해주세요.');
-      else if (price == 0) window.alert('판매가를 작성해주세요.');
+      else if (price == '') window.alert('판매가를 작성해주세요.');
+    } else if (!parseInt(price)) {
+      window.alert('판매가는 숫자로 작성해주시기 바랍니다.')
     } else {
-      console.log(name, price, categoryId)
+      const prices = Number(price)
         const newData: CreateProductInput = {
           name,
-          price,
+          price: prices,
           categoryId,
           businessId: business.id,
-          token
+          token,
         };
 
         window.electron.ipcRenderer.sendMessage('create-product', newData);
@@ -260,6 +251,15 @@ const ProductsPage = () => {
   const categoryClickHandler = () => {
     setIsOpen(true);
   }
+
+  const LAST_PAGE =
+    products.length % 9 === 0
+      ? Math.round(products.length / 9)
+      : Math.floor(products.length / 9) + 1;
+
+  const handlePage = (event: any) => {
+    setPage(parseInt(event.target.outerText));
+  };
 
   return (
     <>
@@ -306,70 +306,76 @@ const ProductsPage = () => {
                     <TableBody>
                       {products &&
                         products.length > 0 &&
-                        products.map((item) => (
-                          <TableRow
-                            key={item.name}
-                            className={styles.dataRow}
-                            onClick={(event) => changeDataHandler(event, item)}
-                            sx={{
-                              '& th': {
-                                fontSize: '14px',
-                              },
-                            }}
-                          >
-                            <TableCell
-                              component="th"
-                              align="left"
-                              sx={{ width: '10%' }}
+                        products
+                          .slice((page - 1) * 9, page * 9)
+                          .map((item) => (
+                            <TableRow
+                              key={item.name}
+                              className={styles.dataRow}
+                              onClick={(event) =>
+                                changeDataHandler(event, item)
+                              }
+                              sx={{
+                                '& th': {
+                                  fontSize: '14px',
+                                },
+                              }}
                             >
-                              {item.id}
-                            </TableCell>
-                            <TableCell
-                              component="th"
-                              align="left"
-                              sx={{ width: '25%' }}
-                            >
-                              {item.name}
-                            </TableCell>
-                            <TableCell
-                              component="th"
-                              align="left"
-                              sx={{ width: '28%' }}
-                            >
-                              ₩ {item.price}
-                            </TableCell>
-                            <TableCell
-                              component="th"
-                              align="left"
-                              className={styles.cutText}
-                              sx={{ width: '45%' }}
-                            >
-                              {/* {item.categoryId} */}
-                              {categories.map((cat) => {
-                                if (cat.id === item.categoryId) {
-                                  if (cat.parentCategory.parentCategory) {
-                                    return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
-                                  } else if (cat.parentCategory) {
-                                    return `${cat.parentCategory.name}/${cat.name}`;
-                                  } else {
-                                    return cat.name;
+                              <TableCell
+                                component="th"
+                                align="left"
+                                sx={{ width: '10%' }}
+                              >
+                                {item.id}
+                              </TableCell>
+                              <TableCell
+                                component="th"
+                                align="left"
+                                sx={{ width: '25%' }}
+                              >
+                                {item.name}
+                              </TableCell>
+                              <TableCell
+                                component="th"
+                                align="left"
+                                sx={{ width: '28%' }}
+                              >
+                                {item.price}
+                              </TableCell>
+                              <TableCell
+                                component="th"
+                                align="left"
+                                className={styles.cutText}
+                                sx={{ width: '45%' }}
+                              >
+                                {categories.map((cat) => {
+                                  if (cat.id === item.categoryId) {
+                                    if (cat.parentCategory.parentCategory) {
+                                      return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
+                                    } else if (cat.parentCategory) {
+                                      return `${cat.parentCategory.name}/${cat.name}`;
+                                    } else {
+                                      return cat.name;
+                                    }
                                   }
-                                }
-                              })}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                                })}
+                              </TableCell>
+                            </TableRow>
+                          ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
-                {products && products.length == 0 && (
-                  <div className={styles.noResult}>
-                    <div>
-                      <h3>검색결과가 없습니다.</h3>
-                    </div>
-                  </div>
-                )}
               </div>
+            </div>
+            <div className={styles.pagination}>
+              <Pagination
+                count={LAST_PAGE}
+                size="small"
+                color="standard"
+                defaultPage={1}
+                boundaryCount={1}
+                onChange={(event) => handlePage(event)}
+              />
             </div>
           </div>
           <div>
@@ -418,7 +424,7 @@ const ProductsPage = () => {
                         <input
                           value={categoryId}
                           className={styles.dataInput}
-                          style={{ backgroundColor: 'white', color: 'black'}}
+                          style={{ backgroundColor: 'white', color: 'black' }}
                           onChange={(event) =>
                             changeStoreDataHandler(event, 'categoryId')
                           }
@@ -431,23 +437,8 @@ const ProductsPage = () => {
                         >
                           카테고리 보기
                         </button>
-                        )}
+                      )}
                     </div>
-                    {/* <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'right',
-                        marginRight: '20%',
-                        marginTop: '10px',
-                      }}
-                    >
-                      <button
-                        className={styles.buttons}
-                        onClick={categoryClickHandler}
-                      >
-                        카테고리 보기
-                      </button>
-                    </div> */}
                   </div>
                 </div>
                 <div className={styles.buttonList}>
