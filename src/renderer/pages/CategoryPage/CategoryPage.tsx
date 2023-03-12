@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import styles from './CategoryPage.module.scss';
 import { TreeItem, TreeView } from '@mui/lab';
@@ -347,9 +347,12 @@ const CategoryPage = () => {
                       defaultValue={levelName}
                     />
                   </div>
-                  <div className={styles.item}>
-                    <p className={styles.labels}>부모 카테고리</p>
+                  <div className={styles.item} hidden>
+                    <p className={styles.labels} hidden>
+                      부모 카테고리
+                    </p>
                     <input
+                      hidden
                       className={styles.dataInput}
                       defaultValue={parentCategoryName}
                       readOnly
