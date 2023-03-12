@@ -118,6 +118,7 @@ const ProductsPage = () => {
         setId(item.id)
         setName(item.name);
         setPrice(item.price);
+        setCategoryId(item.categoryId)
       }
     });
   };
