@@ -111,6 +111,11 @@ const billListState = atom<Bill[]>({
   default: [],
 });
 
+const categoryIdState = atom<number>({
+  key: 'categoryIdState',
+  default: 0
+})
+
 export {
   loginState,
   tokenState,
@@ -125,4 +130,5 @@ export {
   businessesState,
   billState,
   billListState,
+  categoryIdState,
 };
