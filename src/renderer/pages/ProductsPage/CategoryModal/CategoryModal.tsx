@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, tokenState } from 'renderer/recoil/states';
+import { businessState, categoriesState, categoryIdState, tokenState } from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { Category } from 'main/category/entities/category.entity';
 import styles from './CategoryModal.module.scss'
-import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 
 
 interface IProps {
@@ -24,8 +24,7 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
   const [subName, setSubName] = useState<string>('');
   const [groupId, setGroupId] = useState<number>(0);
   const [groupName, setGroupName] = useState<string>('');
-
-  console.log(mainName, subName, groupName)
+  const [categoryId, setCategoryId] = useRecoilState(categoryIdState)
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -46,6 +45,31 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
   const groupChangeHandler = (e: SelectChangeEvent<unknown>) => {
     setGroupName(e.target.value as string);
   };
+
+  const clickHandler = () => {
+    if (groupName && groupName != 'none'){
+      setCategoryId(Number(groupId))
+    } else if (subName && subName != 'none') {
+      setCategoryId(subId)
+    } else {
+      setCategoryId(mainId)
+    }
+
+    console.log(categoryId)
+    setIsOpen(false)
+    // groupName && groupName != 'none' ? (
+    //   {groupId}번 {groupName}
+    //         </span>
+    //       ) : subName ? (
+    //         <span style={{ fontWeight: '500' }}>
+    //           {subId}번 {subName}
+    //         </span>
+    //       ) : (
+    //         <span style={{ fontWeight: '500' }}>
+    //           {mainId}번 {mainName}
+    //         </span>
+    //       )}
+  }
 
 
   return (
@@ -158,22 +182,7 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
           alignItems: 'center',
         }}
       >
-        <Typography variant="subtitle1">
-          선택된 카테고리 :{' '}
-          {groupName && groupName != 'none' ? (
-            <span style={{ fontWeight: '500' }}>
-              {groupId}번 {groupName}
-            </span>
-          ) : subName ? (
-            <span style={{ fontWeight: '500' }}>
-              {subId}번 {subName}
-            </span>
-          ) : (
-            <span style={{ fontWeight: '500' }}>
-              {mainId}번 {mainName}
-            </span>
-          )}
-        </Typography>
+        <Button onClick={clickHandler} size="small" variant='contained' sx={{ width: '50%', marginLeft: '15px', marginTop: '10px'}}>선택하기</Button>
       </div>
     </Modal>
   );

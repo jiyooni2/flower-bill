@@ -3,7 +3,7 @@ import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import Button from '@mui/material/Button';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
+import { businessState, categoriesState, categoryIdState, productsState, tokenState } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
 import styles from './ProductsPage.module.scss';
 import { CreateProductInput, CreateProductOutput } from 'main/product/dtos/create-product.dto';
@@ -26,8 +26,10 @@ const ProductsPage = () => {
   const [id, setId] = useState<number>();
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<number>(0);
-  const [categoryId, setCategoryId] = useState<number>(0);
+  // const [categoryId, setCategoryId] = useState<number>(0);
+  const [categoryId, setCategoryId] = useRecoilState(categoryIdState);
 
+  console.log(categoryId)
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -116,7 +118,6 @@ const ProductsPage = () => {
         setId(item.id)
         setName(item.name);
         setPrice(item.price);
-        setCategoryId(item.categoryId);
       }
     });
   };
@@ -198,9 +199,6 @@ const ProductsPage = () => {
     } else if (dataName === 'price') {
       if (!Number.isInteger(Number(value))) setPrice(0);
       else setPrice(Number(value));
-    } else if (dataName === 'categoryId') {
-      if (Number.isInteger(value)) setCategoryId(0)
-      else setCategoryId(Number(value));
     }
   };
 
@@ -209,7 +207,7 @@ const ProductsPage = () => {
 
     setName('')
     setPrice(0)
-    setCategoryId(0)
+    setCategoryId(0);
   };
 
 
@@ -415,35 +413,40 @@ const ProductsPage = () => {
                     </div>
                     <div className={styles.lastItem}>
                       <p className={styles.labels}>카테고리</p>
-                      <input
-                        value={categoryId}
-                        className={styles.dataInput}
-                        onChange={(event) =>
-                          changeStoreDataHandler(event, 'categoryId')
-                        }
-                      />
+                      {categoryId ? (
+                        <input
+                          value={categoryId}
+                          className={styles.dataInput}
+                          style={{ backgroundColor: 'white', color: 'black'}}
+                          onChange={(event) =>
+                            changeStoreDataHandler(event, 'categoryId')
+                          }
+                          disabled
+                        />
+                      ) : (
+                        <button
+                          className={styles.buttons}
+                          onClick={categoryClickHandler}
+                        >
+                          카테고리 보기
+                        </button>
+                        )}
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'right', marginRight: '20%', marginTop: '10px'}}>
+                    {/* <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'right',
+                        marginRight: '20%',
+                        marginTop: '10px',
+                      }}
+                    >
                       <button
                         className={styles.buttons}
                         onClick={categoryClickHandler}
                       >
                         카테고리 보기
                       </button>
-                    </div>
-                    {/* <span
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'left',
-                        marginTop: '15px',
-                        color: 'darkslategrey',
-                        fontWeight: '450',
-                        fontSize: '13px',
-                        marginLeft: '10%'
-                      }}
-                    >
-                      카테고리명: {idToName(categoryId)}
-                    </span> */}
+                    </div> */}
                   </div>
                 </div>
                 <div className={styles.buttonList}>
