@@ -279,20 +279,24 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 );
               })}
             </table>
-            <div className={styles.sumDiv}>
-              <table style={{ display: 'flex' }}>
-                <tbody style={{ width: '100%' }}>
-                  <td className={styles.lastSum}>합&ensp;&ensp;계</td>
-                  <td
-                    style={{
-                      float: 'right',
-                      marginRight: '10px',
-                      color: 'black',
-                      marginTop: '-16px'
-                    }}
-                  >
-                    ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  </td>
+            <div
+              className={styles.sumDiv}
+              style={{ display: 'flex', width: '100%' }}
+            >
+              <table style={{ display: 'flex', width: '100%' }}>
+                <tbody style={{ width: '100%', display: 'flex' }}>
+                  <tr style={{ width: '100%', display: 'flex', justifyContent: 'space-between', marginRight: '10px' }}>
+                    <td className={styles.lastSum}>
+                      합&ensp;&ensp;계
+                    </td>
+                    <td
+                      style={{
+                        color: 'black',
+                      }}
+                    >
+                      ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
