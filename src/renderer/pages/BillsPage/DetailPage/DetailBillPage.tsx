@@ -1,8 +1,9 @@
-import { Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BillPartPage from '../BillPart/BillPartPage';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { billState, businessState, categoriesState, tokenState } from 'renderer/recoil/states';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
@@ -37,7 +38,7 @@ const DetailBillPage = () => {
           marginTop: '-10px',
         }}
       >
-        <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Link to={'/bills'}>
             <ArrowBackRoundedIcon
               fontSize="large"
@@ -48,6 +49,19 @@ const DetailBillPage = () => {
                 width: '50px',
               }}
             />
+          </Link>
+          <Link to={'/update-bills'}>
+            <Button
+              sx={{
+                margin: '16px 0px 8px 0px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                width: '150px',
+                paddingLeft: '20px'
+              }}
+            >
+              계산서 수정하기 <ArrowRightAltIcon sx={{ color: 'black', marginLeft: '10px'}} />
+            </Button>
           </Link>
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', gap: '0px' }}>
@@ -172,12 +186,8 @@ const DetailBillPage = () => {
                           <TableCell component="th">
                             {item.product.name}
                           </TableCell>
-                          <TableCell>
-                            {item.product.price} 원
-                          </TableCell>
-                          <TableCell>
-                            {item.product.categoryId}
-                          </TableCell>
+                          <TableCell>{item.product.price} 원</TableCell>
+                          <TableCell>{item.product.categoryId}</TableCell>
                           <TableCell align="center">X</TableCell>
                         </TableRow>
                       ))}
