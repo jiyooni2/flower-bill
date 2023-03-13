@@ -1,7 +1,7 @@
 import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BillPartPage from '../BillPart/BillPartPage';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { billState, businessState, categoriesState, tokenState } from 'renderer/recoil/states';
+import { billState, businessState, categoriesState, storeState, tokenState } from 'renderer/recoil/states';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Link } from 'react-router-dom';
@@ -14,6 +14,7 @@ const DetailBillPage = () => {
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
   const [categories, setCategories] = useRecoilState(categoriesState)
+  const [store, setStore] = useRecoilState(storeState)
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -26,6 +27,8 @@ const DetailBillPage = () => {
         setCategories(args.categories as Category[]);
       }
     );
+
+    setStore(bill.store)
   }, [])
 
   return (
