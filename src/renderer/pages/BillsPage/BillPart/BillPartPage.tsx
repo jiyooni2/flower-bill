@@ -180,12 +180,22 @@ const BillPartPage = () => {
               );
             })}
           </table>
-          <div className={styles.sumDiv}>
-            <td className={styles.lastSum}>합&ensp;&ensp;계</td>
-            <td style={{ float: 'right', marginRight: '10px', color: 'black' }}>
-              ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            </td>
-          </div>
+          <table style={{ width: '100%' }}>
+            <tbody>
+              <tr style={{ display: 'flex', justifyContent: 'space-between' }} className={styles.sumDiv}>
+                <td className={styles.lastSum}>합&ensp;&ensp;계</td>
+                <td
+                  style={{
+                    float: 'right',
+                    marginRight: '10px',
+                    color: 'black',
+                  }}
+                >
+                  ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </Paper>
     </>
