@@ -83,7 +83,6 @@ const BillsPage = () => {
                   <TableCell>발행 날짜</TableCell>
                   <TableCell>판매처</TableCell>
                   <TableCell>구매처</TableCell>
-                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -107,15 +106,6 @@ const BillsPage = () => {
                       <TableCell>{convertTime(bill.createdAt)}</TableCell>
                       <TableCell>{bill.business.name}</TableCell>
                       <TableCell>{bill.store.name}</TableCell>
-                      <TableCell>
-                        <Link to={'/update-bills'}>
-                          <SettingsSharpIcon
-                            fontSize="small"
-                            sx={{ color: 'gray', marginTop: '4px' }}
-                            onClick={() => detailHandler(bill.id)}
-                          />
-                        </Link>
-                      </TableCell>
                     </TableRow>
                   );
                 })}
