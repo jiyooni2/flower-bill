@@ -3,60 +3,74 @@
   gap: 10px;
   width: 100%;
   height: 100%;
-  flex-direction: column;
 }
 
 .content_container {
-  width: 45%;
+  width: 50%;
   min-width: 200px;
   height: 100%;
   padding: 10px;
+  background-color: #f5f5f5;
+
+  h1 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  input {
+    width: 30%;
+    border: 0;
+    border-bottom: 1px solid #000;
+    text-align: right;
+    background-color: inherit;
+  }
+}
+
+.products_container {
   display: flex;
   flex-direction: column;
+  width: 55%;
+
+  .productBox {
+    justify-content: space-evenly;
+  }
 }
 
-
-.item {
-  justify-content: center;
+.bill_container {
   display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-
-  .dataInput {
-    width: 50%;
-    height: 33px;
-    border-radius: 5px;
-    border: 1px solid darkgray;
-    opacity: 0.9;
-    padding-left: 8px;
-    font-size: 14px;
-  }
-
-  .memoInput {
-    width: 50%;
-    height: 66px;
-    border-radius: 5px;
-    border: 1px solid darkgray;
-    opacity: 0.9;
-    padding-left: 8px;
-    padding-top: 8px;
-    font-size: 14px;
-    resize: none;
-  }
+  flex-direction: column;
+  width: 45%;
 }
 
-.labels {
-  width: 30%;
-  font-size: 17px;
-  margin-top: 2px;
+.orderProducts_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 180px;
+  padding: 10px;
+  overflow: hidden;
 }
 
-.countInput {
-  width: 100%;
-  height: 33px;
-  border-radius: 5px;
-  border: 1px solid darkgray;
-  opacity: 0.9;
-  padding-left: 8px;
-  font-size: 14px;
+hr {
+  height: 1px;
+  border: 0;
+  background-color: rgb(219, 219, 219);
+}
+
+.total {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .totalName {
+    font-size: 15px;
+    margin-top: 5px;
+    margin-left: 15px;
+  }
+
+  .totalNum {
+    font-size: 15px;
+    margin-top: 5px;
+    margin-right: 15px;
+  }
 }
