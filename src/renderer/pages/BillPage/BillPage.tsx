@@ -124,7 +124,7 @@ const BillPage = () => {
                     color="standard"
                     defaultPage={1}
                     boundaryCount={1}
-                    onChange={(event) => handlePage(event)}
+                    onChange={handlePage}
                   />
                 </div>
               </div>

@@ -12,7 +12,7 @@ import BusinessPage from './pages/BusinessPage/BusinessPage';
 import ProductsPage from './pages/ProductsPage/ProductsPage';
 import BillsPage from './pages/BillsPage/BillsPage';
 import DetailBillPage from './pages/BillsPage/DetailPage/DetailBillPage';
-import UpdateBillPage from './pages/BillsPage/UpdateBillPage/UpdateBIllPage';
+import UpdateBillPage from './pages/BillsPage/UpdateBillPage/UpdateBillPage';
 
 export default function App() {
   return (

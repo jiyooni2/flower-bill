@@ -156,7 +156,7 @@ const ProductsGrid = () => {
             display: 'flex',
             justifyContent: 'center',
             width: '100%',
-            gap: '27px',
+            gap: '5%',
           }}
         >
           <Box sx={{ width: '27%' }}>

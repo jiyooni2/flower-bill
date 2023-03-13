@@ -281,6 +281,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               메모 추가하기
             </Button>
             <ReactToPrint
+              onBeforePrint={handleClick}
               trigger={() => (
                 <Button
                   variant="contained"
