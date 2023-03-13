@@ -10,11 +10,12 @@ import {
   tokenState,
 } from 'renderer/recoil/states';
 import Modal from './Modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import MemoModal from '../MemoModal/MemoModal';
 import { UpdateBillInput, UpdateBillOutput } from 'main/bill/dtos/update-bill.dto';
 import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
+import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
 
 interface IProps {
   isOpen: boolean;
@@ -31,28 +32,45 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const bill = useRecoilValue(billState)
   const [bills, setBills] = useRecoilState(billListState)
 
+  console.log(store)
+
   const handleClick = async () => {
-    const orderProductInputs = orderProducts.map(
-      (orderProduct) => ({
-        count: orderProduct.count,
-        productId: orderProduct.product.id,
-        orderPrice: orderProduct.orderPrice,
-      })
+    const orderProductInputs: CreateOrderProductInput[] = [];
+
+    orderProducts.map(
+      (orderProduct) => {
+        orderProductInputs.push(
+          {
+            count: orderProduct.count,
+            productId: orderProduct.product.id,
+            orderPrice: orderProduct.orderPrice,
+          }
+        )
+      }
     );
 
+    let storeId;
+    if (store.id == undefined) {
+      storeId = bill.store.id
+    } else {
+      storeId = store.id
+    }
+
     const newBill: UpdateBillInput = {
+      businessId: bill.businessId,
       id: bill.id,
-      businessId: business.id,
       token,
-      storeId: store.id,
+      storeId: storeId,
       memo,
-      orderProductInputs,
+      ...orderProductInputs,
     };
+
+    console.log(newBill)
 
     window.electron.ipcRenderer.sendMessage('update-bill', newBill);
     window.electron.ipcRenderer.on(
       'update-bill',
-      ({ ok, error}: UpdateBillOutput) => {
+      ({ ok, error }: UpdateBillOutput) => {
         if (ok) {
           window.electron.ipcRenderer.sendMessage('get-bills', newBill);
           window.electron.ipcRenderer.on(
@@ -72,7 +90,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     );
 
     setOrderProducts([]);
-    window.location.href = '/bills'
+    setIsOpen(false);
   };
 
   let sum = 0;
@@ -239,7 +257,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               </tbody>
               {orderProducts.map((orderProduct) => {
                 return (
-                  <tbody key={orderProduct.productId}>
+                  <tbody key={orderProduct.product.id}>
                     <tr>
                       <td className={styles.item}>{`${month} / ${day}`}</td>
                       <td className={styles.item}>
@@ -262,12 +280,21 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               })}
             </table>
             <div className={styles.sumDiv}>
-              <td className={styles.lastSum}>합&ensp;&ensp;계</td>
-              <td
-                style={{ float: 'right', marginRight: '10px', color: 'black' }}
-              >
-                ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              </td>
+              <table style={{ display: 'flex' }}>
+                <tbody style={{ width: '100%' }}>
+                  <td className={styles.lastSum}>합&ensp;&ensp;계</td>
+                  <td
+                    style={{
+                      float: 'right',
+                      marginRight: '10px',
+                      color: 'black',
+                      marginTop: '-16px'
+                    }}
+                  >
+                    ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  </td>
+                </tbody>
+              </table>
             </div>
           </div>
           <div>
