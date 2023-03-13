@@ -32,8 +32,9 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const newBusiness = {
+    const newBusiness: CreateBusinessInput = {
       name,
+      token,
       businessNumber: businessNumber,
       businessOwnerName: owner,
       address,
@@ -43,10 +44,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       window.alert('사업자를 생성할 수 없습니다.\n모든 입력 사항을 작성해주시기 바랍니다.')
     } else {
       if (window.confirm('정말 생성하시겠습니까?')){
-        window.electron.ipcRenderer.sendMessage('create-business', {
-          ...newBusiness,
-          token,
-        });
+        window.electron.ipcRenderer.sendMessage('create-business', newBusiness);
 
         window.electron.ipcRenderer.on(
           'create-business',
