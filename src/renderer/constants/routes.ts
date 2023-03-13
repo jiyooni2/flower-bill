@@ -7,7 +7,7 @@ const ROUTES = {
   STORE: '/store',
   PRODUCTS: '/products',
   SELLER: '/seller',
-  CATEGORY: '/cateogory',
+  CATEGORY: '/category',
   LOGIN: '/login',
 };
 
