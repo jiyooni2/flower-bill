@@ -419,7 +419,7 @@ const ProductsPage = () => {
                       />
                     </div>
                     <div className={styles.lastItem}>
-                      <p className={styles.labels}>카테고리</p>
+                      <p className={styles.categoryLabel}>카테고리</p>
                       {categoryId ? (
                         <input
                           value={categoryId}
@@ -433,6 +433,7 @@ const ProductsPage = () => {
                       ) : (
                         <button
                           className={styles.buttons}
+                          style={{ float: 'right'}}
                           onClick={categoryClickHandler}
                         >
                           카테고리 보기
