@@ -6,6 +6,7 @@ import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { Category } from 'main/category/entities/category.entity';
 import styles from './CategoryModal.module.scss'
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 
 interface IProps {
@@ -80,17 +81,22 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
           display: 'flex',
           justifyContent: 'center',
           fontWeight: '450',
-          marginBottom: '20px',
+          marginBottom: '10px',
         }}
       >
         카테고리
       </Typography>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ width: 110 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}
+      >
+        <Box sx={{ width: '31%' }}>
           <FormControl fullWidth>
             <InputLabel id="main">대분류</InputLabel>
             <Select
-              size="small"
               labelId="main"
               value={mainName}
               label="대분류"
@@ -117,11 +123,10 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
             </Select>
           </FormControl>
         </Box>
-        <Box sx={{ width: 110 }}>
+        <Box sx={{ width: '31%' }}>
           <FormControl fullWidth>
             <InputLabel id="sub">중분류</InputLabel>
             <Select
-              size="small"
               labelId="sub"
               value={subName}
               label="중분류"
@@ -144,11 +149,10 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
             </Select>
           </FormControl>
         </Box>
-        <Box sx={{ width: 110 }}>
+        <Box sx={{ width: '31%' }}>
           <FormControl fullWidth>
             <InputLabel id="sub">소분류</InputLabel>
             <Select
-              size="small"
               labelId="group"
               value={groupName}
               label="소분류"
@@ -157,7 +161,11 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
             >
               {/* <MenuItem value="none">------------------</MenuItem> */}
               {categories.map((item) => {
-                if (item.level === 3 && item.parentCategoryId === subId && item.parentCategory.parentCategoryId == mainId) {
+                if (
+                  item.level === 3 &&
+                  item.parentCategoryId === subId &&
+                  item.parentCategory.parentCategoryId == mainId
+                ) {
                   return (
                     <MenuItem
                       key={item.id}
@@ -176,13 +184,26 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
       <div
         style={{
           display: 'flex',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           height: '50px',
-          marginTop: '30px',
+          marginTop: '20px',
           alignItems: 'center',
+          marginLeft: '10px',
         }}
       >
-        <Button onClick={clickHandler} size="small" variant='contained' sx={{ width: '50%', marginLeft: '15px', marginTop: '10px'}}>선택하기</Button>
+        <Link to={'/category'} style={{ marginTop: '10px', width: '30%' }}>
+          <Button size="small" variant="outlined" style={{ width: '150%' }}>
+            카테고리 추가하기
+          </Button>
+        </Link>
+        <Button
+          onClick={clickHandler}
+          size="small"
+          variant="contained"
+          sx={{ width: '50%', marginTop: '10px', marginRight: '-10px' }}
+        >
+          선택하기
+        </Button>
       </div>
     </Modal>
   );
