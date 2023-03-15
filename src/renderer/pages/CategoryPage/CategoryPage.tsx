@@ -316,7 +316,7 @@ const CategoryPage = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 fontSize: '24px',
-                marginTop: '20px',
+                marginTop: '-10px',
               }}
             >
               카테고리 생성
@@ -381,7 +381,7 @@ const CategoryPage = () => {
                   <Button
                     variant="contained"
                     size="small"
-                    sx={{ marginRight: '10px' }}
+                    sx={{ marginRight: '10px', marginTop: '-30px' }}
                     onClick={newCategoryHandler}
                   >
                     생성

@@ -180,12 +180,6 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
             >
               찾으시는 판매처가 존재하지 않습니다.{' '}
             </p>
-            {/* <br /> */}
-            {/* <p>
-              <Link to={'/store'} className={styles.addSeller}>
-                판매처 추가하기
-              </Link>
-            </p> */}
           </div>
         )}
       </div>
