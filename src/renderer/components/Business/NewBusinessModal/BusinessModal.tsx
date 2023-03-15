@@ -4,7 +4,7 @@ import { Button, TextField, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
 import { Business } from 'main/business/entities/business.entity';
-import { useState } from 'react';
+import { createRef, useRef, useState } from 'react';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 
 interface IProps {
@@ -16,34 +16,75 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
-  const [businessNumber, setBusinessNumber] = useState<number>(0);
+  const [businessNumber, setBusinessNumber] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [owner, setOwner] = useState<string>('');
+  const numberRef = useRef<HTMLInputElement>();
+  const nameRef = useRef<HTMLInputElement>();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, dataName: string) => {
     const { value } = event.target;
-    if (dataName === 'owner')setOwner(value)
+    if (dataName === 'owner') setOwner(value)
     else if (dataName === 'name') setName(value)
-    else if (dataName === 'number') setBusinessNumber(Number(value))
+    else if (dataName === 'number') {
+      setBusinessNumber(value)
+    }
     else setAddress(value)
+  }
+
+  console.log(owner.length)
+
+  const validation = (businessNumber: string, owner: string, address: string) => {
+    if (!businessNumber) {
+      window.alert('사업자 등록번호를 입력해주시기 바랍니다.')
+      numberRef.current.focus()
+      return;
+    } else if (businessNumber.length != 10) {
+      window.alert('사업자 등록번호를 확인해주십시오.')
+      numberRef.current.focus()
+      return;
+    }
+
+    const pattern1 = "(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/)";
+    if (!owner) {
+      window.alert('성명을 입력해주시기 바랍니다.');
+      nameRef.current.focus();
+      return;
+    } else if (pattern1.search(owner)) {
+      window.alert('성명에 숫자나 특수문자를 포함할 수 없습니다.');
+      nameRef.current.focus();
+      return;
+    }
+
+    // const pattern2 = [가-힣A-Za-z·\d~\-\.]{2,}(로|길).[\d]+|[가-힣A-Za-z·\d~\-\.](읍|동)\s[\d]
+    // if (!pattern2.test(address) && address.length > 2) {
+    //   window.alert('주소가 존재하지 않습니다.');
+    //   return;
+    // }
+    return true;
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const newBusiness: CreateBusinessInput = {
-      name,
-      token,
-      businessNumber: businessNumber,
-      businessOwnerName: owner,
-      address,
-    };
+    if (name == '' && businessNumber == '' && owner == '' && name == '') {
+      window.alert(
+        '사업자를 생성할 수 없습니다.\n모든 입력 사항을 작성해주시기 바랍니다.'
+      );
+      return;
+    }
 
-    if (name == '' || businessNumber == 0 || owner == '' || name == '') {
-      window.alert('사업자를 생성할 수 없습니다.\n모든 입력 사항을 작성해주시기 바랍니다.')
-    } else {
-      if (window.confirm('정말 생성하시겠습니까?')){
+    if (validation(businessNumber, owner, address) == true){
+      if (window.confirm('정말 생성하시겠습니까?')) {
+        const number = Number(businessNumber)
+        const newBusiness: CreateBusinessInput = {
+          name,
+          token,
+          businessNumber: number,
+          businessOwnerName: owner,
+          address,
+        };
         window.electron.ipcRenderer.sendMessage('create-business', newBusiness);
 
         window.electron.ipcRenderer.on(
@@ -65,13 +106,15 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
             }
           }
         );
-        setBusinessNumber(0)
-        setName('')
-        setAddress('')
-        setOwner('')
-        setIsOpen(false);
       }
+    } else {
+      return;
     }
+    setBusinessNumber('');
+    setName('');
+    setAddress('');
+    setOwner('');
+    setIsOpen(false);
   };
 
   return (
@@ -89,13 +132,17 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
         <div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <TextField
-              sx={{ width: '90%' }}
+              ref={numberRef}
+              sx={{
+                width: '90%',
+              }}
               label="사업자등록번호"
               name="businessNumber"
               variant="filled"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange(event, 'number')
               }
+              placeholder='"-"를 제외하고 작성해주시기 바랍니다.'
               value={businessNumber}
             />
           </div>
@@ -113,6 +160,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <TextField
+              ref={nameRef}
               sx={{ width: '90%' }}
               label="성명"
               name="owner"
@@ -132,13 +180,14 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange(event, 'address')
               }
+              placeholder='도로명 주소로 작성해주시기 바랍니다.'
               value={address}
             />
           </div>
           <Button
             type="submit"
             variant="text"
-            sx={{ marginTop: '30px', float: 'right', marginRight: '5px' }}
+            sx={{ marginTop: '17px', float: 'right', marginRight: '10px' }}
           >
             제출하기
           </Button>
