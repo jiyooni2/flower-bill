@@ -1,0 +1,10 @@
+.addSeller {
+  color: darkgreen;
+  display: flex;
+  justify-content: center;
+  font-weight: 450;
+
+  &:hover {
+    color: lightcoral
+  }
+}
