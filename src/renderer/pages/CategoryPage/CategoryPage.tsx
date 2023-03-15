@@ -53,8 +53,10 @@ const CategoryPage = () => {
     if (name === 'add') {
       setClicked(false);
 
-      if (!item) {
-        setLevelName('대분류');
+      console.log(item)
+
+      if (item == null) {
+        setLevelName('대분류')
       } else if (item.level === 1) {
         setLevelName('중분류');
       } else if (item.level === 2) {
@@ -305,7 +307,7 @@ const CategoryPage = () => {
         </div>
       </div>
       <div style={{ width: '55%' }}>
-        <div>
+        <div style={{ height: '100%'}}>
           <div className={styles.infoContent}>
             <Typography
               variant="h6"
@@ -344,7 +346,9 @@ const CategoryPage = () => {
                     <p className={styles.labels}>분류명</p>
                     <input
                       className={styles.dataInput}
-                      defaultValue={levelName}
+                      value={levelName}
+                      onChange={changeHandler}
+                      readOnly
                     />
                   </div>
                   <div className={styles.item} hidden>
