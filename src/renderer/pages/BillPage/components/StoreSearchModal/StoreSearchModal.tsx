@@ -10,6 +10,7 @@ import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
 import { Link } from 'react-router-dom';
+import styles from './StoreSearchModal.module.scss'
 
 interface IProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
   const [keyword, setKeyword] = useState<string>('');
   const [storeList, setStoreList] = useState<Store[]>([]);
   const [store, setStore] = useRecoilState(storeState);
+  const [search, setSearch] = useState<boolean>(true)
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-stores', {
@@ -68,7 +70,8 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
         ({ ok, error, stores }: SearchStoreOutput) => {
           if (ok) {
             setStoreList(stores);
-            console.log(storeList)
+            if (stores.length == 0) setSearch(false)
+            else setSearch(true)
           } else {
             console.log(error);
           }
@@ -118,7 +121,14 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
           }}
         >
           <Link to={'/store'}>
-            <Button variant='contained' size="small" color="info" sx={{ width: '120px' }}>판매처 추가하기</Button>
+            <Button
+              variant="contained"
+              size="small"
+              color="info"
+              sx={{ width: '120px' }}
+            >
+              판매처 추가하기
+            </Button>
           </Link>
         </div>
       </div>
@@ -154,6 +164,30 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
             </TableBody>
           </Table>
         </TableContainer>
+        {!search && (
+          <div
+            style={{
+              color: 'gray',
+              fontSize: '14px',
+            }}
+          >
+            <p
+              style={{
+                marginTop: '-200px',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              찾으시는 판매처가 존재하지 않습니다.{' '}
+            </p>
+            {/* <br /> */}
+            {/* <p>
+              <Link to={'/store'} className={styles.addSeller}>
+                판매처 추가하기
+              </Link>
+            </p> */}
+          </div>
+        )}
       </div>
     </Modal>
   );
