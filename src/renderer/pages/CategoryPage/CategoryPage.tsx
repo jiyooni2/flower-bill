@@ -98,6 +98,8 @@ const CategoryPage = () => {
   };
 
   const newCategoryHandler = () => {
+    if (categoryName === '') {window.alert('카테고리명을 입력해주십시오.'); return;}
+
     if (categories.findIndex(item => item.id == categoryId) > -1){
       window.alert('동일한 카테고리명이 이미 존재합니다.')
     } else {
