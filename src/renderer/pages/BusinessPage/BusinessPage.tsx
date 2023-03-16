@@ -25,17 +25,6 @@ const BuisnessPage = () => {
   const [address, setAddress] = useState<string>(business.address);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    // window.electron.ipcRenderer.sendMessage('login', {
-    //   token,
-    //   businessId: business.id,
-    // });
-    // window.electron.ipcRenderer.on('login', (args: LoginOutput) => {
-    //   setLoginInfo(args.login as Store[]);
-    // });
-    console.log(businesses);
-  }, [businesses]);
-
 
   const deleteDataHandler = () => {
     if (window.confirm('정말 삭제하시겠습니까?')){
@@ -44,16 +33,16 @@ const BuisnessPage = () => {
   };
 
   const updateDataHandler = () => {
-    const newData: UpdateBusinessInput = {
-      businessNumber,
-      address,
-      name,
-      businessOwnerName,
-      token,
-      businessId: business.id
-    };
-
     if (window.confirm('정말 수정하시겠습니까?')){
+      const newData: UpdateBusinessInput = {
+        businessNumber,
+        address,
+        name,
+        businessOwnerName,
+        token,
+        businessId: business.id,
+      };
+
       window.electron.ipcRenderer.sendMessage('update-business', {
         ...newData,
       });

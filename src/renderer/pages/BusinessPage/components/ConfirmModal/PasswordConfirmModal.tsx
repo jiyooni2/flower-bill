@@ -61,7 +61,6 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
               }
               if (error) {
                 console.log(error);
-                window.alert('비밀번호가 일치하지 않습니다.');
                 setIsOpen(false);
               }
             }
