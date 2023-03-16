@@ -4,7 +4,7 @@ import { Button, TextField, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
 import { Business } from 'main/business/entities/business.entity';
-import { createRef, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 
 interface IProps {
@@ -23,6 +23,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
   const numberRef = useRef<HTMLInputElement>();
   const nameRef = useRef<HTMLInputElement>();
 
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, dataName: string) => {
     const { value } = event.target;
     if (dataName === 'owner') setOwner(value)
@@ -32,8 +33,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
     }
     else setAddress(value)
   }
-
-  console.log(owner.length)
 
   const validation = (businessNumber: string, owner: string, address: string) => {
     if (!businessNumber) {
@@ -46,28 +45,23 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       return;
     }
 
-    const pattern1 = "(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/)";
     if (!owner) {
       window.alert('성명을 입력해주시기 바랍니다.');
       nameRef.current.focus();
       return;
-    } else if (pattern1.search(owner)) {
-      window.alert('성명에 숫자나 특수문자를 포함할 수 없습니다.');
-      nameRef.current.focus();
-      return;
     }
 
-    // const pattern2 = [가-힣A-Za-z·\d~\-\.]{2,}(로|길).[\d]+|[가-힣A-Za-z·\d~\-\.](읍|동)\s[\d]
-    // if (!pattern2.test(address) && address.length > 2) {
-    //   window.alert('주소가 존재하지 않습니다.');
-    //   return;
-    // }
+    const pattern2 = /(([가-힣A-Za-z·\d~\-\.]{2,}(로|길).[\d]+)|([가-힣A-Za-z·\d~\-\.]+(읍|동)\s)[\d]+)/;
+    if (address && address.length > 2){
+      if (pattern2.test(address) == false){
+        window.alert('주소를 확인하시기 바랍니다.')
+        return;
+      }
+    }
     return true;
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleSubmit = () => {
     if (name == '' && businessNumber == '' && owner == '' && name == '') {
       window.alert(
         '사업자를 생성할 수 없습니다.\n모든 입력 사항을 작성해주시기 바랍니다.'
@@ -95,10 +89,16 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
                 token,
                 businessId: business.id,
               });
+
               window.electron.ipcRenderer.on(
                 'get-businesses',
-                (args: GetBusinessesOutput) => {
-                  setBusinesses(args.businesses as Business[]);
+                ({ ok, error, businesses }: GetBusinessesOutput) => {
+                  if (ok) {
+                    setBusinesses(businesses);
+                    console.log(businesses)
+                  } else {
+                    console.error(error);
+                  }
                 }
               );
             } else if (error) {
@@ -128,7 +128,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       >
         <Typography variant="h6">사업자 등록하기</Typography>
       </div>
-      <form onSubmit={handleSubmit}>
         <div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <TextField
@@ -188,11 +187,11 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
             type="submit"
             variant="text"
             sx={{ marginTop: '17px', float: 'right', marginRight: '10px' }}
+            onClick={handleSubmit}
           >
             제출하기
           </Button>
         </div>
-      </form>
     </Modal>
   );
 };
