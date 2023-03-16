@@ -5,6 +5,10 @@ import { useState } from 'react';
 import styles from './PasswordConfirmModal.module.scss'
 import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
 import { CheckPasswordInput, CheckPasswordOutput } from 'auth/dtos/check-password.dto';
+import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
+import { Business } from 'main/business/entities/business.entity';
+import { Link } from 'react-router-dom';
+import { BrowserWindow } from 'electron';
 
 interface IProps {
   isOpen: boolean;
@@ -14,9 +18,9 @@ interface IProps {
 
 const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
-  const businesses = useRecoilValue(businessesState);
   const [business, setBusiness] = useRecoilState(businessState);
   const [password, setPassword] = useState<string>('');
+  const [businesses, setBusinesses] = useRecoilState(businessesState)
 
   const clickHandler = () => {
     const check: CheckPasswordInput = {
@@ -42,8 +46,18 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
             'delete-business',
             ({ ok, error }: DeleteBusinessOutput) => {
               if (ok) {
-                setBusiness(businesses[0])
-                setIsOpen(false);
+                window.electron.ipcRenderer.sendMessage('get-businesses', {
+                  token,
+                  businessId: business.id,
+                });
+                window.electron.ipcRenderer.on(
+                  'get-businesses',
+                  (args: GetBusinessesOutput) => {
+                    setBusinesses(args.businesses as Business[]);
+                    setBusiness(businesses[0]);
+                    setIsOpen(false);
+                  }
+                );
               }
               if (error) {
                 console.log(error);
@@ -77,13 +91,13 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
             />
           </p>
         </div>
-        <button
-          className={styles.deleteButton}
-          disabled={!password ? true : false}
-          onClick={clickHandler}
-        >
-          확인
-        </button>
+          <button
+            className={styles.deleteButton}
+            disabled={!password ? true : false}
+            onClick={clickHandler}
+          >
+            확인
+          </button>
       </div>
     </Modal>
   );
