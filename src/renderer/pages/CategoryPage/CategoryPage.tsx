@@ -53,8 +53,6 @@ const CategoryPage = () => {
     if (name === 'add') {
       setClicked(false);
 
-      console.log(item)
-
       if (item == null) {
         setLevelName('대분류')
       } else if (item.level === 1) {
@@ -100,44 +98,46 @@ const CategoryPage = () => {
   };
 
   const newCategoryHandler = () => {
-    const newData: CreateCategoryInput = {
-      token: token,
-      businessId: business.id,
-      name: categoryName,
-      parentCategoryId: parentCategoryId,
-    };
+    if (categories.findIndex(item => item.id == categoryId) > -1){
+      window.alert('동일한 카테고리명이 이미 존재합니다.')
+    } else {
+      const newData: CreateCategoryInput = {
+        token: token,
+        businessId: business.id,
+        name: categoryName,
+        parentCategoryId: parentCategoryId,
+      };
+      window.electron.ipcRenderer.sendMessage('create-category', newData);
 
-    window.electron.ipcRenderer.sendMessage('create-category', newData);
-
-    window.electron.ipcRenderer.on(
-      'create-category',
-      ({ ok, error }: CreateCategoryOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-categories', {
-            token,
-            businessId: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-categories',
-            ({ ok, error, categories }: GetCategoriesOutput) => {
-              if (ok) {
-                setCategories(categories);
-              } else {
-                console.error(error);
+      window.electron.ipcRenderer.on(
+        'create-category',
+        ({ ok, error }: CreateCategoryOutput) => {
+          if (ok) {
+            window.electron.ipcRenderer.sendMessage('get-categories', {
+              token,
+              businessId: business.id,
+            });
+            window.electron.ipcRenderer.on(
+              'get-categories',
+              ({ ok, error, categories }: GetCategoriesOutput) => {
+                if (ok) {
+                  setCategories(categories);
+                } else {
+                  console.error(error);
+                }
               }
-            }
-          );
-          console.log('done!');
-        } else if (error) {
-          console.log(error);
+            );
+            console.log('done!');
+          } else if (error) {
+            console.log(error);
+          }
         }
-      }
-    );
-
-    setCategoryName('');
-    setLevelName('');
-    setParentCategoryName('');
-  };
+      );
+      setCategoryName('');
+      setLevelName('');
+      setParentCategoryName('');
+    }
+  }
 
   // const updateDataHandler = () => {
   //   const newData: UpdateCategoryInput = {
