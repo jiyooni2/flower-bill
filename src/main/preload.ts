@@ -34,6 +34,7 @@ export type Channels =
   | 'create-business'
   | 'update-business'
   | 'delete-business'
+  | 'get-business'
   | 'get-businesses'
   | 'check-password'
   | 'login';

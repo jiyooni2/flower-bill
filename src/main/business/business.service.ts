@@ -1,3 +1,4 @@
+import { GetBusinessOutput, GetBusinessInput } from './dtos/get-business.dto';
 import {
   DeleteBusinessInput,
   DeleteBusinessOutput,
@@ -126,13 +127,27 @@ export class BusinessService {
     }
   }
 
-  //service not for API
-  async getBusiness(id: number) {
-    return this.businessRepository.findOne({ where: { id } });
+  async getBusiness({
+    token,
+    id,
+  }: GetBusinessInput): Promise<GetBusinessOutput> {
+    try {
+      await authService.checkBusinessAuth(token, id);
+
+      const business = await this.businessRepository.findOne({ where: { id } });
+
+      if (!business) {
+        return { ok: false, error: '존재하지 않는 사업자입니다.' };
+      }
+
+      return { ok: true, business };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
   }
 
   async validateBusiness(id: number) {
-    const business = this.getBusiness(id);
+    const business = this.businessRepository.findOne({ where: { id } });
     if (!business) {
       throw new Error('없는 사업자입니다.');
     }

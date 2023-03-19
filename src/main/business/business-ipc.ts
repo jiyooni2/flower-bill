@@ -1,3 +1,4 @@
+import { GetBusinessInput } from './dtos/get-business.dto';
 import { DeleteBusinessInput } from './dtos/delete-business.dto';
 import { UpdateBusinessInput } from './dtos/update-busiess.dto';
 import { GetBusinessesInput } from './dtos/get-businesses.dto';
@@ -41,3 +42,10 @@ ipcMain.on(
     event.reply('delete-business', result);
   }
 );
+
+ipcMain.on("get-business",
+async(event,getBusinessInput:GetBusinessInput)=>{
+  authService.checkAuth(getBusinessInput.token);
+  const result = await businessService.getBusiness(getBusinessInput);
+  event.reply("get-business",result);
+})
