@@ -72,147 +72,147 @@ const BillPage = () => {
 
   return (
     <>
-          <StoreSearchModal
-            isOpen={isSearchStoreOpen}
-            setIsOpen={setIsSearchStoreOpen}
-          />
-          <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
-          <div className={styles.container}>
-            <div
-              className={`${styles.content_container} ${styles.bill_container}`}
-              style={{ width: '50%' }}
-            >
-              <Typography
-                variant="h5"
-                align="center"
-                marginTop="15px"
-                marginBottom="7px"
-              >
-                계산서
-              </Typography>
-              <Table>
-                <TableHead>
-                  <TableRow sx={{ fontWeight: 'bold' }}>
-                    <TableCell sx={{ width: '10%' }}></TableCell>
-                    <TableCell sx={{ width: '34%' }}>상품</TableCell>
-                    <TableCell sx={{ width: '32%' }}>총 금액</TableCell>
-                    <TableCell sx={{ width: '30%' }}>개수</TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div className={styles.orderProducts_list}>
-                  {orderProducts
-                    .slice((page - 1) * 4, page * 4)
-                    .map((orderProduct) => (
-                      <OrderProductBox
-                        key={orderProduct.product.id}
-                        orderProduct={orderProduct}
-                      />
-                    ))}
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    height: '100px',
-                  }}
-                >
-                  <Pagination
-                    count={LAST_PAGE}
-                    size="small"
-                    color="standard"
-                    defaultPage={1}
-                    boundaryCount={1}
-                    onChange={handlePage}
+      <StoreSearchModal
+        isOpen={isSearchStoreOpen}
+        setIsOpen={setIsSearchStoreOpen}
+      />
+      <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
+      <div className={styles.container}>
+        <div className={styles.content_container} style={{ width: '50%' }}>
+          <Typography
+            variant="h5"
+            align="center"
+            marginTop="15px"
+            marginBottom="7px"
+          >
+            계산서
+          </Typography>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ fontWeight: 'bold' }}>
+                <TableCell sx={{ width: '10%' }}></TableCell>
+                <TableCell sx={{ width: '24%' }}>상품</TableCell>
+                <TableCell sx={{ width: '22%' }}>총 금액</TableCell>
+                <TableCell sx={{ width: '25%' }}>개수</TableCell>
+              </TableRow>
+            </TableHead>
+          </Table>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className={styles.orderProducts_list}>
+              {orderProducts
+                .slice((page - 1) * 4, page * 4)
+                .map((orderProduct) => (
+                  <OrderProductBox
+                    key={orderProduct.product.id}
+                    orderProduct={orderProduct}
                   />
-                </div>
-              </div>
+                ))}
             </div>
             <div
-                style={{
-                  marginLeft: '20px',
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                height: '100px',
+              }}
+            >
+              <Pagination
+                count={LAST_PAGE}
+                size="small"
+                color="standard"
+                defaultPage={1}
+                boundaryCount={1}
+                onChange={handlePage}
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+          >
+            <div style={{ width: '100%' }}>
+              <div className={styles.total}>
+                <p className={styles.totalName}>과세&nbsp;물품</p>
+                <h6 className={styles.totalNum}>
+                  {addComma(Math.round(sum / 1.1))} 원
+                </h6>
+              </div>
+              <hr />
+              <div className={styles.total}>
+                <p className={styles.totalName}>
+                  부&nbsp;&nbsp;가&nbsp;&nbsp;세
+                </p>
+                <h6 className={styles.totalNum}>
+                  {addComma(Math.round(Math.round(sum / 1.1) * 0.1))} 원
+                </h6>
+              </div>
+              <hr />
+              <div className={styles.total}>
+                <p className={styles.totalName}>
+                  할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
+                </p>
+                <h6 className={styles.totalNum}>
+                  {discount ? addComma(discount) : 0} 원
+                </h6>
+              </div>
+              <hr />
+              <div className={styles.total}>
+                <p className={styles.totalName}>
+                  합&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;계
+                </p>
+                <p className={styles.totalNum}>
+                  {addComma(sum - (sum * discount) / 100)} 원
+                </p>
+              </div>
+              <hr />
+            </div>
+            <div
+              style={{
+                marginTop: '20px',
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Button
+                variant="contained"
+                // color="secondary"
+                sx={{
+                  height: '33px',
+                  width: '60%',
+                  marginTop: '10px',
+                  marginLeft: '10px',
+                  backgroundColor: 'ghostwhite',
+                  opacity: '0.9',
+                  color: '#228af2',
+                  '&:hover': {
+                    color: 'lightskyblue',
+                  },
+                }}
+                onClick={() => setIsSearchStoreOpen(true)}
+              >
+                판매처 선택하기
+              </Button>
+              <Button
+                variant="contained"
+                onClick={billClickHandler}
+                sx={{
+                  height: '33px',
+                  width: '70%',
+                  marginLeft: '15px',
+                  marginTop: '10px',
                   marginRight: '10px',
-                  position: 'absolute',
-                  bottom: '30px',
-                  width: '30%',
+                  backgroundColor: '#228bf2',
+                  color: '#e8f8e2',
                 }}
               >
-                <div>
-                  <div className={styles.total}>
-                    <p className={styles.totalName}>과세&nbsp;물품</p>
-                    <h6 className={styles.totalNum}>
-                      {addComma(Math.round(sum / 1.1))} 원
-                    </h6>
-                  </div>
-                  <hr />
-                  <div className={styles.total}>
-                    <p className={styles.totalName}>
-                      부&nbsp;&nbsp;가&nbsp;&nbsp;세
-                    </p>
-                    <h6 className={styles.totalNum}>
-                      {addComma(Math.round(Math.round(sum / 1.1) * 0.1))} 원
-                    </h6>
-                  </div>
-                  <hr />
-                  <div className={styles.total}>
-                    <p className={styles.totalName}>
-                      할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
-                    </p>
-                    <h6 className={styles.totalNum}>
-                      {discount ? addComma(discount) : 0} 원
-                    </h6>
-                  </div>
-                  <hr />
-                  <div className={styles.total}>
-                    <p className={styles.totalName}>
-                      합&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;계
-                    </p>
-                    <p className={styles.totalNum}>
-                      {addComma(sum - (sum * discount) / 100)} 원
-                    </p>
-                  </div>
-                  <hr />
-                </div>
-                <div
-                  style={{
-                    width: '100%',
-                    marginTop: '20px',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginLeft: '2px',
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    sx={{
-                      height: '33px',
-                      width: '60%',
-                      marginLeft: '20px',
-                      marginTop: '10px',
-                    }}
-                    onClick={() => setIsSearchStoreOpen(true)}
-                  >
-                    판매처 선택하기
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={billClickHandler}
-                    sx={{
-                      height: '33px',
-                      width: '65%',
-                      marginLeft: '20px',
-                      marginTop: '10px',
-                    }}
-                  >
-                    계산서 생성
-                  </Button>
-                </div>
-              </div>
-            <ProductsGrid />
+                계산서 생성
+              </Button>
+            </div>
           </div>
+        </div>
+        <ProductsGrid />
+      </div>
     </>
   );
 };

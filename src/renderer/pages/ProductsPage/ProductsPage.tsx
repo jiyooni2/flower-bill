@@ -22,12 +22,13 @@ const ProductsPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
+  const [nameHasError, setNameHasError] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [id, setId] = useState<number>();
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [categoryId, setCategoryId] = useRecoilState(categoryIdState);
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -187,8 +188,21 @@ const ProductsPage = () => {
 
     if (dataName === 'name') {
       setName(value);
+      products.map((item) => {
+        if (item.name === value) {
+          setNameHasError(true)
+        } else {
+          setNameHasError(false);
+        }
+      })
     } else if (dataName === 'price') {
-      setPrice(value)
+      const pattern = /^[0-9]+$/;
+      if (!pattern.test(value)) {
+        window.alert('판매가는 숫자만 입력이 가능합니다.');
+        return;
+      } else {
+        setPrice(value);
+      }
     }
   };
 
@@ -305,63 +319,58 @@ const ProductsPage = () => {
                     </TableHead>
                     <TableBody>
                       {products &&
-                        products.length > 0 &&
-                        products
-                          .slice((page - 1) * 9, page * 9)
-                          .map((item) => (
-                            <TableRow
-                              key={item.name}
-                              className={styles.dataRow}
-                              onClick={(event) =>
-                                changeDataHandler(event, item)
-                              }
-                              sx={{
-                                '& th': {
-                                  fontSize: '14px',
-                                },
-                              }}
+                        products.slice((page - 1) * 9, page * 9).map((item) => (
+                          <TableRow
+                            key={item.name}
+                            className={styles.dataRow}
+                            onClick={(event) => changeDataHandler(event, item)}
+                            sx={{
+                              '& th': {
+                                fontSize: '14px',
+                              },
+                            }}
+                          >
+                            <TableCell
+                              component="th"
+                              align="left"
+                              sx={{ width: '10%' }}
                             >
-                              <TableCell
-                                component="th"
-                                align="left"
-                                sx={{ width: '10%' }}
-                              >
-                                {item.id}
-                              </TableCell>
-                              <TableCell
-                                component="th"
-                                align="left"
-                                sx={{ width: '25%' }}
-                              >
-                                {item.name}
-                              </TableCell>
-                              <TableCell
-                                component="th"
-                                align="left"
-                                sx={{ width: '28%' }}
-                              >
-                                {item.price}
-                              </TableCell>
-                              <TableCell
-                                component="th"
-                                align="left"
-                                className={styles.cutText}
-                                sx={{ width: '45%' }}
-                              >
-                                {categories.map((cat) => {
-                                  if (cat.id === item.categoryId) {
-                                    if (cat.parentCategory.parentCategory) {
-                                      return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
-                                    } else if (cat.parentCategory) {
-                                      return `${cat.parentCategory.name}/${cat.name}`;
-                                    } else {
-                                      return cat.name;
-                                    }
+                              {item.id}
+                            </TableCell>
+                            <TableCell
+                              component="th"
+                              align="left"
+                              sx={{ width: '25%' }}
+                            >
+                              {item.name}
+                            </TableCell>
+                            <TableCell
+                              component="th"
+                              align="left"
+                              sx={{ width: '28%' }}
+                            >
+                              {item.price}
+                            </TableCell>
+                            <TableCell
+                              component="th"
+                              align="left"
+                              className={styles.cutText}
+                              sx={{ width: '45%' }}
+                            >
+                              {categories.map((cat) => {
+                                if (cat.id === item.categoryId) {
+                                  if (cat.parentCategory.parentCategory) {
+                                    return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
+                                  } else if (cat.parentCategory) {
+                                    return `${cat.parentCategory.name}/${cat.name}`;
+                                  } else {
+                                    return cat.name;
                                   }
-                                })}
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                                }
+                              })}
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -398,7 +407,7 @@ const ProductsPage = () => {
               <div className={styles.list}>
                 <div>
                   <div>
-                    <div className={styles.item}>
+                    <div className={nameHasError ? styles.itemWithError : styles.item}>
                       <p className={styles.labels}>상품명</p>
                       <input
                         value={name}
@@ -408,6 +417,20 @@ const ProductsPage = () => {
                         }
                       />
                     </div>
+                    {nameHasError && (
+                      <div className={styles.errorMessage}>
+                        <p
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginLeft: '110px',
+                            marginTop: '5px',
+                          }}
+                        >
+                          동일한 상품이 이미 존재합니다.
+                        </p>
+                      </div>
+                    )}
                     <div className={styles.item}>
                       <p className={styles.labels}>판매가</p>
                       <input
@@ -433,10 +456,10 @@ const ProductsPage = () => {
                       ) : (
                         <button
                           className={styles.buttons}
-                          style={{ float: 'right'}}
+                          style={{ float: 'right' }}
                           onClick={categoryClickHandler}
                         >
-                          카테고리 보기
+                          카테고리 선택하기
                         </button>
                       )}
                     </div>
@@ -462,6 +485,7 @@ const ProductsPage = () => {
                       size="small"
                       sx={{ marginRight: '10px' }}
                       onClick={addDataHandler}
+                      disabled={nameHasError}
                     >
                       생성
                     </Button>

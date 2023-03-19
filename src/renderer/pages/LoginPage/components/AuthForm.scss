@@ -24,13 +24,12 @@ form {
   }
 
   .button-wrapper {
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 40px;
+    justify-content: space-between;
+    gap: 20px;
     margin-top: 20px;
-    button {
-    }
   }
 }

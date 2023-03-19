@@ -53,8 +53,8 @@ const CategoryPage = () => {
     if (name === 'add') {
       setClicked(false);
 
-      if (!item) {
-        setLevelName('대분류');
+      if (item == null) {
+        setLevelName('대분류')
       } else if (item.level === 1) {
         setLevelName('중분류');
       } else if (item.level === 2) {
@@ -98,44 +98,48 @@ const CategoryPage = () => {
   };
 
   const newCategoryHandler = () => {
-    const newData: CreateCategoryInput = {
-      token: token,
-      businessId: business.id,
-      name: categoryName,
-      parentCategoryId: parentCategoryId,
-    };
+    if (categoryName === '') {window.alert('카테고리명을 입력해주십시오.'); return;}
 
-    window.electron.ipcRenderer.sendMessage('create-category', newData);
+    if (categories.findIndex(item => item.id == categoryId) > -1){
+      window.alert('동일한 카테고리명이 이미 존재합니다.')
+    } else {
+      const newData: CreateCategoryInput = {
+        token: token,
+        businessId: business.id,
+        name: categoryName,
+        parentCategoryId: parentCategoryId,
+      };
+      window.electron.ipcRenderer.sendMessage('create-category', newData);
 
-    window.electron.ipcRenderer.on(
-      'create-category',
-      ({ ok, error }: CreateCategoryOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-categories', {
-            token,
-            businessId: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-categories',
-            ({ ok, error, categories }: GetCategoriesOutput) => {
-              if (ok) {
-                setCategories(categories);
-              } else {
-                console.error(error);
+      window.electron.ipcRenderer.on(
+        'create-category',
+        ({ ok, error }: CreateCategoryOutput) => {
+          if (ok) {
+            window.electron.ipcRenderer.sendMessage('get-categories', {
+              token,
+              businessId: business.id,
+            });
+            window.electron.ipcRenderer.on(
+              'get-categories',
+              ({ ok, error, categories }: GetCategoriesOutput) => {
+                if (ok) {
+                  setCategories(categories);
+                } else {
+                  console.error(error);
+                }
               }
-            }
-          );
-          console.log('done!');
-        } else if (error) {
-          console.log(error);
+            );
+            console.log('done!');
+          } else if (error) {
+            console.log(error);
+          }
         }
-      }
-    );
-
-    setCategoryName('');
-    setLevelName('');
-    setParentCategoryName('');
-  };
+      );
+      setCategoryName('');
+      setLevelName('');
+      setParentCategoryName('');
+    }
+  }
 
   // const updateDataHandler = () => {
   //   const newData: UpdateCategoryInput = {
@@ -305,7 +309,7 @@ const CategoryPage = () => {
         </div>
       </div>
       <div style={{ width: '55%' }}>
-        <div>
+        <div style={{ height: '100%'}}>
           <div className={styles.infoContent}>
             <Typography
               variant="h6"
@@ -314,7 +318,7 @@ const CategoryPage = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 fontSize: '24px',
-                marginTop: '20px',
+                marginTop: '-10px',
               }}
             >
               카테고리 생성
@@ -344,7 +348,9 @@ const CategoryPage = () => {
                     <p className={styles.labels}>분류명</p>
                     <input
                       className={styles.dataInput}
-                      defaultValue={levelName}
+                      value={levelName}
+                      onChange={changeHandler}
+                      readOnly
                     />
                   </div>
                   <div className={styles.item} hidden>
@@ -377,7 +383,7 @@ const CategoryPage = () => {
                   <Button
                     variant="contained"
                     size="small"
-                    sx={{ marginRight: '10px' }}
+                    sx={{ marginRight: '10px', marginTop: '-30px' }}
                     onClick={newCategoryHandler}
                   >
                     생성

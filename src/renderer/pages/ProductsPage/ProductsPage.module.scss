@@ -36,9 +36,7 @@
 
 
 .infoContent {
-  margin-top: 5px;
   position: relative;
-  height: 96vh;
 
   .clearInput {
     float: right;
@@ -72,6 +70,7 @@
       justify-content: center;
       display: flex;
       align-items: center;
+      height: 33px;
     }
 
     .labels {
@@ -89,9 +88,7 @@
 }
 
 .buttons {
-
   width: 50%;
-  // height: 25px;
   height: 33px;
   border-radius: 5px;
   border: 1px solid darkgray;
@@ -198,4 +195,35 @@ button {
   display: flex;
   justify-content: center;
   margin-right: 10px;
+}
+
+.errorMessage {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  font-size: 12.5px;
+  color: crimson;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.itemWithError {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+
+  .dataInput {
+    width: 50%;
+    height: 33px;
+    border-radius: 5px;
+    border: 1px solid darkgray;
+    opacity: 0.9;
+    padding-left: 8px;
+    font-size: 14px;
+  }
 }

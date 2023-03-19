@@ -241,28 +241,28 @@ const StorePage = () => {
                       <TableCell
                         component="th"
                         align="left"
-                        sx={{ width: '15%' }}
+                        sx={{ width: '25%' }}
                       >
                         사업자 번호
                       </TableCell>
                       <TableCell
                         component="th"
                         align="left"
-                        sx={{ width: '35%' }}
+                        sx={{ width: '30%' }}
                       >
                         가게명
                       </TableCell>
                       <TableCell
                         component="th"
                         align="left"
-                        sx={{ width: '20%' }}
+                        sx={{ width: '25%' }}
                       >
                         사업자
                       </TableCell>
                       <TableCell
                         component="th"
                         align="left"
-                        sx={{ width: '30%' }}
+                        sx={{ width: '35%' }}
                       >
                         가게 주소
                       </TableCell>
@@ -285,21 +285,21 @@ const StorePage = () => {
                           <TableCell
                             component="th"
                             scope="row"
-                            sx={{ width: '15%' }}
+                            // sx={{ width: '15%' }}
                           >
                             {store.businessNumber}
                           </TableCell>
                           <TableCell
                             component="th"
                             align="left"
-                            sx={{ width: '35%' }}
+                            // sx={{ width: '35%' }}
                           >
                             {store.name}
                           </TableCell>
                           <TableCell
                             component="th"
                             align="left"
-                            sx={{ width: '20%' }}
+                            // sx={{ width: '20%' }}
                           >
                             {store.owner}
                           </TableCell>
@@ -307,7 +307,7 @@ const StorePage = () => {
                             component="th"
                             align="left"
                             className={styles.cutText}
-                            sx={{ width: '30%' }}
+                            // sx={{ width: '30%' }}
                           >
                             {store.address}
                           </TableCell>

@@ -42,13 +42,21 @@ const NavBar = () => {
         <p className={styles.menuTitle}>계산서</p>
         <p
           className={styles.menu}
-          onClick={() => (hasBusinesses ? navigate(ROUTES.BILL) : undefined)}
+          onClick={() =>
+            hasBusinesses
+              ? navigate(ROUTES.BILL)
+              : window.alert('사업자를 먼저 생성해주세요.')
+          }
         >
           계산서 생성
         </p>
         <p
           className={styles.menu}
-          onClick={() => (hasBusinesses ? navigate(ROUTES.BILLS) : undefined)}
+          onClick={() =>
+            hasBusinesses
+              ? navigate(ROUTES.BILLS)
+              : window.alert('사업자를 먼저 생성해주세요.')
+          }
         >
           계산서 목록
         </p>
@@ -58,7 +66,9 @@ const NavBar = () => {
         <p
           className={styles.menu}
           onClick={() =>
-            hasBusinesses ? navigate(ROUTES.PRODUCTS) : undefined
+            hasBusinesses
+              ? navigate(ROUTES.PRODUCTS)
+              : window.alert('사업자를 먼저 생성해주세요.')
           }
         >
           상품 정보 관리
@@ -68,7 +78,7 @@ const NavBar = () => {
           onClick={() => {
             hasBusinesses && hasBusinesses
               ? navigate(ROUTES.CATEGORY)
-              : undefined;
+              : window.alert('사업자를 먼저 생성해주세요.');
           }}
         >
           카테고리 관리
@@ -78,13 +88,21 @@ const NavBar = () => {
         <p className={styles.menuTitle}>사업 관리</p>
         <p
           className={styles.menu}
-          onClick={() => (hasBusinesses ? navigate(ROUTES.STORE) : undefined)}
+          onClick={() =>
+            hasBusinesses
+              ? navigate(ROUTES.STORE)
+              : window.alert('사업자를 먼저 생성해주세요.')
+          }
         >
           판매처 관리
         </p>
         <p
           className={styles.menu}
-          onClick={() => (hasBusinesses ? navigate(ROUTES.SELLER) : undefined)}
+          onClick={() =>
+            hasBusinesses
+              ? navigate(ROUTES.SELLER)
+              : window.alert('사업자를 먼저 생성해주세요.')
+          }
         >
           사업자 관리
         </p>

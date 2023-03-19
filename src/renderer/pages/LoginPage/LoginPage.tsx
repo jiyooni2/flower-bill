@@ -43,9 +43,7 @@ const LoginPage = () => {
   return (
     <div className="content-container">
       {isSignUpPageOpen && (
-        <Modal isOpen={isSignUpPageOpen} setIsOpen={setIsSignUpPageOpen}>
-          <SignUpForm />
-        </Modal>
+          <SignUpForm isOpen={isSignUpPageOpen} setIsOpen={setIsSignUpPageOpen} />
       )}
       <form onSubmit={handleSubmit}>
         <div className="form-wrapper">
