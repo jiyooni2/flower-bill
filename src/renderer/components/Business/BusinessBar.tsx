@@ -1,7 +1,6 @@
 // import { useNavigate } from 'react-router-dom';
 import styles from './BusinessBar.module.scss';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { useEffect, useState } from 'react';
 import BusinessModal from './NewBusinessModal/BusinessModal';
 import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
@@ -9,6 +8,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
 import { Link } from 'react-router-dom';
+import { GetBusinessOutput } from 'main/business/dtos/get-business.dto';
 
 const BusinessBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -17,9 +17,15 @@ const BusinessBar = () => {
   const token = useRecoilValue(tokenState);
 
   useEffect(() => {
+    let businessId;
+    if (business) {
+      businessId = business.id
+    } else {
+      businessId = 1;
+    }
     window.electron.ipcRenderer.sendMessage('get-businesses', {
       token,
-      businessId: 1,
+      businessId: businessId,
     });
 
     window.electron.ipcRenderer.on(
@@ -27,7 +33,6 @@ const BusinessBar = () => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
-          setBusiness(businesses[0])
         } else {
           console.error(error);
         }
@@ -36,6 +41,22 @@ const BusinessBar = () => {
   }, [])
 
   const clickHandler = (item: Business) => {
+    window.electron.ipcRenderer.sendMessage('get-business', {
+      token,
+      id: business.id,
+    });
+
+    window.electron.ipcRenderer.on(
+      'get-business',
+      ({ ok, error, business }: GetBusinessOutput) => {
+        if (ok) {
+          setBusiness(business)
+        } else {
+          console.error(error);
+        }
+      }
+    );
+
     setBusiness(item);
   };
 
