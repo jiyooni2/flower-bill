@@ -16,36 +16,24 @@ const BuisnessPage = () => {
   const [business, setBusiness] = useRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
   const token = useRecoilValue(tokenState);
-  const [businessNumber, setBusinessNumber] = useState<number>(
-    business.businessNumber
-  );
-  const [name, setName] = useState<string>(business.name);
+  const [businessNumber, setBusinessNumber] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [businessOwnerName, setBusinessOwnerName] = useState<string>(
-    business.businessOwnerName
+    ''
   );
-  const [address, setAddress] = useState<string>(business.address);
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [address, setAddress] = useState<string>('');
+  // const [isOpen, setIsOpen] = useState<boolean>(true);
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-business', {
-      token,
-      id: business.id,
-    });
-
-    window.electron.ipcRenderer.on(
-      'get-business',
-      ({ ok, error, business }: GetBusinessOutput) => {
-        if (ok) {
-          setBusiness(business)
-        } else {
-          console.error(error);
-        }
-      }
-    );
-  }, [])
+    setBusinessNumber(business.businessNumber.toString())
+    setName(business.name)
+    setBusinessOwnerName(business.businessOwnerName)
+    setAddress(business.address)
+  }, [business])
 
 
   const deleteDataHandler = () => {
+    console.log(business)
     if (window.confirm('정말 삭제하시겠습니까?')){
       window.electron.ipcRenderer.sendMessage('delete-business', {
         businessId: business.id,
@@ -78,8 +66,10 @@ const BuisnessPage = () => {
 
   const updateDataHandler = () => {
     if (window.confirm('정말 수정하시겠습니까?')){
+      const number = parseInt(businessNumber);
+
       const newData: UpdateBusinessInput = {
-        businessNumber,
+        businessNumber: number,
         address,
         name,
         businessOwnerName,
@@ -125,9 +115,7 @@ const BuisnessPage = () => {
 
   return (
     <>
-      {isOpen ? (
-        <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} />
-      ) : (
+      {/* <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} /> */}
         <div className={styles.container}>
           <div className={styles.content}>
             <div className={styles.infoContent}>
@@ -203,7 +191,6 @@ const BuisnessPage = () => {
             </div>
           </div>
         </div>
-      )}
     </>
   );
 };

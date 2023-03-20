@@ -40,24 +40,8 @@ const BusinessBar = () => {
     );
   }, [])
 
-  console.log(business)
-
   const clickHandler = (item: Business) => {
-    window.electron.ipcRenderer.sendMessage('get-business', {
-      token,
-      id: item.id,
-    });
-
-    window.electron.ipcRenderer.on(
-      'get-business',
-      ({ ok, error, business }: GetBusinessOutput) => {
-        if (ok) {
-          setBusiness(business)
-        } else {
-          console.error(error);
-        }
-      }
-    );
+    setBusiness(item)
   };
 
   return (
