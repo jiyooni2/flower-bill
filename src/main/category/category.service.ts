@@ -120,6 +120,7 @@ export class CategoryService {
     businessId,
   }: GetCategoriesInput): Promise<GetCategoriesOutput> {
     try {
+      console.log(token, businessId);
       await authService.checkBusinessAuth(token, businessId);
 
       const categories = await this.categoryRepository.find({

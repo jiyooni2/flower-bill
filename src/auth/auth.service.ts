@@ -8,14 +8,16 @@ import * as jwt from 'jsonwebtoken';
 import { Owner } from './../main/owner/entities/owner.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { businessService } from '../main/main';
+import { Business } from './../main/business/entities/business.entity';
 
 export class AuthService {
   private readonly ownerRepository: Repository<Owner>;
+  private readonly businessRepository: Repository<Business>;
   private readonly ACCESS_KEY = 'AAA';
 
   constructor() {
     this.ownerRepository = AppDataSource.getRepository(Owner);
+    this.businessRepository = AppDataSource.getRepository(Business);
   }
 
   async login({ ownerId, password }: LoginInput): Promise<LoginOutput> {
@@ -118,7 +120,9 @@ export class AuthService {
       throw new Error('존재하지 않는 유저입니다.');
     }
 
-    const business = await businessService.getBusiness(businessId);
+    const business = await this.businessRepository.findOne({
+      where: { id: businessId },
+    });
 
     if (!business) {
       throw new Error('존재하지 않는 사업자입니다.');
