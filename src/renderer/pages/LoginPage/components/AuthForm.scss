@@ -52,3 +52,11 @@ form {
     margin-top: 20px;
   }
 }
+
+.signin-button {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 30px;
+}

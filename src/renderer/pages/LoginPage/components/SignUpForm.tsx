@@ -1,4 +1,4 @@
-import { TextField } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import useInputs from 'renderer/hooks/useInputs';
 import { Owner } from 'renderer/types';
 import { Button } from '@mui/material';
@@ -33,8 +33,10 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
     } else if (!nickname || !ownerId || !password) {
       if (!nickname) {
         setNameError({ text: '닉네임을 입력해주십시오.' });
+      } else if (nickname && nickname.length < 3) {
+        setNameError({ text: '3글자 이상 입력바랍니다.' });
       } else {
-        setNameError({ text: ''})
+        setNameError({ text: '' });
       }
 
       if (!ownerId) {
@@ -70,7 +72,7 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ marginTop: '8%' }}>
         <div className="form-wrapper">
           <div className="text-wrapper">
             <TextField
@@ -105,19 +107,20 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
               value={password}
             />
           </div>
-          <div className="button-wrapper">
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: '#EEEEEE',
-                  color: '#1876d2',
-                  '&:hover': { backgroundColor: '#bccee4', color: 'white' },
-                }}
-                onClick={() => setIsOpen(false)}
-              >
-                닫기
-              </Button>
-            <Button type="submit" variant="contained">
+          <div className="signin-button">
+            <Button
+              variant="contained"
+              sx={{
+                width: '10%',
+                backgroundColor: '#EEEEEE',
+                color: '#1876d2',
+                '&:hover': { backgroundColor: '#bccee4', color: 'white' },
+              }}
+              onClick={() => setIsOpen(false)}
+            >
+              닫기
+            </Button>
+            <Button type="submit" variant="contained" sx={{ width: '14%' }}>
               회원가입
             </Button>
           </div>
