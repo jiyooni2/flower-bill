@@ -9,12 +9,13 @@ import { LoginOutput } from 'auth/dtos/login.dto';
 import { UpdateBusinessInput, UpdateBusinessOutPut } from 'main/business/dtos/update-busiess.dto';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
+import { GetBusinessOutput } from 'main/business/dtos/get-business.dto';
+import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
 
 const BuisnessPage = () => {
-  const business = useRecoilValue(businessState);
+  const [business, setBusiness] = useRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
   const token = useRecoilValue(tokenState);
-  const [loginInfo, setLoginInfo] = useState({});
   const [businessNumber, setBusinessNumber] = useState<number>(
     business.businessNumber
   );
@@ -23,12 +24,55 @@ const BuisnessPage = () => {
     business.businessOwnerName
   );
   const [address, setAddress] = useState<string>(business.address);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-business', {
+      token,
+      id: business.id,
+    });
+
+    window.electron.ipcRenderer.on(
+      'get-business',
+      ({ ok, error, business }: GetBusinessOutput) => {
+        if (ok) {
+          setBusiness(business)
+        } else {
+          console.error(error);
+        }
+      }
+    );
+  }, [])
 
 
   const deleteDataHandler = () => {
     if (window.confirm('정말 삭제하시겠습니까?')){
-      setIsOpen(true)
+      window.electron.ipcRenderer.sendMessage('delete-business', {
+        businessId: business.id,
+        token,
+      });
+
+      window.electron.ipcRenderer.on(
+        'delete-business',
+        ({ ok, error }: DeleteBusinessOutput) => {
+          if (ok) {
+            window.electron.ipcRenderer.sendMessage('get-businesses', {
+              token,
+              businessId: business.id,
+            });
+            window.electron.ipcRenderer.on(
+              'get-businesses',
+              (args: GetBusinessesOutput) => {
+                setBusinesses(args.businesses as Business[]);
+                setBusiness(businesses[0])
+              }
+            );
+          }
+          if (error) {
+            console.log(error);
+          }
+        }
+      )
     }
   };
 
@@ -81,60 +125,62 @@ const BuisnessPage = () => {
 
   return (
     <>
-      <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} purpose="enter" />
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <div className={styles.infoContent}>
-            <Typography
-              variant="h6"
-              fontWeight={600}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                fontSize: '24px',
-                marginTop: '20px',
-              }}
-            >
-              사업자 정보
-            </Typography>
-            <div className={styles.list}>
-              <div>
+      {isOpen ? (
+        <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      ) : (
+        <div className={styles.container}>
+          <div className={styles.content}>
+            <div className={styles.infoContent}>
+              <Typography
+                variant="h6"
+                fontWeight={600}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontSize: '24px',
+                  marginTop: '20px',
+                }}
+              >
+                사업자 정보
+              </Typography>
+              <div className={styles.list}>
                 <div>
-                  <div className={styles.item}>
-                    <p className={styles.labels}>사업자 번호</p>
-                    <input
-                      value={businessNumber}
-                      className={styles.dataInput}
-                      onChange={(event) => changeHandler(event, 'number')}
-                    />
-                  </div>
-                  <div className={styles.item}>
-                    <p className={styles.labels}>사업장 이름</p>
-                    <input
-                      value={name}
-                      className={styles.dataInput}
-                      onChange={(event) => changeHandler(event, 'name')}
-                    />
-                  </div>
-                  <div className={styles.item}>
-                    <p className={styles.labels}>소유자 이름</p>
-                    <input
-                      value={businessOwnerName}
-                      className={styles.dataInput}
-                      onChange={(event) => changeHandler(event, 'owner')}
-                    />
-                  </div>
-                  <div className={styles.item}>
-                    <p className={styles.labels}>사업장 주소</p>
-                    <input
-                      value={address}
-                      className={styles.dataInput}
-                      onChange={(event) => changeHandler(event, 'address')}
-                    />
+                  <div>
+                    <div className={styles.item}>
+                      <p className={styles.labels}>사업자 번호</p>
+                      <input
+                        value={businessNumber}
+                        className={styles.dataInput}
+                        onChange={(event) => changeHandler(event, 'number')}
+                      />
+                    </div>
+                    <div className={styles.item}>
+                      <p className={styles.labels}>사업장 이름</p>
+                      <input
+                        value={name}
+                        className={styles.dataInput}
+                        onChange={(event) => changeHandler(event, 'name')}
+                      />
+                    </div>
+                    <div className={styles.item}>
+                      <p className={styles.labels}>소유자 이름</p>
+                      <input
+                        value={businessOwnerName}
+                        className={styles.dataInput}
+                        onChange={(event) => changeHandler(event, 'owner')}
+                      />
+                    </div>
+                    <div className={styles.item}>
+                      <p className={styles.labels}>사업장 주소</p>
+                      <input
+                        value={address}
+                        className={styles.dataInput}
+                        onChange={(event) => changeHandler(event, 'address')}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className={styles.buttonList}>
+                <div className={styles.buttonList}>
                   <Button
                     variant="contained"
                     size="small"
@@ -152,11 +198,12 @@ const BuisnessPage = () => {
                   >
                     수정
                   </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

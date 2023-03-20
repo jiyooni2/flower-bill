@@ -13,14 +13,12 @@ import { BrowserWindow } from 'electron';
 interface IProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  purpose: string;
 }
 
 const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
   const [business, setBusiness] = useRecoilState(businessState);
   const [password, setPassword] = useState<string>('');
-  const [businesses, setBusinesses] = useRecoilState(businessesState)
 
   const clickHandler = () => {
     const check: CheckPasswordInput = {
@@ -37,34 +35,7 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
       'check-password',
       ({ ok, error }: CheckPasswordOutput) => {
         if (ok) {
-          window.electron.ipcRenderer.sendMessage('delete-business', {
-            businessId: business.id,
-            token,
-          });
-
-          window.electron.ipcRenderer.on(
-            'delete-business',
-            ({ ok, error }: DeleteBusinessOutput) => {
-              if (ok) {
-                window.electron.ipcRenderer.sendMessage('get-businesses', {
-                  token,
-                  businessId: business.id,
-                });
-                window.electron.ipcRenderer.on(
-                  'get-businesses',
-                  (args: GetBusinessesOutput) => {
-                    setBusinesses(args.businesses as Business[]);
-                    setBusiness(businesses[0]);
-                    setIsOpen(false);
-                  }
-                );
-              }
-              if (error) {
-                console.log(error);
-                setIsOpen(false);
-              }
-            }
-          );
+          setIsOpen(false);
         }
         if (error) {
           console.log(error);
