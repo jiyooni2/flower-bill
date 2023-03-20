@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Typography } from '@mui/material';
 import Modal from 'renderer/components/Modal/Modal';
 import SignUpForm from './components/SignUpForm';
 import useInputs from 'renderer/hooks/useInputs';
@@ -33,7 +33,7 @@ const LoginPage = () => {
           setIsLoggedIn(true);
           setToken(token);
         } else {
-          console.error(error);
+          console.error(error)
         }
         //set token, businessId
       }
@@ -43,44 +43,49 @@ const LoginPage = () => {
   return (
     <div className="content-container">
       {isSignUpPageOpen && (
-          <SignUpForm isOpen={isSignUpPageOpen} setIsOpen={setIsSignUpPageOpen} />
+        <SignUpForm isOpen={isSignUpPageOpen} setIsOpen={setIsSignUpPageOpen} />
       )}
-      <form onSubmit={handleSubmit}>
-        <div className="form-wrapper">
-          <div className="text-wrapper">
-            <TextField
-              label="ID"
-              name="ownerId"
-              variant="filled"
-              onChange={handleChange}
-              value={ownerId}
-            />
-          </div>
+      <div className="content">
+        <h1 className="title" style={{ display: 'flex', justifyContent: 'center'}}>Flower Bill</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="form-wrapper">
+            <div className="text-wrapper">
+              <TextField
+                label="ID"
+                name="ownerId"
+                variant="filled"
+                onChange={handleChange}
+                value={ownerId}
+              />
+            </div>
 
-          <div className="text-wrapper">
-            <TextField
-              label="비밀번호"
-              name="password"
-              variant="filled"
-              type="password"
-              onChange={handleChange}
-              value={password}
-            />
-          </div>
+            <div className="text-wrapper">
+              <TextField
+                label="비밀번호"
+                name="password"
+                variant="filled"
+                type="password"
+                onChange={handleChange}
+                value={password}
+              />
+            </div>
 
-          <div className="button-wrapper">
-            <Button type="submit" variant="contained">
-              로그인
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => setIsSignUpPageOpen(true)}
-            >
-              회원가입
-            </Button>
+            <div className="button-wrapper">
+              <Button type="submit" variant="contained" style={{ width: '100%'}}>
+                로그인
+              </Button>
+              <div>
+                <span style={{ fontSize: '14px', color: 'gray'}}>회원이 아니신가요?</span>
+                <Button
+                  variant="text"
+                  onClick={() => setIsSignUpPageOpen(true)}
+                  sx={{ color: 'steelblue', '&:hover' : { backgroundColor: 'transparent', color: 'skyblue'}}}
+                >회원가입하기</Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

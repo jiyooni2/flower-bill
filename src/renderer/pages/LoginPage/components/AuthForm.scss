@@ -1,10 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Handlee&family=Nanum+Gothic:wght@700&family=Noto+Sans+KR&family=Pacifico&display=swap');
+
 .content-container {
   display: flex;
   width: 100%;
+  height: 100vh;
 }
 
 form {
   width: 100%;
+}
+
+.title {
+  font-family: 'Handlee', cursive;
+  font-weight: bold;
+  font-size: 34px;
+  margin-top: -35px;
+  margin-bottom: 30px;
+}
+
+.content {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .form-wrapper {
@@ -26,7 +45,7 @@ form {
   .button-wrapper {
     width: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
