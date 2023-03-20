@@ -26,7 +26,7 @@ const StorePage = () => {
   const [clicked, setClicked] = useState<boolean>(false);
   const [numberHasError, setNumberHasError] = useState<boolean>(false);
   const [addressHasError, setAddressHasError] = useState<boolean>(false);
-  const [StoreNumber, setStoreNumber] = useState<number>();
+  const [StoreNumber, setStoreNumber] = useState<string>('');
   const [StoreName, setStoreName] = useState<string>('');
   const [Owner, setOwner] = useState<string>('');
   const [Address, setAddress] = useState<string>('');
@@ -81,7 +81,7 @@ const StorePage = () => {
 
     stores.forEach((item) => {
       if (item.name === data.name) {
-        setStoreNumber(item.businessNumber);
+        setStoreNumber(item.businessNumber.toString());
         setStoreName(item.name);
         setOwner(item.owner);
         setAddress(item.address);
@@ -109,7 +109,7 @@ const StorePage = () => {
       if (event.target.value == ''){
         setNumberHasError(false)
       }
-      setStoreNumber(parseInt(event.target.value));
+      setStoreNumber(event.target.value);
     } else if (dataName === 'storeName') {
       setStoreName(event.target.value);
     } else if (dataName === 'owner') {
@@ -144,16 +144,16 @@ const StorePage = () => {
 
   const addDataHandler = () => {
     if (
-      stores.findIndex((data) => data.businessNumber == StoreNumber) != -1
+      stores.findIndex((data) => data.businessNumber.toString() == StoreNumber) != -1
     ) {
       setNumberHasError(true);
     } else if (stores.findIndex((data) => data.address == Address) != -1) {
       setAddressHasError(true);
     } else {
-      if (StoreName != '' && StoreNumber != 0 && Owner != '' && Address != '') {
+      if (StoreName != '' && StoreNumber != '' && Owner != '' && Address != '') {
         const newData: Store = {
           name: StoreName,
-          businessNumber: StoreNumber,
+          businessNumber: parseInt(StoreNumber),
           owner: Owner,
           address: Address,
           bills: null,
@@ -203,7 +203,7 @@ const StorePage = () => {
     );
       stores[findIndex] = {
         ...stores[findIndex],
-        businessNumber: StoreNumber,
+        businessNumber: parseInt(StoreNumber),
         name: StoreName,
         owner: Owner,
         address: Address,
@@ -428,8 +428,9 @@ const StorePage = () => {
                   <Button
                     variant="contained"
                     size="small"
+                    type='submit'
                     sx={{ marginRight: '10px' }}
-                    onClick={addDataHandler}
+                    // onClick={addDataHandler}
                   >
                     생성
                   </Button>
