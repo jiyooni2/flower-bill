@@ -10,8 +10,6 @@ import { ChevronRight, ExpandMore, AddRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Typography } from '@mui/material';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-// import { DeleteCategoryInput, DeleteCategoryOutput } from 'main/category/dtos/delete-category.dto';
-// import { UpdateCategoryInput, UpdateCategoryOutput } from 'main/category/dtos/update-category.dto';
 
 
 const CategoryPage = () => {
@@ -25,20 +23,21 @@ const CategoryPage = () => {
   const [parentCategoryName, setParentCategoryName] = useState<string>('');
   const [parentCategoryId, setParentCategoryId] = useState<number>(0);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const [errors, setErrors] = useState({name: ''})
 
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
       token,
-      business: business.id,
+      businessId: business.id,
     });
     window.electron.ipcRenderer.on(
       'get-categories',
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
-        } else if (error) {
-          window.alert(error);
+        } else {
+          console.error(error);
         }
       }
     );
@@ -270,7 +269,13 @@ const CategoryPage = () => {
   );
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCategoryName(e.target.value);
+    const {value} = e.target;
+    const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z0-9]+$/;
+    if (value) {
+      setErrors({'name': '카테고리명이 입력되지 않았습니다.'})
+    } else if (!pattern.test(value)){
+      setErrors({'name': '한글, 영문, 숫자를 제외한 문자는 작성하실 수 없습니다.'})
+    } else setCategoryName(value);
   };
 
   return (
@@ -342,6 +347,7 @@ const CategoryPage = () => {
                       ref={nameInputRef}
                       value={categoryName}
                       onChange={changeHandler}
+                      maxLength={20}
                     />
                   </div>
                   <div className={styles.item}>
