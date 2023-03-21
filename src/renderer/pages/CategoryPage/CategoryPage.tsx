@@ -97,7 +97,10 @@ const CategoryPage = () => {
   };
 
   const newCategoryHandler = () => {
-    if (categoryName === '') {window.alert('카테고리명을 입력해주십시오.'); return;}
+    if (categoryName === '') {
+      setErrors({ name: '카테고리명이 입력되지 않았습니다.' })
+      return;
+    }
 
     if (categories.findIndex(item => item.id == categoryId) > -1){
       window.alert('동일한 카테고리명이 이미 존재합니다.')
@@ -270,12 +273,10 @@ const CategoryPage = () => {
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target;
-    const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z0-9]+$/;
     if (value) {
-      setErrors({'name': '카테고리명이 입력되지 않았습니다.'})
-    } else if (!pattern.test(value)){
-      setErrors({'name': '한글, 영문, 숫자를 제외한 문자는 작성하실 수 없습니다.'})
-    } else setCategoryName(value);
+      setErrors({ name: ''})
+    }
+    setCategoryName(value)
   };
 
   return (
@@ -314,7 +315,7 @@ const CategoryPage = () => {
         </div>
       </div>
       <div style={{ width: '55%' }}>
-        <div style={{ height: '100%'}}>
+        <div style={{ height: '100%' }}>
           <div className={styles.infoContent}>
             <Typography
               variant="h6"
@@ -340,16 +341,19 @@ const CategoryPage = () => {
                       readOnly
                     />
                   </div>
-                  <div className={styles.item}>
+                  <div className={errors.name.length > 0 ? styles.itemWithError : styles.item}>
                     <p className={styles.labels}>카테고리명</p>
                     <input
-                      className={styles.dataInput}
+                      className={errors.name.length > 0 ? styles.hasError : styles.dataInput}
                       ref={nameInputRef}
                       value={categoryName}
                       onChange={changeHandler}
                       maxLength={20}
                     />
                   </div>
+                  {errors.name && (
+                    <span className={styles.errorMessage}>{errors.name}</span>
+                  )}
                   <div className={styles.item}>
                     <p className={styles.labels}>분류명</p>
                     <input
