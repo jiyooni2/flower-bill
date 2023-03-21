@@ -17,8 +17,6 @@ import { ChevronRight, ExpandMore, AddRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Typography } from '@mui/material';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-// import { DeleteCategoryInput, DeleteCategoryOutput } from 'main/category/dtos/delete-category.dto';
-// import { UpdateCategoryInput, UpdateCategoryOutput } from 'main/category/dtos/update-category.dto';
 
 const CategoryPage = () => {
   const [categories, setCategories] = useRecoilState(categoriesState);
@@ -31,6 +29,7 @@ const CategoryPage = () => {
   const [parentCategoryName, setParentCategoryName] = useState<string>('');
   const [parentCategoryId, setParentCategoryId] = useState<number>(0);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const [errors, setErrors] = useState({ name: '' });
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -42,8 +41,8 @@ const CategoryPage = () => {
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
-        } else if (error) {
-          window.alert(error);
+        } else {
+          console.error(error);
         }
       }
     );
@@ -104,7 +103,7 @@ const CategoryPage = () => {
 
   const newCategoryHandler = () => {
     if (categoryName === '') {
-      window.alert('카테고리명을 입력해주십시오.');
+      setErrors({ name: '카테고리명이 입력되지 않았습니다.' });
       return;
     }
 
@@ -280,7 +279,11 @@ const CategoryPage = () => {
   );
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCategoryName(e.target.value);
+    const { value } = e.target;
+    if (value) {
+      setErrors({ name: '' });
+    }
+    setCategoryName(value);
   };
 
   return (
@@ -345,15 +348,29 @@ const CategoryPage = () => {
                       readOnly
                     />
                   </div>
-                  <div className={styles.item}>
+                  <div
+                    className={
+                      errors.name.length > 0
+                        ? styles.itemWithError
+                        : styles.item
+                    }
+                  >
                     <p className={styles.labels}>카테고리명</p>
                     <input
-                      className={styles.dataInput}
+                      className={
+                        errors.name.length > 0
+                          ? styles.hasError
+                          : styles.dataInput
+                      }
                       ref={nameInputRef}
                       value={categoryName}
                       onChange={changeHandler}
+                      maxLength={20}
                     />
                   </div>
+                  {errors.name && (
+                    <span className={styles.errorMessage}>{errors.name}</span>
+                  )}
                   <div className={styles.item}>
                     <p className={styles.labels}>분류명</p>
                     <input

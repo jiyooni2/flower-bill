@@ -111,7 +111,7 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
             <Button
               variant="contained"
               sx={{
-                width: '10%',
+                width: 'auto',
                 backgroundColor: '#EEEEEE',
                 color: '#1876d2',
                 '&:hover': { backgroundColor: '#bccee4', color: 'white' },
@@ -120,7 +120,7 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
             >
               닫기
             </Button>
-            <Button type="submit" variant="contained" sx={{ width: '14%' }}>
+            <Button type="submit" variant="contained" sx={{ width: 'auto' }}>
               회원가입
             </Button>
           </div>

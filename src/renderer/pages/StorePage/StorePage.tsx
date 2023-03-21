@@ -378,7 +378,11 @@ const StorePage = () => {
                 <div>
                   <div>
                     <div
-                      className={!clicked ? styles.itemWithError : styles.item}
+                      className={
+                        errors.storeNumber.length > 0
+                          ? styles.itemWithError
+                          : styles.item
+                      }
                     >
                       <p className={styles.labels}>사업자 번호</p>
                       <input
@@ -395,19 +399,17 @@ const StorePage = () => {
                         maxLength={10}
                       />
                     </div>
-                    {errors.storeNumber ? (
+                    {errors.storeNumber && (
                       <span className={styles.errorMessage}>
                         {errors.storeNumber}
                       </span>
-                    ) : (
-                      !clicked && (
-                        <span className={styles.infoMessage}>
-                          사업자 번호는 - 를 제외한 10자리 숫자 이어야 합니다.
-                        </span>
-                      )
                     )}
                     <div
-                      className={!clicked ? styles.itemWithError : styles.item}
+                      className={
+                        errors.storeNumber.length > 0
+                          ? styles.itemWithError
+                          : styles.item
+                      }
                     >
                       <p className={styles.labels}>사업장 이름</p>
                       <input
@@ -423,17 +425,15 @@ const StorePage = () => {
                         }
                       />
                     </div>
-                    {errors.storeName ? (
+                    {errors.storeName && (
                       <p className={styles.errorMessage}>{errors.storeName}</p>
-                    ) : (
-                      !clicked && (
-                        <span className={styles.infoMessage}>
-                          판매처명은 2자리 이상의 문자 이어야 합니다.
-                        </span>
-                      )
                     )}
                     <div
-                      className={!clicked ? styles.itemWithError : styles.item}
+                      className={
+                        errors.storeNumber.length > 0
+                          ? styles.itemWithError
+                          : styles.item
+                      }
                     >
                       <p className={styles.labels}>소유자 이름</p>
                       <input
@@ -449,17 +449,15 @@ const StorePage = () => {
                         }
                       />
                     </div>
-                    {errors.owner ? (
+                    {errors.owner && (
                       <p className={styles.errorMessage}>{errors.owner}</p>
-                    ) : (
-                      !clicked && (
-                        <span className={styles.infoMessage}>
-                          성함은 2자리 이상의 문자 이어야 합니다.
-                        </span>
-                      )
                     )}
                     <div
-                      className={!clicked ? styles.itemWithError : styles.item}
+                      className={
+                        errors.storeNumber.length > 0
+                          ? styles.itemWithError
+                          : styles.item
+                      }
                     >
                       <p className={styles.labels}>사업장 주소</p>
                       <input
@@ -476,14 +474,8 @@ const StorePage = () => {
                         maxLength={30}
                       />
                     </div>
-                    {errors.address ? (
+                    {errors.address && (
                       <p className={styles.errorMessage}>{errors.address}</p>
-                    ) : (
-                      !clicked && (
-                        <span className={styles.infoMessage}>
-                          지번 주소, 도로명 주소 둘 다 작성하실 수 있습니다.
-                        </span>
-                      )
                     )}
                   </div>
                 </div>

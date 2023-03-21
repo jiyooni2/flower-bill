@@ -8,7 +8,6 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
 import { Link } from 'react-router-dom';
-import { GetBusinessOutput } from 'main/business/dtos/get-business.dto';
 
 const BusinessBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -33,6 +32,7 @@ const BusinessBar = () => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
+          if (businesses.length <= 1) setBusiness(businesses[0])
         } else {
           console.error(error);
         }

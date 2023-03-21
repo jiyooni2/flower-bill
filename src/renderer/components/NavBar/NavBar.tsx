@@ -3,19 +3,21 @@ import styles from './NavBar.module.scss';
 import ROUTES from '../../constants/routes';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessesState, tokenState } from 'renderer/recoil/states';
+import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 
 const NavBar = () => {
   const navigate = useNavigate();
   const token = useRecoilValue(tokenState)
+  const business = useRecoilValue(businessState)
   const [businesses, setBusinesses] = useRecoilState(businessesState)
   const [hasBusinesses, setHasBusinesses] = useState<boolean>(false);
+
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-businesses', {
       token,
-      businessId: 1,
+      businessId: business.id,
     });
 
     window.electron.ipcRenderer.on(
