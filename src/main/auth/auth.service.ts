@@ -2,13 +2,13 @@ import {
   CheckPasswordInput,
   CheckPasswordOutput,
 } from './dtos/check-password.dto';
-import { AppDataSource } from './../main/main';
+import { AppDataSource } from '../main';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import * as jwt from 'jsonwebtoken';
-import { Owner } from './../main/owner/entities/owner.entity';
+import { Owner } from '../owner/entities/owner.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Business } from './../main/business/entities/business.entity';
+import { Business } from '../business/entities/business.entity';
 
 export class AuthService {
   private readonly ownerRepository: Repository<Owner>;

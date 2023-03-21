@@ -1,10 +1,17 @@
 import Modal from './Modal';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
+import {
+  businessState,
+  businessesState,
+  tokenState,
+} from 'renderer/recoil/states';
 import { useState } from 'react';
-import styles from './PasswordConfirmModal.module.scss'
+import styles from './PasswordConfirmModal.module.scss';
 import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
-import { CheckPasswordInput, CheckPasswordOutput } from 'auth/dtos/check-password.dto';
+import {
+  CheckPasswordInput,
+  CheckPasswordOutput,
+} from 'main/auth/dtos/check-password.dto';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
 import { Link } from 'react-router-dom';
@@ -42,7 +49,7 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
         }
       }
     );
-  }
+  };
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
@@ -61,13 +68,13 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
             />
           </p>
         </div>
-          <button
-            className={styles.deleteButton}
-            disabled={!password ? true : false}
-            onClick={clickHandler}
-          >
-            확인
-          </button>
+        <button
+          className={styles.deleteButton}
+          disabled={!password ? true : false}
+          onClick={clickHandler}
+        >
+          확인
+        </button>
       </div>
     </Modal>
   );

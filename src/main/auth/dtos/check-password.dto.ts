@@ -1,5 +1,5 @@
-import { AuthInput } from './../../main/common/dtos/auth.dto';
-import { CoreOutput } from './../../main/common/dtos/core.dto';
+import { AuthInput } from '../../common/dtos/auth.dto';
+import { CoreOutput } from '../../common/dtos/core.dto';
 
 export interface CheckPasswordInput extends AuthInput {
   password: string;

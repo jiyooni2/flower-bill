@@ -1,10 +1,10 @@
-import { CheckPasswordInput } from './../../auth/dtos/check-password.dto';
+import { CheckPasswordInput } from '../auth/dtos/check-password.dto';
 import { ipcMain } from 'electron';
 import { ownerService } from '../main';
 import { CreateOwnerInput } from './dtos/create-owner.dto';
 import { UpdateOwnerInput } from './dtos/update-owner.dto';
 import { authService } from './../main';
-import { LoginInput } from './../../auth/dtos/login.dto';
+import { LoginInput } from '../auth/dtos/login.dto';
 
 ipcMain.on(
   'create-owner',

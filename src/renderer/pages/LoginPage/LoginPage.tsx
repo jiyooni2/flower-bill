@@ -5,7 +5,7 @@ import SignUpForm from './components/SignUpForm';
 import useInputs from 'renderer/hooks/useInputs';
 import { LoginInput } from 'renderer/types';
 import './components/AuthForm.scss';
-import { LoginOutput } from 'auth/dtos/login.dto';
+import { LoginOutput } from 'main/auth/dtos/login.dto';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { loginState, tokenState } from 'renderer/recoil/states';
 
@@ -33,7 +33,7 @@ const LoginPage = () => {
           setIsLoggedIn(true);
           setToken(token);
         } else {
-          console.error(error)
+          console.error(error);
         }
         //set token, businessId
       }
@@ -46,7 +46,12 @@ const LoginPage = () => {
         <SignUpForm isOpen={isSignUpPageOpen} setIsOpen={setIsSignUpPageOpen} />
       )}
       <div className="content">
-        <h1 className="title" style={{ display: 'flex', justifyContent: 'center'}}>Flower Bill</h1>
+        <h1
+          className="title"
+          style={{ display: 'flex', justifyContent: 'center' }}
+        >
+          Flower Bill
+        </h1>
         <form onSubmit={handleSubmit}>
           <div className="form-wrapper">
             <div className="text-wrapper">
@@ -71,16 +76,30 @@ const LoginPage = () => {
             </div>
 
             <div className="button-wrapper">
-              <Button type="submit" variant="contained" style={{ width: '100%'}}>
+              <Button
+                type="submit"
+                variant="contained"
+                style={{ width: '100%' }}
+              >
                 로그인
               </Button>
               <div>
-                <span style={{ fontSize: '14px', color: 'gray'}}>회원이 아니신가요?</span>
+                <span style={{ fontSize: '14px', color: 'gray' }}>
+                  회원이 아니신가요?
+                </span>
                 <Button
                   variant="text"
                   onClick={() => setIsSignUpPageOpen(true)}
-                  sx={{ color: 'steelblue', '&:hover' : { backgroundColor: 'transparent', color: 'skyblue'}}}
-                >회원가입하기</Button>
+                  sx={{
+                    color: 'steelblue',
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                      color: 'skyblue',
+                    },
+                  }}
+                >
+                  회원가입하기
+                </Button>
               </div>
             </div>
           </div>

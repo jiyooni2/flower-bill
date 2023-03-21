@@ -3,8 +3,15 @@ import Button from '@mui/material/Button';
 import styles from './CategoryPage.module.scss';
 import { TreeItem, TreeView } from '@mui/lab';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, tokenState } from 'renderer/recoil/states';
-import { CreateCategoryInput, CreateCategoryOutput } from 'main/category/dtos/create-category.dto';
+import {
+  businessState,
+  categoriesState,
+  tokenState,
+} from 'renderer/recoil/states';
+import {
+  CreateCategoryInput,
+  CreateCategoryOutput,
+} from 'main/category/dtos/create-category.dto';
 import { Category } from 'main/category/entities/category.entity';
 import { ChevronRight, ExpandMore, AddRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,7 +19,6 @@ import { Typography } from '@mui/material';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 // import { DeleteCategoryInput, DeleteCategoryOutput } from 'main/category/dtos/delete-category.dto';
 // import { UpdateCategoryInput, UpdateCategoryOutput } from 'main/category/dtos/update-category.dto';
-
 
 const CategoryPage = () => {
   const [categories, setCategories] = useRecoilState(categoriesState);
@@ -26,11 +32,10 @@ const CategoryPage = () => {
   const [parentCategoryId, setParentCategoryId] = useState<number>(0);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
       token,
-      business: business.id,
+      businessId: business.id,
     });
     window.electron.ipcRenderer.on(
       'get-categories',
@@ -54,7 +59,7 @@ const CategoryPage = () => {
       setClicked(false);
 
       if (item == null) {
-        setLevelName('대분류')
+        setLevelName('대분류');
       } else if (item.level === 1) {
         setLevelName('중분류');
       } else if (item.level === 2) {
@@ -83,11 +88,11 @@ const CategoryPage = () => {
 
       if (item) {
         setCategoryId(item.id);
-        categories.map(cat => {
+        categories.map((cat) => {
           if (cat.id == item.parentCategoryId) {
-            setParentCategoryName(cat.name)
+            setParentCategoryName(cat.name);
           }
-        })
+        });
         setParentCategoryId(item.parentCategoryId);
       } else {
         setParentCategoryName('');
@@ -98,10 +103,13 @@ const CategoryPage = () => {
   };
 
   const newCategoryHandler = () => {
-    if (categoryName === '') {window.alert('카테고리명을 입력해주십시오.'); return;}
+    if (categoryName === '') {
+      window.alert('카테고리명을 입력해주십시오.');
+      return;
+    }
 
-    if (categories.findIndex(item => item.id == categoryId) > -1){
-      window.alert('동일한 카테고리명이 이미 존재합니다.')
+    if (categories.findIndex((item) => item.id == categoryId) > -1) {
+      window.alert('동일한 카테고리명이 이미 존재합니다.');
     } else {
       const newData: CreateCategoryInput = {
         token: token,
@@ -139,7 +147,7 @@ const CategoryPage = () => {
       setLevelName('');
       setParentCategoryName('');
     }
-  }
+  };
 
   // const updateDataHandler = () => {
   //   const newData: UpdateCategoryInput = {
@@ -235,8 +243,8 @@ const CategoryPage = () => {
   };
 
   const idChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCategoryId(parseInt(e.target.value))
-  }
+    setCategoryId(parseInt(e.target.value));
+  };
 
   const renderTree = (nodes: Category) => (
     <TreeItem
@@ -265,7 +273,9 @@ const CategoryPage = () => {
       })}
       {!nodes.childCategories
         ? nodes.childCategories.map(() => addTree(nodes, true))
-        : nodes.level < 4 ? addTree(nodes, false) : null}
+        : nodes.level < 4
+        ? addTree(nodes, false)
+        : null}
     </TreeItem>
   );
 
@@ -309,7 +319,7 @@ const CategoryPage = () => {
         </div>
       </div>
       <div style={{ width: '55%' }}>
-        <div style={{ height: '100%'}}>
+        <div style={{ height: '100%' }}>
           <div className={styles.infoContent}>
             <Typography
               variant="h6"

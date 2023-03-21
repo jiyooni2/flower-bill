@@ -20,7 +20,7 @@ import { CategoryService } from './category/category.service';
 import { Owner } from './owner/entities/owner.entity';
 import { Business } from './business/entities/business.entity';
 import { BusinessService } from './business/business.service';
-import { AuthService } from './../auth/auth.service';
+import { AuthService } from './auth/auth.service';
 
 class AppUpdater {
   constructor() {

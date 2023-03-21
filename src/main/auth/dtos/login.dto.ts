@@ -1,5 +1,5 @@
-import { Owner } from '../../main/owner/entities/owner.entity';
-import { CoreOutput } from '../../main/common/dtos/core.dto';
+import { Owner } from '../../owner/entities/owner.entity';
+import { CoreOutput } from '../../common/dtos/core.dto';
 
 export interface LoginInput extends Pick<Owner, 'password' | 'ownerId'> {}
 
