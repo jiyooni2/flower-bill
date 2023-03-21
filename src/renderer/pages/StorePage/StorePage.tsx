@@ -17,6 +17,7 @@ import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
 import { CreateStoreOutput } from 'main/store/dtos/create-store.dto';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 import Validation from 'renderer/hooks/Validations/storeValidation';
+import { Close } from '@mui/icons-material';
 
 
 type StoreData = {
@@ -41,8 +42,10 @@ const StorePage = () => {
   const [owner, setOwner] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   const [name, setName] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [clicked, setClicked] = useState<boolean>(false);
   const [clickedStore, setClickedStore] = useState<Store>({
+    id: 0,
     business: null,
     businessId: null,
     businessNumber: 0,
@@ -95,19 +98,18 @@ const StorePage = () => {
       if (item.name === data.name) {
         setStoreNumber(item.businessNumber.toString());
         setStoreName(item.name);
-        setStoreName(item.owner);
-        setStoreName(item.address);
-        setClickedStore(
-          {
-            business: item.business,
-            businessId: item.businessId,
-            businessNumber: item.businessNumber,
-            name: item.name,
-            owner: item.owner,
-            address: item.address,
-            bills: item.bills,
-          },
-        );
+        setOwner(item.owner);
+        setAddress(item.address);
+        setClickedStore({
+          id: data.id,
+          business: item.business,
+          businessId: item.businessId,
+          businessNumber: item.businessNumber,
+          name: item.name,
+          owner: item.owner,
+          address: item.address,
+          bills: item.bills,
+        });
       }
     });
   };
@@ -130,10 +132,11 @@ const StorePage = () => {
     } else if (dataName === 'storeName') {
       setStoreName(value);
     } else if (dataName === 'owner') {
-      const namePattern = /^[가-힣a-zA-Z]+$/;
-      if (!namePattern.test(value)) {
-        setErrors({...errors, owner : '한글, 영문 이외의 문자는 성함에 포함될 수 없습니다.'});
-      } else if (value == '' || value) {
+      // const namePattern = /^[가-힣a-zA-Z]+$/;
+      // if (!namePattern.test(value)) {
+      //   setErrors({...errors, owner : '한글, 영문 이외의 문자는 성함에 포함될 수 없습니다.'});
+      // } else
+      if (value == '' || value) {
         setErrors({ ...errors, owner: '' });
         setOwner(value);
       }
@@ -165,6 +168,7 @@ const StorePage = () => {
   };
 
   const addDataHandler = () => {
+    setIsOpen(true);
     setErrors(Validation({ storeNumber, storeName, owner, address }))
     console.log(errors)
 
@@ -221,302 +225,309 @@ const StorePage = () => {
     }
   };
 
-  const doubleClickHandler = () => {
-    setClicked(false);
-    console.log(clickedStore)
+  const updateDataHandler = () => {
+    const findIndex = stores.findIndex(
+      (element) => element.id == clickedStore.id
+    );
+    const updateStore = [...stores];
+    updateStore[Number(findIndex)] = {
+      ...updateStore[Number(findIndex)],
+      businessNumber: parseInt(storeNumber),
+      name: storeName,
+      owner: owner,
+      address: address,
+    };
+    setStores(updateStore);
+    clearInputs();
+    setClicked(false)
   };
 
-  // const updateDataHandler = () => {
-  //   const findIndex = stores.findIndex(
-  //     (element) => element.businessNumber == clickedStore.businessNumber
-  //   );
-  //     stores[findIndex] = {
-  //       ...stores[findIndex],
-  //       businessNumber: parseInt(StoreNumber),
-  //       name: StoreName,
-  //       owner: Owner,
-  //       address: Address,
-  //     };
-  //     setStores(stores);
-  //   setClicked(true)
-  // };
-
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <div>
-          <input
-            type="search"
-            value={name}
-            onChange={filter}
-            placeholder="구매처 검색"
-            onKeyDown={keyHandler}
-            className={styles.searchInput}
-          />
-          <div className={styles.userList}>
-            <div>
-              <TableContainer sx={{ width: '100%' }}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow
-                      sx={{
-                        borderBottom: '1.5px solid black',
-                        backgroundColor: 'lightgray',
-                        '& th': {
-                          fontSize: '14px',
-                        },
-                      }}
-                    >
-                      <TableCell
-                        component="th"
-                        align="left"
-                        sx={{ width: '25%' }}
+    <>
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div>
+            <input
+              type="search"
+              value={name}
+              onChange={filter}
+              placeholder="구매처 검색"
+              onKeyDown={keyHandler}
+              className={styles.searchInput}
+            />
+            <div className={styles.userList}>
+              <div>
+                <TableContainer sx={{ width: '100%' }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow
+                        sx={{
+                          borderBottom: '1.5px solid black',
+                          backgroundColor: 'lightgray',
+                          '& th': {
+                            fontSize: '14px',
+                          },
+                        }}
                       >
-                        사업자 번호
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        align="left"
-                        sx={{ width: '30%' }}
-                      >
-                        가게명
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        align="left"
-                        sx={{ width: '25%' }}
-                      >
-                        사업자
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        align="left"
-                        sx={{ width: '35%' }}
-                      >
-                        가게 주소
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {stores &&
-                      stores.length > 0 &&
-                      stores.map((store) => (
-                        <TableRow
-                          key={store.businessNumber}
-                          className={styles.dataRow}
-                          onClick={(event) => changeDataHandler(event, store)}
-                          sx={{
-                            '& th': {
-                              fontSize: '14px',
-                            },
-                          }}
+                        <TableCell
+                          component="th"
+                          align="left"
+                          sx={{ width: '25%' }}
                         >
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            // sx={{ width: '15%' }}
+                          사업자 번호
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          align="left"
+                          sx={{ width: '30%' }}
+                        >
+                          가게명
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          align="left"
+                          sx={{ width: '25%' }}
+                        >
+                          사업자
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          align="left"
+                          sx={{ width: '35%' }}
+                        >
+                          가게 주소
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {stores &&
+                        stores.length > 0 &&
+                        stores.map((store) => (
+                          <TableRow
+                            key={store.businessNumber}
+                            className={styles.dataRow}
+                            onClick={(event) => changeDataHandler(event, store)}
+                            sx={{
+                              '& th': {
+                                fontSize: '14px',
+                              },
+                            }}
                           >
-                            {store.businessNumber}
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            align="left"
-                            // sx={{ width: '35%' }}
-                          >
-                            {store.name}
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            align="left"
-                            // sx={{ width: '20%' }}
-                          >
-                            {store.owner}
-                          </TableCell>
-                          <TableCell
-                            component="th"
-                            align="left"
-                            className={styles.cutText}
-                            // sx={{ width: '30%' }}
-                          >
-                            {store.address}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {stores && stores.length == 0 && (
-                <div className={styles.noResult}>
-                  <div>
-                    <h3>검색결과가 없습니다.</h3>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              // sx={{ width: '15%' }}
+                            >
+                              {store.businessNumber}
+                            </TableCell>
+                            <TableCell
+                              component="th"
+                              align="left"
+                              // sx={{ width: '35%' }}
+                            >
+                              {store.name}
+                            </TableCell>
+                            <TableCell
+                              component="th"
+                              align="left"
+                              // sx={{ width: '20%' }}
+                            >
+                              {store.owner}
+                            </TableCell>
+                            <TableCell
+                              component="th"
+                              align="left"
+                              className={styles.cutText}
+                              // sx={{ width: '30%' }}
+                            >
+                              {store.address}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                {stores && stores.length == 0 && (
+                  <div className={styles.noResult}>
+                    <div>
+                      <h3>검색결과가 없습니다.</h3>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
-        <div>
-          <div className={styles.infoContent}>
-            <Typography
-              variant="h6"
-              fontWeight={600}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                fontSize: '24px',
-                marginTop: '20px',
-              }}
-            >
-              구매처 정보
-            </Typography>
-            <button className={styles.clearInput} onClick={clearInputs}>
-              비우기
-            </button>
-            <div className={styles.list}>
-              <div>
+          <div>
+            <div className={styles.infoContent}>
+              <Typography
+                variant="h6"
+                fontWeight={600}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontSize: '24px',
+                  marginTop: '20px',
+                }}
+              >
+                구매처 정보
+              </Typography>
+              <button className={styles.clearInput} onClick={clearInputs}>
+                비우기
+              </button>
+              <div className={styles.list}>
                 <div>
-                  <div className={styles.itemWithError}>
-                    <p className={styles.labels}>사업자 번호</p>
-                    <input
-                      name="storeNumber"
-                      value={storeNumber}
-                      className={
-                        errors.storeNumber.length > 0
-                          ? styles.hasError
-                          : styles.dataInput
-                      }
-                      onDoubleClick={doubleClickHandler}
-                      readOnly={clicked}
-                      onChange={(event) =>
-                        changeStoreDataHandler(event, 'storeNumber')
-                      }
-                      maxLength={10}
-                    />
+                  <div>
+                    <div
+                      className={!clicked ? styles.itemWithError : styles.item}
+                    >
+                      <p className={styles.labels}>사업자 번호</p>
+                      <input
+                        name="storeNumber"
+                        value={storeNumber}
+                        className={
+                          errors.storeNumber.length > 0
+                            ? styles.hasError
+                            : styles.dataInput
+                        }
+                        onChange={(event) =>
+                          changeStoreDataHandler(event, 'storeNumber')
+                        }
+                        maxLength={10}
+                      />
+                    </div>
+                    {errors.storeNumber ? (
+                      <span className={styles.errorMessage}>
+                        {errors.storeNumber}
+                      </span>
+                    ) : (
+                      !clicked && (
+                        <span className={styles.infoMessage}>
+                          사업자 번호는 - 를 제외한 10자리 숫자 이어야 합니다.
+                        </span>
+                      )
+                    )}
+                    <div
+                      className={!clicked ? styles.itemWithError : styles.item}
+                    >
+                      <p className={styles.labels}>사업장 이름</p>
+                      <input
+                        name="storeName"
+                        value={storeName}
+                        className={
+                          errors.storeName.length > 0
+                            ? styles.hasError
+                            : styles.dataInput
+                        }
+                        onChange={(event) =>
+                          changeStoreDataHandler(event, 'storeName')
+                        }
+                      />
+                    </div>
+                    {errors.storeName ? (
+                      <p className={styles.errorMessage}>{errors.storeName}</p>
+                    ) : (
+                      !clicked && (
+                        <span className={styles.infoMessage}>
+                          판매처명은 2자리 이상의 문자 이어야 합니다.
+                        </span>
+                      )
+                    )}
+                    <div
+                      className={!clicked ? styles.itemWithError : styles.item}
+                    >
+                      <p className={styles.labels}>소유자 이름</p>
+                      <input
+                        name="owner"
+                        value={owner}
+                        className={
+                          errors.owner.length > 0
+                            ? styles.hasError
+                            : styles.dataInput
+                        }
+                        onChange={(event) =>
+                          changeStoreDataHandler(event, 'owner')
+                        }
+                      />
+                    </div>
+                    {errors.owner ? (
+                      <p className={styles.errorMessage}>{errors.owner}</p>
+                    ) : (
+                      !clicked && (
+                        <span className={styles.infoMessage}>
+                          성함은 2자리 이상의 문자 이어야 합니다.
+                        </span>
+                      )
+                    )}
+                    <div
+                      className={!clicked ? styles.itemWithError : styles.item}
+                    >
+                      <p className={styles.labels}>사업장 주소</p>
+                      <input
+                        name="address"
+                        value={address}
+                        className={
+                          errors.address.length > 0
+                            ? styles.hasError
+                            : styles.dataInput
+                        }
+                        onChange={(event) =>
+                          changeStoreDataHandler(event, 'address')
+                        }
+                        maxLength={30}
+                      />
+                    </div>
+                    {errors.address ? (
+                      <p className={styles.errorMessage}>{errors.address}</p>
+                    ) : (
+                      !clicked && (
+                        <span className={styles.infoMessage}>
+                          지번 주소, 도로명 주소 둘 다 작성하실 수 있습니다.
+                        </span>
+                      )
+                    )}
                   </div>
-                  {errors.storeNumber ? (
-                    <span className={styles.errorMessage}>
-                      {errors.storeNumber}
-                    </span>
+                </div>
+                <div className={styles.buttonList}>
+                  {clicked ? (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{ marginLeft: '40px' }}
+                      color="error"
+                      onClick={deleteDataHandler}
+                    >
+                      삭제
+                    </Button>
                   ) : (
-                    <span className={styles.infoMessage}>
-                      사업자 번호는 - 를 제외한 10자리 숫자 이어야 합니다.
-                    </span>
+                    <div></div>
                   )}
-                  <div className={styles.itemWithError}>
-                    <p className={styles.labels}>사업장 이름</p>
-                    <input
-                      name="storeName"
-                      value={storeName}
-                      className={
-                        errors.storeName.length > 0
-                          ? styles.hasError
-                          : styles.dataInput
-                      }
-                      onDoubleClick={doubleClickHandler}
-                      readOnly={clicked}
-                      onChange={(event) =>
-                        changeStoreDataHandler(event, 'storeName')
-                      }
-                    />
-                  </div>
-                  {errors.storeName ? (
-                    <p className={styles.errorMessage}>{errors.storeName}</p>
+                  {!clicked ? (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      type="submit"
+                      sx={{ marginRight: '10px' }}
+                      onClick={addDataHandler}
+                    >
+                      생성
+                    </Button>
                   ) : (
-                    <span className={styles.infoMessage}>
-                      판매처명은 2자리 이상의 문자 이어야 합니다.
-                    </span>
-                  )}
-                  <div className={styles.itemWithError}>
-                    <p className={styles.labels}>소유자 이름</p>
-                    <input
-                      name="owner"
-                      value={owner}
-                      className={
-                        errors.owner.length > 0
-                          ? styles.hasError
-                          : styles.dataInput
-                      }
-                      onDoubleClick={doubleClickHandler}
-                      readOnly={clicked}
-                      onChange={(event) =>
-                        changeStoreDataHandler(event, 'owner')
-                      }
-                    />
-                  </div>
-                  {errors.owner ? (
-                    <p className={styles.errorMessage}>{errors.owner}</p>
-                  ) : (
-                    <span className={styles.infoMessage}>
-                      성함은 2자리 이상의 문자 이어야 합니다.
-                    </span>
-                  )}
-                  <div className={styles.itemWithError}>
-                    <p className={styles.labels}>사업장 주소</p>
-                    <input
-                      name="address"
-                      value={address}
-                      className={
-                        errors.address.length > 0
-                          ? styles.hasError
-                          : styles.dataInput
-                      }
-                      onDoubleClick={doubleClickHandler}
-                      readOnly={clicked}
-                      onChange={(event) =>
-                        changeStoreDataHandler(event, 'address')
-                      }
-                      maxLength={30}
-                    />
-                  </div>
-                  {errors.address ? (
-                    <p className={styles.errorMessage}>{errors.address}</p>
-                  ) : (
-                    <span className={styles.infoMessage}>
-                      지번 주소, 도로명 주소 둘 다 작성하실 수 있습니다.
-                    </span>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{ marginRight: '10px', backgroundColor: 'coral' }}
+                      onClick={updateDataHandler}
+                    >
+                      수정
+                    </Button>
                   )}
                 </div>
-              </div>
-              <div className={styles.buttonList}>
-                {clicked ? (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ marginLeft: '40px' }}
-                    color="error"
-                    onClick={deleteDataHandler}
-                  >
-                    삭제
-                  </Button>
-                ) : (
-                  <div></div>
-                )}
-                {!clicked ? (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    type="submit"
-                    sx={{ marginRight: '10px' }}
-                    onClick={addDataHandler}
-                  >
-                    생성
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ marginRight: '10px', backgroundColor: 'coral' }}
-                    // onClick={updateDataHandler}
-                  >
-                    수정
-                  </Button>
-                )}
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
