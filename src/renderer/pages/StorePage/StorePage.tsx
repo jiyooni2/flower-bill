@@ -16,20 +16,32 @@ import { Store } from 'main/store/entities/store.entity';
 import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
 import { CreateStoreOutput } from 'main/store/dtos/create-store.dto';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
+import Validation from 'renderer/hooks/Validations/storeValidation';
 
+
+type StoreData = {
+  storeNumber?: string;
+  storeName?: string;
+  owner?: string;
+  address?: string;
+};
 
 const StorePage = () => {
   const business = useRecoilValue(businessState)
   const token = useRecoilValue(tokenState)
   const [stores, setStores] = useRecoilState(storesState);
+  const [errors, setErrors] = useState<StoreData>({
+    storeNumber: '',
+    storeName: '',
+    owner: '',
+    address: '',
+  })
+  const [storeNumber, setStoreNumber] = useState<string>('');
+  const [storeName, setStoreName] = useState<string>('');
+  const [owner, setOwner] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
   const [name, setName] = useState<string>("");
   const [clicked, setClicked] = useState<boolean>(false);
-  const [numberHasError, setNumberHasError] = useState<boolean>(false);
-  const [addressHasError, setAddressHasError] = useState<boolean>(false);
-  const [StoreNumber, setStoreNumber] = useState<string>('');
-  const [StoreName, setStoreName] = useState<string>('');
-  const [Owner, setOwner] = useState<string>('');
-  const [Address, setAddress] = useState<string>('');
   const [clickedStore, setClickedStore] = useState<Store>({
     business: null,
     businessId: null,
@@ -83,8 +95,8 @@ const StorePage = () => {
       if (item.name === data.name) {
         setStoreNumber(item.businessNumber.toString());
         setStoreName(item.name);
-        setOwner(item.owner);
-        setAddress(item.address);
+        setStoreName(item.owner);
+        setStoreName(item.address);
         setClickedStore(
           {
             business: item.business,
@@ -105,30 +117,40 @@ const StorePage = () => {
   };
 
   const changeStoreDataHandler = (event: React.ChangeEvent<HTMLInputElement>, dataName:string) => {
+    const {value} = event.target;
+
     if (dataName === 'storeNumber') {
-      if (event.target.value == ''){
-        setNumberHasError(false)
+      const numPattern = /^[0-9]*$/;
+      if (!numPattern.test(value)) {
+        setErrors({...errors, storeNumber: '숫자 외의 문자는 작성하실 수 없습니다.'})
+      } else if (value == '' || value) {
+        setErrors({...errors, storeNumber: ''})
+        setStoreNumber(value);
       }
-      setStoreNumber(event.target.value);
     } else if (dataName === 'storeName') {
-      setStoreName(event.target.value);
+      setStoreName(value);
     } else if (dataName === 'owner') {
-      setOwner(event.target.value);
-    } else if (dataName === 'address'){
-      if (event.target.value == '') {
-        setAddressHasError(false);
+      const namePattern = /^[가-힣a-zA-Z]+$/;
+      if (!namePattern.test(value)) {
+        setErrors({...errors, owner : '한글, 영문 이외의 문자는 성함에 포함될 수 없습니다.'});
+      } else if (value == '' || value) {
+        setErrors({ ...errors, owner: '' });
+        setOwner(value);
       }
-      setAddress(event.target.value);
+    } else if (dataName === 'address'){
+      setErrors({...errors, address: ''})
+      setAddress(value);
     }
   };
 
   const clearInputs = () => {
     setClicked(false)
 
-    setStoreNumber(0)
-    setStoreName('')
-    setOwner('')
-    setAddress('')
+    setErrors({storeNumber: '', storeName: '', owner: '', address: ''});
+    setStoreNumber('');
+    setStoreName('');
+    setOwner('');
+    setAddress('');
     setClickedStore(
       {
         business: null,
@@ -143,19 +165,26 @@ const StorePage = () => {
   };
 
   const addDataHandler = () => {
-    if (
-      stores.findIndex((data) => data.businessNumber.toString() == StoreNumber) != -1
-    ) {
-      setNumberHasError(true);
-    } else if (stores.findIndex((data) => data.address == Address) != -1) {
-      setAddressHasError(true);
-    } else {
-      if (StoreName != '' && StoreNumber != '' && Owner != '' && Address != '') {
+    setErrors(Validation({ storeNumber, storeName, owner, address }))
+    console.log(errors)
+
+    if (stores.findIndex((data) => data.businessNumber.toString() == storeNumber) != -1) {
+      errors.storeNumber = '동일한 사업자 번호가 존재합니다.';
+      return;
+    }
+
+    if (errors.address.length == 0 && errors.owner.length == 0 && errors.storeName.length == 0 && errors.storeNumber.length == 0) {
+      if (
+        storeName != '' &&
+        storeNumber != '' &&
+        owner != '' &&
+        address != ''
+      ) {
         const newData: Store = {
-          name: StoreName,
-          businessNumber: parseInt(StoreNumber),
-          owner: Owner,
-          address: Address,
+          name: storeName,
+          businessNumber: parseInt(storeNumber),
+          owner: owner,
+          address: address,
           bills: null,
           business: business,
           businessId: business.id,
@@ -164,7 +193,7 @@ const StorePage = () => {
         window.electron.ipcRenderer.sendMessage('create-store', {
           ...newData,
           token,
-          businessId: business.id
+          businessId: business.id,
         });
 
         window.electron.ipcRenderer.on(
@@ -173,7 +202,7 @@ const StorePage = () => {
             if (ok) {
               window.electron.ipcRenderer.sendMessage('get-stores', {
                 token,
-                businessId: business.id
+                businessId: business.id,
               });
               window.electron.ipcRenderer.on(
                 'get-stores',
@@ -186,7 +215,7 @@ const StorePage = () => {
               console.log(error);
             }
           }
-        )
+        );
         clearInputs();
       }
     }
@@ -197,20 +226,20 @@ const StorePage = () => {
     console.log(clickedStore)
   };
 
-  const updateDataHandler = () => {
-    const findIndex = stores.findIndex(
-      (element) => element.businessNumber == clickedStore.businessNumber
-    );
-      stores[findIndex] = {
-        ...stores[findIndex],
-        businessNumber: parseInt(StoreNumber),
-        name: StoreName,
-        owner: Owner,
-        address: Address,
-      };
-      setStores(stores);
-    setClicked(true)
-  };
+  // const updateDataHandler = () => {
+  //   const findIndex = stores.findIndex(
+  //     (element) => element.businessNumber == clickedStore.businessNumber
+  //   );
+  //     stores[findIndex] = {
+  //       ...stores[findIndex],
+  //       businessNumber: parseInt(StoreNumber),
+  //       name: StoreName,
+  //       owner: Owner,
+  //       address: Address,
+  //     };
+  //     setStores(stores);
+  //   setClicked(true)
+  // };
 
   return (
     <div className={styles.container}>
@@ -349,27 +378,40 @@ const StorePage = () => {
                   <div className={styles.itemWithError}>
                     <p className={styles.labels}>사업자 번호</p>
                     <input
-                      value={StoreNumber || 0}
-                      className={styles.dataInput}
+                      name="storeNumber"
+                      value={storeNumber}
+                      className={
+                        errors.storeNumber.length > 0
+                          ? styles.hasError
+                          : styles.dataInput
+                      }
                       onDoubleClick={doubleClickHandler}
                       readOnly={clicked}
                       onChange={(event) =>
                         changeStoreDataHandler(event, 'storeNumber')
                       }
+                      maxLength={10}
                     />
                   </div>
-                  {numberHasError ? (
-                    <p className={styles.errorMessage}>
-                      동일한 가게 번호가 이미 존재하고 있습니다.
-                    </p>
+                  {errors.storeNumber ? (
+                    <span className={styles.errorMessage}>
+                      {errors.storeNumber}
+                    </span>
                   ) : (
-                    <p className={styles.item}></p>
+                    <span className={styles.infoMessage}>
+                      사업자 번호는 - 를 제외한 10자리 숫자 이어야 합니다.
+                    </span>
                   )}
-                  <div className={styles.item}>
+                  <div className={styles.itemWithError}>
                     <p className={styles.labels}>사업장 이름</p>
                     <input
-                      value={StoreName}
-                      className={styles.dataInput}
+                      name="storeName"
+                      value={storeName}
+                      className={
+                        errors.storeName.length > 0
+                          ? styles.hasError
+                          : styles.dataInput
+                      }
                       onDoubleClick={doubleClickHandler}
                       readOnly={clicked}
                       onChange={(event) =>
@@ -377,11 +419,23 @@ const StorePage = () => {
                       }
                     />
                   </div>
-                  <div className={styles.item}>
+                  {errors.storeName ? (
+                    <p className={styles.errorMessage}>{errors.storeName}</p>
+                  ) : (
+                    <span className={styles.infoMessage}>
+                      판매처명은 2자리 이상의 문자 이어야 합니다.
+                    </span>
+                  )}
+                  <div className={styles.itemWithError}>
                     <p className={styles.labels}>소유자 이름</p>
                     <input
-                      value={Owner}
-                      className={styles.dataInput}
+                      name="owner"
+                      value={owner}
+                      className={
+                        errors.owner.length > 0
+                          ? styles.hasError
+                          : styles.dataInput
+                      }
                       onDoubleClick={doubleClickHandler}
                       readOnly={clicked}
                       onChange={(event) =>
@@ -389,24 +443,37 @@ const StorePage = () => {
                       }
                     />
                   </div>
+                  {errors.owner ? (
+                    <p className={styles.errorMessage}>{errors.owner}</p>
+                  ) : (
+                    <span className={styles.infoMessage}>
+                      성함은 2자리 이상의 문자 이어야 합니다.
+                    </span>
+                  )}
                   <div className={styles.itemWithError}>
                     <p className={styles.labels}>사업장 주소</p>
                     <input
-                      value={Address}
-                      className={styles.dataInput}
+                      name="address"
+                      value={address}
+                      className={
+                        errors.address.length > 0
+                          ? styles.hasError
+                          : styles.dataInput
+                      }
                       onDoubleClick={doubleClickHandler}
                       readOnly={clicked}
                       onChange={(event) =>
                         changeStoreDataHandler(event, 'address')
                       }
+                      maxLength={30}
                     />
                   </div>
-                  {addressHasError ? (
-                    <p className={styles.errorMessage}>
-                      동일한 가게 주소가 이미 존재하고 있습니다.
-                    </p>
+                  {errors.address ? (
+                    <p className={styles.errorMessage}>{errors.address}</p>
                   ) : (
-                    <p className={styles.item}></p>
+                    <span className={styles.infoMessage}>
+                      지번 주소, 도로명 주소 둘 다 작성하실 수 있습니다.
+                    </span>
                   )}
                 </div>
               </div>
@@ -428,9 +495,9 @@ const StorePage = () => {
                   <Button
                     variant="contained"
                     size="small"
-                    type='submit'
+                    type="submit"
                     sx={{ marginRight: '10px' }}
-                    // onClick={addDataHandler}
+                    onClick={addDataHandler}
                   >
                     생성
                   </Button>
@@ -439,7 +506,7 @@ const StorePage = () => {
                     variant="contained"
                     size="small"
                     sx={{ marginRight: '10px', backgroundColor: 'coral' }}
-                    onClick={updateDataHandler}
+                    // onClick={updateDataHandler}
                   >
                     수정
                   </Button>
