@@ -22,13 +22,17 @@ const ProductsPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
-  const [nameHasError, setNameHasError] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [id, setId] = useState<number>();
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [categoryId, setCategoryId] = useRecoilState(categoryIdState);
   const [page, setPage] = useState<number>(1);
+  const [errors, setErrors] = useState({
+    name: '',
+    price: '',
+    category: '',
+  })
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -137,7 +141,7 @@ const ProductsPage = () => {
             );
           }
           if (error) {
-            window.alert(error);
+            console.error(error);
           }
         }
       )
@@ -174,7 +178,7 @@ const ProductsPage = () => {
             );
           }
           if (error) {
-            window.alert(error);
+            console.error(error);
           }
         }
       );
@@ -190,17 +194,19 @@ const ProductsPage = () => {
       setName(value);
       products.map((item) => {
         if (item.name === value) {
-          setNameHasError(true)
-        } else {
-          setNameHasError(false);
+          setErrors({...errors, name: '동일한 상품명이 이미 존재합니다.'});
+          return;
         }
       })
+    setErrors({ ...errors, name: '' });
     } else if (dataName === 'price') {
-      const pattern = /^[0-9]+$/;
+      const pattern = /^[0-9]*$/;
       if (!pattern.test(value)) {
-        window.alert('판매가는 숫자만 입력이 가능합니다.');
-        return;
-      } else {
+        setErrors({ ...errors, price: '숫자 외의 문자는 작성하실 수 없습니다.' });
+      } else if (value.startsWith('0')) {
+        setErrors({ ...errors, price: '판매가는 0으로 시작할 수 없습니다.'})
+      } else if (value == '' || value) {
+        setErrors({ ...errors, price: '' });
         setPrice(value);
       }
     }
@@ -212,17 +218,18 @@ const ProductsPage = () => {
     setName('')
     setPrice('')
     setCategoryId(0);
+    setErrors({name: '', price: '', category: ''})
   };
 
-
   const addDataHandler = () => {
-    if (name == '' || price == '' || categoryId == 0) {
-      if (name == '') window.alert('상품명을 작성해주세요.');
-      else if (price == '') window.alert('판매가를 작성해주세요.');
-    } else if (!parseInt(price)) {
-      window.alert('판매가는 숫자로 작성해주시기 바랍니다.')
-    } else {
-      const prices = Number(price)
+    if (name == '') {setErrors({...errors, name: '상품명이 입력되지 않았습니다.'}); return;}
+    if (price == '') {setErrors({ ...errors, price: '판매가가 입력되지 않았습니다.' }); return;}
+    if (categoryId == 0) {
+      setErrors({...errors, category: '카테고리가 선택되지 않았습니다.'});
+      return;
+    }
+
+    const prices = Number(price)
         const newData: CreateProductInput = {
           name,
           price: prices,
@@ -248,18 +255,17 @@ const ProductsPage = () => {
                     setProducts(products)
                   }
                   if (error) {
-                    window.alert(error);
+                    console.error(error);
                   }
                 }
               );
             }
             if (error) {
-              window.alert(error)
+              console.log(error);
             }
           }
         );
         clearInputs();
-      }
   };
 
   const categoryClickHandler = () => {
@@ -407,40 +413,56 @@ const ProductsPage = () => {
               <div className={styles.list}>
                 <div>
                   <div>
-                    <div className={nameHasError ? styles.itemWithError : styles.item}>
+                    <div
+                      className={
+                        errors.name.length > 0
+                          ? styles.itemWithError
+                          : styles.item
+                      }
+                    >
                       <p className={styles.labels}>상품명</p>
                       <input
+                        className={
+                          errors.name.length > 0
+                            ? styles.hasError
+                            : styles.dataInput
+                        }
                         value={name}
-                        className={styles.dataInput}
                         onChange={(event) =>
                           changeStoreDataHandler(event, 'name')
                         }
+                        maxLength={20}
                       />
                     </div>
-                    {nameHasError && (
-                      <div className={styles.errorMessage}>
-                        <p
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            marginLeft: '110px',
-                            marginTop: '5px',
-                          }}
-                        >
-                          동일한 상품이 이미 존재합니다.
-                        </p>
-                      </div>
+                    {errors.name && (
+                      <span className={styles.errorMessage}>{errors.name}</span>
                     )}
-                    <div className={styles.item}>
+                    <div
+                      className={
+                        errors.price.length > 0
+                          ? styles.itemWithError
+                          : styles.item
+                      }
+                    >
                       <p className={styles.labels}>판매가</p>
                       <input
+                        className={
+                          errors.price.length > 0
+                            ? styles.hasError
+                            : styles.dataInput
+                        }
                         value={price}
-                        className={styles.dataInput}
                         onChange={(event) =>
                           changeStoreDataHandler(event, 'price')
                         }
+                        minLength={3}
                       />
                     </div>
+                    {errors.price && (
+                      <span className={styles.errorMessage}>
+                        {errors.price}
+                      </span>
+                    )}
                     <div className={styles.lastItem}>
                       <p className={styles.categoryLabel}>카테고리</p>
                       {categoryId ? (
@@ -449,13 +471,13 @@ const ProductsPage = () => {
                           className={styles.dataInput}
                           style={{ backgroundColor: 'white', color: 'black' }}
                           onChange={(event) =>
-                            changeStoreDataHandler(event, 'categoryId')
+                            changeStoreDataHandler(event, 'category')
                           }
                           disabled
                         />
                       ) : (
                         <button
-                          className={styles.buttons}
+                          className={errors.category.length > 0 ? styles.categoryError : styles.buttons}
                           style={{ float: 'right' }}
                           onClick={categoryClickHandler}
                         >
@@ -463,6 +485,11 @@ const ProductsPage = () => {
                         </button>
                       )}
                     </div>
+                    {categoryId == 0 && errors.category && (
+                      <span className={styles.errorMessage}>
+                        {errors.category}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className={styles.buttonList}>
@@ -485,7 +512,7 @@ const ProductsPage = () => {
                       size="small"
                       sx={{ marginRight: '10px' }}
                       onClick={addDataHandler}
-                      disabled={nameHasError}
+                      disabled={errors.name.length > 0}
                     >
                       생성
                     </Button>
