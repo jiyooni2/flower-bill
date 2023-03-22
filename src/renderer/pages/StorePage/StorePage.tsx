@@ -411,7 +411,7 @@ const StorePage = () => {
                           : styles.item
                       }
                     >
-                      <p className={styles.labels}>사업장 이름</p>
+                      <p className={styles.labels}>상호</p>
                       <input
                         name="storeName"
                         value={storeName}
@@ -435,7 +435,7 @@ const StorePage = () => {
                           : styles.item
                       }
                     >
-                      <p className={styles.labels}>소유자 이름</p>
+                      <p className={styles.labels}>사업자 성명</p>
                       <input
                         name="owner"
                         value={owner}
@@ -459,7 +459,7 @@ const StorePage = () => {
                           : styles.item
                       }
                     >
-                      <p className={styles.labels}>사업장 주소</p>
+                      <p className={styles.labels}>사업장 소재지</p>
                       <input
                         name="address"
                         value={address}
