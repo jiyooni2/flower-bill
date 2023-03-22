@@ -251,7 +251,7 @@ const StorePage = () => {
               type="search"
               value={name}
               onChange={filter}
-              placeholder="구매처 검색"
+              placeholder="판매처 검색"
               onKeyDown={keyHandler}
               className={styles.searchInput}
             />
@@ -369,7 +369,7 @@ const StorePage = () => {
                   marginTop: '20px',
                 }}
               >
-                구매처 정보
+                판매처 정보
               </Typography>
               <button className={styles.clearInput} onClick={clearInputs}>
                 비우기
