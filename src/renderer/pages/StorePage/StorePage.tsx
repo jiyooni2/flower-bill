@@ -130,19 +130,41 @@ const StorePage = () => {
         setStoreNumber(value);
       }
     } else if (dataName === 'storeName') {
-      setStoreName(value);
+      // const namePattern = /^[ㄱ-ㅎ가-힣a-zA-Z0-9\s]*$/;
+      const namePattern = /^[ㄱ-ㅎ가-힣0-9\s]*$/;
+      if (!namePattern.test(value)) {
+        setErrors({
+          ...errors,
+          storeName: '한글, 숫자, 공백 외의 문자는 작성하실 수 없습니다.',
+        });
+      } else if (value.startsWith(' ')) {
+        setErrors({
+          ...errors,
+          storeName: '첫 번째 자리는 공백이 될 수 없습니다.',
+        });
+      } else if (value.length > 30) {
+        setErrors({...errors, storeName: '최대 30글자까지 작성하실 수 있습니다.'})
+      } else if (value == '' || value) {
+        setErrors({ ...errors, storeName: '' });
+        setStoreName(value);
+      }
     } else if (dataName === 'owner') {
-      // const namePattern = /^[가-힣a-zA-Z]+$/;
-      // if (!namePattern.test(value)) {
-      //   setErrors({...errors, owner : '한글, 영문 이외의 문자는 성함에 포함될 수 없습니다.'});
-      // } else
+      const namePattern = /^[ㄱ-ㅎ가-힣a-zA-Z]*$/;
+      if (!namePattern.test(value)) {
+        setErrors({...errors, owner : '한글, 영문 이외의 문자는 성함에 포함될 수 없습니다.'});
+      } else
       if (value == '' || value) {
         setErrors({ ...errors, owner: '' });
         setOwner(value);
       }
     } else if (dataName === 'address'){
-      setErrors({...errors, address: ''})
-      setAddress(value);
+      const addressPattern = /^[ㄱ-ㅎ가-힣a-zA-Z_-]*$/;
+      if (!addressPattern.test(value)){
+        setErrors({...errors, address: '-와 _를 제외한 특수문자는 작성하실 수 없습니다.'})
+      } else if (value == '' || value) {
+        setErrors({ ...errors, address: '' });
+        setAddress(value);
+      }
     }
   };
 
@@ -170,7 +192,7 @@ const StorePage = () => {
   const addDataHandler = () => {
     setIsOpen(true);
     setErrors(Validation({ storeNumber, storeName, owner, address }))
-    console.log(errors)
+    if (errors){return;}
 
     if (stores.findIndex((data) => data.businessNumber.toString() == storeNumber) != -1) {
       errors.storeNumber = '동일한 사업자 번호가 존재합니다.';
@@ -406,7 +428,7 @@ const StorePage = () => {
                     )}
                     <div
                       className={
-                        errors.storeNumber.length > 0
+                        errors.storeName.length > 0
                           ? styles.itemWithError
                           : styles.item
                       }
@@ -430,7 +452,7 @@ const StorePage = () => {
                     )}
                     <div
                       className={
-                        errors.storeNumber.length > 0
+                        errors.owner.length > 0
                           ? styles.itemWithError
                           : styles.item
                       }
@@ -454,7 +476,7 @@ const StorePage = () => {
                     )}
                     <div
                       className={
-                        errors.storeNumber.length > 0
+                        errors.address.length > 0
                           ? styles.itemWithError
                           : styles.item
                       }
