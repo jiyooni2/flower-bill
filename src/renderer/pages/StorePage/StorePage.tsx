@@ -17,7 +17,6 @@ import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
 import { CreateStoreOutput } from 'main/store/dtos/create-store.dto';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 import Validation from 'renderer/hooks/Validations/storeValidation';
-import { Close } from '@mui/icons-material';
 
 
 type StoreData = {
@@ -42,7 +41,6 @@ const StorePage = () => {
   const [owner, setOwner] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   const [name, setName] = useState<string>("");
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [clicked, setClicked] = useState<boolean>(false);
   const [clickedStore, setClickedStore] = useState<Store>({
     id: 0,
@@ -160,7 +158,7 @@ const StorePage = () => {
     } else if (dataName === 'address'){
       const addressPattern = /^[ㄱ-ㅎ가-힣a-zA-Z_-]*$/;
       if (!addressPattern.test(value)){
-        setErrors({...errors, address: '-와 _를 제외한 특수문자는 작성하실 수 없습니다.'})
+        setErrors({...errors, address: '특수문자는 -와 _만 입력 가능합니다'})
       } else if (value == '' || value) {
         setErrors({ ...errors, address: '' });
         setAddress(value);
@@ -190,7 +188,6 @@ const StorePage = () => {
   };
 
   const addDataHandler = () => {
-    setIsOpen(true);
     setErrors(Validation({ storeNumber, storeName, owner, address }))
     if (errors){return;}
 
