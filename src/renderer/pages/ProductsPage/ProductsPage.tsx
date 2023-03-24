@@ -230,6 +230,7 @@ const ProductsPage = () => {
       return;
     }
 
+
     const prices = Number(price)
         const newData: CreateProductInput = {
           name,
@@ -263,6 +264,13 @@ const ProductsPage = () => {
             }
             if (error) {
               console.log(error);
+              if (error.startsWith('최하위')) {
+                setErrors({
+                  ...errors,
+                  category: '카테고리는 소분류만 선택 가능합니다.',
+                });
+                return;
+              }
             }
           }
         );
@@ -486,22 +494,28 @@ const ProductsPage = () => {
                           disabled
                         />
                       ) : (
-                        <button
-                          className={
-                            errors.category.length > 0
-                              ? styles.categoryError
-                              : styles.buttons
-                          }
-                          style={{ float: 'right' }}
-                          onClick={categoryClickHandler}
-                        >
-                          카테고리 선택하기
-                        </button>
+                        <>
+                          <button
+                            className={
+                              errors.category.length > 0
+                                ? styles.categoryError
+                                : styles.buttons
+                            }
+                            style={{ float: 'right' }}
+                            onClick={categoryClickHandler}
+                          >
+                            카테고리 선택하기
+                          </button>
+                        </>
                       )}
                     </div>
-                    {categoryId == 0 && errors.category && (
+                    {errors.category ? (
                       <span className={styles.errorMessage}>
                         {errors.category}
+                      </span>
+                    ) : (
+                      <span className={styles.infoMessage}>
+                        카테고리는 소분류만 선택 가능합니다.
                       </span>
                     )}
                   </div>
