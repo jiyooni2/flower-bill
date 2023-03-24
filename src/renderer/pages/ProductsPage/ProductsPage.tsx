@@ -224,6 +224,7 @@ const ProductsPage = () => {
   const addDataHandler = () => {
     if (name == '') {setErrors({...errors, name: '상품명이 입력되지 않았습니다.'}); return;}
     if (price == '') {setErrors({ ...errors, price: '판매가가 입력되지 않았습니다.' }); return;}
+    if (price.length < 3) {setErrors({...errors, price: '100원 이상부터 작성할 수 있습니다.'}); return;}
     if (categoryId == 0) {
       setErrors({...errors, category: '카테고리가 선택되지 않았습니다.'});
       return;
@@ -280,6 +281,8 @@ const ProductsPage = () => {
   const handlePage = (event: any) => {
     setPage(parseInt(event.target.outerText));
   };
+
+  console.log(categories)
 
   return (
     <>
@@ -381,6 +384,13 @@ const ProductsPage = () => {
                   </Table>
                 </TableContainer>
               </div>
+              {products && products.length == 0 && (
+                <div className={styles.noResult}>
+                  <div>
+                    <h3>검색결과가 없습니다.</h3>
+                  </div>
+                </div>
+              )}
             </div>
             <div className={styles.pagination}>
               <Pagination
@@ -477,7 +487,11 @@ const ProductsPage = () => {
                         />
                       ) : (
                         <button
-                          className={errors.category.length > 0 ? styles.categoryError : styles.buttons}
+                          className={
+                            errors.category.length > 0
+                              ? styles.categoryError
+                              : styles.buttons
+                          }
                           style={{ float: 'right' }}
                           onClick={categoryClickHandler}
                         >
