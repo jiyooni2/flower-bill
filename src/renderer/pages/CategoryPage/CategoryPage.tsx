@@ -23,7 +23,8 @@ const CategoryPage = () => {
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const [clicked, setClicked] = useState<boolean>(false);
-  const [categoryId, setCategoryId] = useState<number>(0);
+  const [addNew, setAddNew] = useState<boolean>(false);
+  const [categoryId, setCategoryId] = useState<string>('');
   const [categoryName, setCategoryName] = useState<string>('');
   const [levelName, setLevelName] = useState<string>('');
   const [parentCategoryName, setParentCategoryName] = useState<string>('');
@@ -49,13 +50,14 @@ const CategoryPage = () => {
   }, []);
 
   const clickAddHandler = (item: Category, name: string) => {
-    setCategoryId(0);
+    setCategoryId('');
     setCategoryName('');
     setLevelName('');
     setParentCategoryName('');
 
     if (name === 'add') {
       setClicked(false);
+      setAddNew(true);
 
       if (item == null) {
         setLevelName('대분류');
@@ -73,9 +75,10 @@ const CategoryPage = () => {
         setParentCategoryName('');
         setParentCategoryId(null);
       }
-      setCategoryId(categories.length + 1);
+      setCategoryId((categories.length + 1).toString());
     } else if (name === 'item') {
       setClicked(true);
+      setAddNew(false);
 
       if (item.level === 1) {
         setLevelName('대분류');
@@ -86,7 +89,7 @@ const CategoryPage = () => {
       }
 
       if (item) {
-        setCategoryId(item.id);
+        setCategoryId(item.id.toString());
         categories.map((cat) => {
           if (cat.id == item.parentCategoryId) {
             setParentCategoryName(cat.name);
@@ -107,8 +110,9 @@ const CategoryPage = () => {
       return;
     }
 
-    if (categories.findIndex((item) => item.id == categoryId) > -1) {
+    if (categories.findIndex((item) => item.id.toString() == categoryId) > -1) {
       window.alert('동일한 카테고리명이 이미 존재합니다.');
+      return;
     } else {
       const newData: CreateCategoryInput = {
         token: token,
@@ -223,7 +227,7 @@ const CategoryPage = () => {
       <TreeItem
         label={<Typography sx={{ fontSize: '14px' }}>{text}</Typography>}
         key={item.name}
-        nodeId={`add${item.name}`}
+        nodeId={`add${item.name}${Math.random() * 10}`}
         icon={<AddRounded />}
         sx={{ marginTop: '15px' }}
         onClick={() => clickAddHandler(item, 'add')}
@@ -242,7 +246,7 @@ const CategoryPage = () => {
   };
 
   const idChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCategoryId(parseInt(e.target.value));
+    setCategoryId(e.target.value);
   };
 
   const renderTree = (nodes: Category) => (
@@ -280,10 +284,16 @@ const CategoryPage = () => {
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    if (value) {
+    const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z-\s]*$/;
+    if (!pattern.test(value)) {
+      setErrors({ name: '한글, 영문, 기호 - 외의 문자는 입력하실 수 없습니다.'})
+      console.log('aa')
+    } else if (value.startsWith(' ')) {
+      setErrors({ name: '첫 자리는 공백으로 시작하실 수 없습니다.'})
+    } else if (value == '' || value) {
       setErrors({ name: '' });
+      setCategoryName(value);
     }
-    setCategoryName(value);
   };
 
   return (
@@ -342,7 +352,7 @@ const CategoryPage = () => {
                   <div className={styles.item}>
                     <p className={styles.labels}>카테고리 번호</p>
                     <input
-                      className={styles.dataInput}
+                      className={`${styles.dataInput} ${styles.disabled}`}
                       value={categoryId}
                       onChange={idChangeHandler}
                       readOnly
@@ -366,17 +376,19 @@ const CategoryPage = () => {
                       value={categoryName}
                       onChange={changeHandler}
                       maxLength={20}
+                      readOnly={!addNew}
+                      required
                     />
                   </div>
-                  {errors.name && (
+                  {errors.name.length > 0 && (
                     <span className={styles.errorMessage}>{errors.name}</span>
                   )}
                   <div className={styles.item}>
                     <p className={styles.labels}>분류명</p>
                     <input
-                      className={styles.dataInput}
+                      className={`${styles.dataInput} ${styles.disabled}`}
                       value={levelName}
-                      onChange={changeHandler}
+                      // onChange={changeHandler}
                       readOnly
                     />
                   </div>
