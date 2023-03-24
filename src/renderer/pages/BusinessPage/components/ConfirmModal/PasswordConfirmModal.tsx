@@ -1,7 +1,8 @@
 import Modal from './Modal';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   businessState,
+  passwordCheckState,
   tokenState,
 } from 'renderer/recoil/states';
 import { useState } from 'react';
@@ -22,6 +23,7 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
   const business = useRecoilValue(businessState);
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [checked, setChecked] = useRecoilState(passwordCheckState);
 
   const clickHandler = () => {
     const check: CheckPasswordInput = {
@@ -39,10 +41,12 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
       ({ ok, error }: CheckPasswordOutput) => {
         if (ok) {
           setIsOpen(false);
+          setChecked(true);
         }
         if (error) {
           console.log(error);
-          setError('비밀번호를 확인해주세요.')
+          setChecked(false);
+          setError('비밀번호를 확인해주세요.');
         }
       }
     );
@@ -50,8 +54,8 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
-    if (event.target.value == '' ){
-      setError('')
+    if (event.target.value == '') {
+      setError('');
     }
   };
 
@@ -72,7 +76,7 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
         </div>
         <div style={{ width: '100%' }}>
           <Button
-            variant='contained'
+            variant="contained"
             className={styles.deleteButton}
             disabled={!password ? true : false}
             onClick={clickHandler}

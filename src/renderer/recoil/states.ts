@@ -116,6 +116,11 @@ const categoryIdState = atom<number>({
   default: 0
 })
 
+const passwordCheckState = atom<boolean>({
+  key: 'passwordCheckState',
+  default: false,
+})
+
 export {
   loginState,
   tokenState,
@@ -131,4 +136,5 @@ export {
   billState,
   billListState,
   categoryIdState,
+  passwordCheckState,
 };
