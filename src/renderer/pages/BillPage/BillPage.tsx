@@ -80,10 +80,12 @@ const BillPage = () => {
       <div className={styles.container}>
         <div className={styles.content_container} style={{ width: '50%' }}>
           <Typography
-            variant="h5"
+            variant="h6"
+            fontWeight={600}
             align="center"
             marginTop="15px"
             marginBottom="7px"
+            fontSize={'24px'}
           >
             계산서
           </Typography>
@@ -108,27 +110,28 @@ const BillPage = () => {
                   />
                 ))}
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                height: '100px',
-              }}
-            >
-              <Pagination
-                count={LAST_PAGE}
-                size="small"
-                color="standard"
-                defaultPage={1}
-                boundaryCount={1}
-                onChange={handlePage}
-              />
-            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              height: '50%',
+            }}
+          >
+            <Pagination
+              count={LAST_PAGE}
+              size="small"
+              color="standard"
+              defaultPage={1}
+              boundaryCount={1}
+              onChange={handlePage}
+            />
           </div>
           <div
             style={{
               flexDirection: 'column',
               justifyContent: 'center',
+              marginBottom: '15px'
             }}
           >
             <div style={{ width: '100%' }}>
@@ -171,7 +174,7 @@ const BillPage = () => {
               style={{
                 marginTop: '20px',
                 display: 'flex',
-                justifyContent: 'space-between',
+                flexDirection: 'row',
               }}
             >
               <Button
@@ -179,7 +182,7 @@ const BillPage = () => {
                 // color="secondary"
                 sx={{
                   height: '33px',
-                  width: '60%',
+                  width: '50%',
                   marginTop: '10px',
                   marginLeft: '10px',
                   backgroundColor: 'ghostwhite',
@@ -198,7 +201,7 @@ const BillPage = () => {
                 onClick={billClickHandler}
                 sx={{
                   height: '33px',
-                  width: '70%',
+                  width: '50%',
                   marginLeft: '15px',
                   marginTop: '10px',
                   marginRight: '10px',
