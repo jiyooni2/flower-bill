@@ -58,18 +58,6 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
 
     console.log(categoryId)
     setIsOpen(false)
-    // groupName && groupName != 'none' ? (
-    //   {groupId}번 {groupName}
-    //         </span>
-    //       ) : subName ? (
-    //         <span style={{ fontWeight: '500' }}>
-    //           {subId}번 {subName}
-    //         </span>
-    //       ) : (
-    //         <span style={{ fontWeight: '500' }}>
-    //           {mainId}번 {mainName}
-    //         </span>
-    //       )}
   }
 
 
@@ -159,7 +147,6 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
               onChange={groupChangeHandler}
               className={styles.selects}
             >
-              {/* <MenuItem value="none">------------------</MenuItem> */}
               {categories.map((item) => {
                 if (
                   item.level === 3 &&
@@ -183,16 +170,27 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
       </div>
       <div
         style={{
+          marginTop: '25px',
           display: 'flex',
           justifyContent: 'space-between',
-          height: '50px',
-          marginTop: '20px',
-          alignItems: 'center',
-          marginLeft: '10px',
+          width: '100%',
         }}
       >
-        <Link to={'/category'} style={{ marginTop: '10px', width: '30%' }}>
-          <Button size="small" variant="outlined" style={{ width: '150%' }}>
+        <Link to={'/category'} style={{ float: 'right' }}>
+          <Button
+            size="small"
+            variant="contained"
+            sx={{
+              width: '100%',
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+              color: '#265eba',
+              '&:hover': {
+                backgroundColor: '#5990f0',
+                color: '#eff0f3',
+              },
+            }}
+          >
             카테고리 추가하기
           </Button>
         </Link>
@@ -200,7 +198,7 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
           onClick={clickHandler}
           size="small"
           variant="contained"
-          sx={{ width: '50%', marginTop: '10px', marginRight: '-10px' }}
+          sx={{ width: '30%' }}
         >
           선택하기
         </Button>
