@@ -358,13 +358,7 @@ const CategoryPage = () => {
                       readOnly
                     />
                   </div>
-                  <div
-                    className={
-                      errors.name.length > 0
-                        ? styles.itemWithError
-                        : styles.item
-                    }
-                  >
+                  <div className={styles.itemWithError}>
                     <p className={styles.labels}>카테고리명</p>
                     <input
                       className={
@@ -380,15 +374,20 @@ const CategoryPage = () => {
                       required
                     />
                   </div>
-                  {errors.name.length > 0 && (
+                  {errors.name.length > 0 ? (
                     <span className={styles.errorMessage}>{errors.name}</span>
+                  ) : !clicked ? (
+                    <span className={styles.infoMessage}>
+                      &apos;분류 추가하기&apos;를 눌러 카테고리를 추가하세요.
+                    </span>
+                  ) : (
+                    <span className={styles.infoMessage} style={{ marginTop: '16.5px'}}></span>
                   )}
                   <div className={styles.item}>
                     <p className={styles.labels}>분류명</p>
                     <input
                       className={`${styles.dataInput} ${styles.disabled}`}
                       value={levelName}
-                      // onChange={changeHandler}
                       readOnly
                     />
                   </div>
