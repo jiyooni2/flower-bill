@@ -6,6 +6,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   businessState,
   businessesState,
+  passwordCheckState,
   tokenState,
 } from 'renderer/recoil/states';
 import PasswordConfirmModal from './components/ConfirmModal/PasswordConfirmModal';
@@ -18,7 +19,6 @@ import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
 import { GetBusinessOutput } from 'main/business/dtos/get-business.dto';
 import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
-
 const BuisnessPage = () => {
   const [business, setBusiness] = useRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
@@ -28,6 +28,7 @@ const BuisnessPage = () => {
   const [businessOwnerName, setBusinessOwnerName] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(true);
+  const checked = useRecoilValue(passwordCheckState);
 
   useEffect(() => {
     setBusinessNumber(business.businessNumber.toString());
@@ -122,8 +123,9 @@ const BuisnessPage = () => {
 
   return (
     <>
-      {isOpen && <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} />}
-      {!isOpen && (
+      {!checked ? (
+        <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      ) : (
         <div className={styles.container}>
           <div className={styles.content}>
             <div className={styles.infoContent}>
