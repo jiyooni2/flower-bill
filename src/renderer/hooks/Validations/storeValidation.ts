@@ -19,8 +19,6 @@ const Validation = ({ storeNumber, storeName, owner, address }: SignUpValidation
 
   if (!storeNumber) {
     errors.storeNumber = '사업자 번호가 입력되지 않았습니다.';
-  } else if (storeNumber.length != 10) {
-    errors.storeNumber = '사업자 번호는 10자리 수여야 합니다.';
   } else {
     errors.storeNumber = '';
    }
