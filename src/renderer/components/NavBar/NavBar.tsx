@@ -3,7 +3,7 @@ import styles from './NavBar.module.scss';
 import ROUTES from '../../constants/routes';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
+import { businessState, businessesState, passwordCheckState, tokenState } from 'renderer/recoil/states';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 
 const NavBar = () => {
@@ -12,6 +12,7 @@ const NavBar = () => {
   const business = useRecoilValue(businessState)
   const [businesses, setBusinesses] = useRecoilState(businessesState)
   const [hasBusinesses, setHasBusinesses] = useState<boolean>(false);
+  const [checked, setChecked] = useRecoilState(passwordCheckState);
 
 
   useEffect(() => {
@@ -33,6 +34,13 @@ const NavBar = () => {
       }
     );
   }, []);
+
+  const businessClickHandler = () => {
+    setChecked(false);
+    hasBusinesses
+      ? navigate(ROUTES.SELLER)
+      : window.alert('사업자를 먼저 생성해주세요.');
+  }
 
   return (
     <nav className={styles.container}>
@@ -101,9 +109,7 @@ const NavBar = () => {
         <p
           className={styles.menu}
           onClick={() =>
-            hasBusinesses
-              ? navigate(ROUTES.SELLER)
-              : window.alert('사업자를 먼저 생성해주세요.')
+            businessClickHandler()
           }
         >
           사업자 관리
