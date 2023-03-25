@@ -26,7 +26,6 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
           return {
             ...item,
             count: Number(value),
-            orderPrice: orderProduct.product.price * Number(value),
           };
         }
 
@@ -34,6 +33,8 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
       })
     );
   };
+
+  console.log(orderProduct)
 
   const updateOrderProduct = (product: Product, name: string) => {
     setOrderProducts(
@@ -43,14 +44,12 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
             return {
               ...orderProduct,
               count: orderProduct.count + 1,
-              orderPrice: orderProduct.orderPrice + product.price,
             };
           } else if (name === 'DECREASE') {
             if (count > 0) {
               return {
                 ...orderProduct,
                 count: orderProduct.count - 1,
-                orderPrice: orderProduct.orderPrice - product.price,
               };
             }
           }
@@ -63,7 +62,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
   const onDeleteClick = () => {
     setOrderProducts(
       orderProducts.filter(
-        (item) => item.product.id !== orderProduct.product.id
+        (item) => item.id !== orderProduct.id
       )
     );
   };
@@ -75,20 +74,47 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
   return (
     <div className={styles.container}>
       <div className={styles.contents}>
-        <div style={{ width: '7%', position: 'relative', marginRight: '15px', marginTop: '-10px' }}>
+        <div
+          style={{
+            width: '7%',
+            position: 'relative',
+            marginRight: '15px',
+            marginTop: '-10px',
+          }}
+        >
           <button className={styles.deleteButton} onClick={onDeleteClick}>
             x
           </button>
         </div>
-        <div style={{ width: '40%', marginTop: '3px' }}>
+        <div
+          style={{
+            width: '30%',
+            marginTop: '3px',
+            display: 'flex',
+            justifyContent: 'left',
+          }}
+        >
           {orderProduct.product.name}
         </div>
-        <div style={{ marginTop: '3px', width: '30%' }}>
+        <div
+          style={{
+            marginTop: '3px',
+            width: '20%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
           <span className={styles.cutText}>
-            {orderProduct.orderPrice.toLocaleString('ko-KR')}원
+            {(orderProduct.orderPrice * orderProduct.count).toLocaleString(
+              'ko-KR'
+            )}
+            원
           </span>
         </div>
-        <div className={styles.count} style={{ width: '30%' }}>
+        <div
+          className={styles.count}
+          style={{ width: '30%', display: 'flex', justifyContent: 'center', marginLeft: '10px' }}
+        >
           <span
             className={styles.decrease}
             onClick={() => updateOrderProduct(orderProduct.product, 'DECREASE')}

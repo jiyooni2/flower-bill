@@ -16,6 +16,7 @@ import OrderProductBox from './components/OrderProductBox/OrderProductBox';
 import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
+import DiscountModal from './components/DiscountModal/DiscountModal';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -24,6 +25,7 @@ const BillPage = () => {
   const orderProducts = useRecoilValue(orderProductsState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
+  const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const store = useRecoilValue(storeState);
 
@@ -77,6 +79,7 @@ const BillPage = () => {
         setIsOpen={setIsSearchStoreOpen}
       />
       <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
+      <DiscountModal isOpen={isDiscountOpen} setIsOpen={setIsDiscountOpen} />
       <div className={styles.container}>
         <div className={styles.content_container} style={{ width: '50%' }}>
           <Typography
@@ -131,7 +134,7 @@ const BillPage = () => {
             style={{
               flexDirection: 'column',
               justifyContent: 'center',
-              marginBottom: '15px'
+              marginBottom: '15px',
             }}
           >
             <div style={{ width: '100%' }}>
@@ -152,8 +155,10 @@ const BillPage = () => {
               </div>
               <hr />
               <div className={styles.total}>
-                <p className={styles.totalName}>
-                  할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
+                <p className={styles.discount}>
+                  <button className={styles.discountBtn} onClick={() => setIsDiscountOpen(true)}>
+                    할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
+                  </button>
                 </p>
                 <h6 className={styles.totalNum}>
                   {discount ? addComma(discount) : 0} 원
