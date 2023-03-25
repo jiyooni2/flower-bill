@@ -52,6 +52,12 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
     );
   };
 
+  const keyEnterHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key == 'Enter' && e.nativeEvent.isComposing === false) {
+      clickHandler();
+    }
+  };
+
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
     if (event.target.value == '') {
@@ -70,6 +76,7 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
               type="password"
               className={styles.pwInput}
               onChange={changeHandler}
+              onKeyDown={keyEnterHandler}
             />
             {<span className={styles.errorMessage}>{error}</span>}
           </p>
