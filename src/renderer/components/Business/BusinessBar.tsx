@@ -74,10 +74,10 @@ const BusinessBar = () => {
           <div className={styles.addBusiness}>
             <AddRoundedIcon
               sx={{
-                width: '60%',
+                width: '120%',
                 height: '70%',
                 color: '#73777B',
-                marginLeft: '13px',
+                marginLeft: '-4px',
                 cursor: 'pointer',
                 marginTop: '25px',
               }}
