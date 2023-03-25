@@ -191,14 +191,24 @@ const ProductsPage = () => {
     const {value} = event.target;
 
     if (dataName === 'name') {
-      setName(value);
       products.map((item) => {
         if (item.name === value) {
           setErrors({...errors, name: '동일한 상품명이 이미 존재합니다.'});
           return;
         }
       })
-    setErrors({ ...errors, name: '' });
+      const pattern = /^[ㄱ-ㅎ가-힣\s]*$/;
+      if (!pattern.test(value)) {
+        setErrors({
+          ...errors,
+          name: '한글, 공백 외의 문자는 작성하실 수 없습니다.',
+        });
+      } else if (value.startsWith(' ')) {
+        setErrors({ ...errors, name: '첫 번째 자리는 공백이 될 수 없습니다.' });
+      } else if (value == '' || value) {
+        setErrors({ ...errors, name: '' });
+        setName(value);
+      }
     } else if (dataName === 'price') {
       const pattern = /^[0-9]*$/;
       if (!pattern.test(value)) {
