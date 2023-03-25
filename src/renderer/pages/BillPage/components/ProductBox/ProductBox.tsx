@@ -56,7 +56,7 @@ const ProductBox = ({ product }: IProps) => {
       >
         {product.name}
       </Typography>
-      <Typography sx={{ fontSize: '15px', fontWeight: '500', width: '70px' }} align="right">
+      <Typography sx={{ fontSize: '15px', fontWeight: '500' }} align="right">
         {product.price.toLocaleString('ko-KR')}원
       </Typography>
     </div>
