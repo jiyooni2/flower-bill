@@ -38,6 +38,8 @@ const Validation = ({ storeNumber, storeName, owner, address }: SignUpValidation
 
     if (!address) {
       errors.address = '사업자 주소가 입력되지 않았습니다.';
+    } else if (address.length < 3) {
+      errors.address = '사업자 주소는 3글자 이상이어야 합니다.'
     } else {
       errors.address = '';
     }
