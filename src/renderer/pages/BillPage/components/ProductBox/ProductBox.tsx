@@ -1,8 +1,10 @@
 import { Product } from 'main/product/entities/product.entity';
 import styles from './ProductBox.module.scss';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, orderProductsState } from 'renderer/recoil/states';
+import { businessState, orderProductState, orderProductsState } from 'renderer/recoil/states';
 import { Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 
 interface IProps {
   product: Product;

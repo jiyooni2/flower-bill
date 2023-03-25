@@ -146,6 +146,7 @@ const CategoryPage = () => {
           }
         }
       );
+      setCategoryId('');
       setCategoryName('');
       setLevelName('');
       setParentCategoryName('');

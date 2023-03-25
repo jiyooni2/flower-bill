@@ -95,7 +95,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               style={{ width: '100%', border: '0' }}
               cellPadding="0"
               cellSpacing="0"
-              className="title"
+              className={styles.title}
             >
               <tbody>
                 <tr>
