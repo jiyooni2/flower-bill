@@ -18,7 +18,6 @@ import { CreateStoreOutput } from 'main/store/dtos/create-store.dto';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 import Validation from 'renderer/hooks/Validations/storeValidation';
 
-
 type StoreData = {
   storeNumber?: string;
   storeName?: string;
@@ -27,20 +26,20 @@ type StoreData = {
 };
 
 const StorePage = () => {
-  const business = useRecoilValue(businessState)
-  const token = useRecoilValue(tokenState)
+  const business = useRecoilValue(businessState);
+  const token = useRecoilValue(tokenState);
   const [stores, setStores] = useRecoilState(storesState);
   const [errors, setErrors] = useState<StoreData>({
     storeNumber: '',
     storeName: '',
     owner: '',
     address: '',
-  })
+  });
   const [storeNumber, setStoreNumber] = useState<string>('');
   const [storeName, setStoreName] = useState<string>('');
   const [owner, setOwner] = useState<string>('');
   const [address, setAddress] = useState<string>('');
-  const [name, setName] = useState<string>("");
+  const [name, setName] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
   const [clickedStore, setClickedStore] = useState<Store>({
     id: 0,
@@ -88,9 +87,8 @@ const StorePage = () => {
     }
   };
 
-
-  const changeDataHandler = (event: React.MouseEvent<unknown>, data: Store ) => {
-    setClicked(true)
+  const changeDataHandler = (event: React.MouseEvent<unknown>, data: Store) => {
+    setClicked(true);
 
     stores.forEach((item) => {
       if (item.name === data.name) {
@@ -116,19 +114,29 @@ const StorePage = () => {
     setStores(stores.filter((store) => store.name !== clickedStore.name));
   };
 
-  const changeStoreDataHandler = (event: React.ChangeEvent<HTMLInputElement>, dataName:string) => {
-    const {value} = event.target;
+  const changeStoreDataHandler = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    dataName: string
+  ) => {
+    const { value } = event.target;
 
     if (dataName === 'storeNumber') {
       const numPattern = /^[0-9]*$/;
       if (!numPattern.test(value)) {
-        setErrors({...errors, storeNumber: '숫자 외의 문자는 작성하실 수 없습니다.'})
+        setErrors({
+          ...errors,
+          storeNumber: '숫자 외의 문자는 작성하실 수 없습니다.',
+        });
+      } else if (value.startsWith('0')) {
+        setErrors({
+          ...errors,
+          storeNumber: '첫 번쨰 자리는 0이 될 수 없습니다.',
+        });
       } else if (value == '' || value) {
-        setErrors({...errors, storeNumber: ''})
+        setErrors({ ...errors, storeNumber: '' });
         setStoreNumber(value);
       }
     } else if (dataName === 'storeName') {
-      // const namePattern = /^[ㄱ-ㅎ가-힣a-zA-Z0-9\s]*$/;
       const namePattern = /^[ㄱ-ㅎ가-힣0-9\s]*$/;
       if (!namePattern.test(value)) {
         setErrors({
@@ -141,7 +149,10 @@ const StorePage = () => {
           storeName: '첫 번째 자리는 공백이 될 수 없습니다.',
         });
       } else if (value.length > 30) {
-        setErrors({...errors, storeName: '최대 30글자까지 작성하실 수 있습니다.'})
+        setErrors({
+          ...errors,
+          storeName: '최대 30글자까지 작성하실 수 있습니다.',
+        });
       } else if (value == '' || value) {
         setErrors({ ...errors, storeName: '' });
         setStoreName(value);
@@ -149,16 +160,18 @@ const StorePage = () => {
     } else if (dataName === 'owner') {
       const namePattern = /^[ㄱ-ㅎ가-힣a-zA-Z]*$/;
       if (!namePattern.test(value)) {
-        setErrors({...errors, owner : '한글, 영문 이외의 문자는 성함에 포함될 수 없습니다.'});
-      } else
-      if (value == '' || value) {
+        setErrors({
+          ...errors,
+          owner: '한글, 영문 이외의 문자는 성함에 포함될 수 없습니다.',
+        });
+      } else if (value == '' || value) {
         setErrors({ ...errors, owner: '' });
         setOwner(value);
       }
-    } else if (dataName === 'address'){
+    } else if (dataName === 'address') {
       const addressPattern = /^[ㄱ-ㅎ가-힣a-zA-Z_-]*$/;
-      if (!addressPattern.test(value)){
-        setErrors({...errors, address: '특수문자는 -와 _만 입력 가능합니다'})
+      if (!addressPattern.test(value)) {
+        setErrors({ ...errors, address: '특수문자는 -와 _만 입력 가능합니다' });
       } else if (value == '' || value) {
         setErrors({ ...errors, address: '' });
         setAddress(value);
@@ -167,36 +180,45 @@ const StorePage = () => {
   };
 
   const clearInputs = () => {
-    setClicked(false)
+    setClicked(false);
 
-    setErrors({storeNumber: '', storeName: '', owner: '', address: ''});
+    setErrors({ storeNumber: '', storeName: '', owner: '', address: '' });
     setStoreNumber('');
     setStoreName('');
     setOwner('');
     setAddress('');
-    setClickedStore(
-      {
-        business: null,
-        businessId: null,
-        businessNumber: 0,
-        name: '',
-        owner: '',
-        address: '',
-        bills: null,
-      },
-    );
+    setClickedStore({
+      business: null,
+      businessId: null,
+      businessNumber: 0,
+      name: '',
+      owner: '',
+      address: '',
+      bills: null,
+    });
   };
 
   const addDataHandler = () => {
-    setErrors(Validation({ storeNumber, storeName, owner, address }))
-    if (errors){return;}
+    setErrors(Validation({ storeNumber, storeName, owner, address }));
+    if (errors) {
+      return;
+    }
 
-    if (stores.findIndex((data) => data.businessNumber.toString() == storeNumber) != -1) {
+    if (
+      stores.findIndex(
+        (data) => data.businessNumber.toString() == storeNumber
+      ) != -1
+    ) {
       errors.storeNumber = '동일한 사업자 번호가 존재합니다.';
       return;
     }
 
-    if (errors.address.length == 0 && errors.owner.length == 0 && errors.storeName.length == 0 && errors.storeNumber.length == 0) {
+    if (
+      errors.address.length == 0 &&
+      errors.owner.length == 0 &&
+      errors.storeName.length == 0 &&
+      errors.storeNumber.length == 0
+    ) {
       if (
         storeName != '' &&
         storeNumber != '' &&
@@ -258,7 +280,7 @@ const StorePage = () => {
     };
     setStores(updateStore);
     clearInputs();
-    setClicked(false)
+    setClicked(false);
   };
 
   return (
@@ -466,6 +488,7 @@ const StorePage = () => {
                         onChange={(event) =>
                           changeStoreDataHandler(event, 'owner')
                         }
+                        maxLength={25}
                       />
                     </div>
                     {errors.owner && (
@@ -490,7 +513,7 @@ const StorePage = () => {
                         onChange={(event) =>
                           changeStoreDataHandler(event, 'address')
                         }
-                        maxLength={30}
+                        maxLength={50}
                       />
                     </div>
                     {errors.address && (

@@ -1,19 +1,42 @@
 import { useEffect, useRef, useState } from 'react';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import Button from '@mui/material/Button';
-import { Pagination, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import {
+  Pagination,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, categoryIdState, productsState, tokenState } from 'renderer/recoil/states';
+import {
+  businessState,
+  categoriesState,
+  categoryIdState,
+  productsState,
+  tokenState,
+} from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
 import styles from './ProductsPage.module.scss';
-import { CreateProductInput, CreateProductOutput } from 'main/product/dtos/create-product.dto';
+import {
+  CreateProductInput,
+  CreateProductOutput,
+} from 'main/product/dtos/create-product.dto';
 import { DeleteProductOutput } from 'main/product/dtos/delete-product.dto';
-import { UpdateProductInput, UpdateProductOutput } from 'main/product/dtos/update-product.dto';
+import {
+  UpdateProductInput,
+  UpdateProductOutput,
+} from 'main/product/dtos/update-product.dto';
 import { Category } from 'main/category/entities/category.entity';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import CategoryModal from './CategoryModal/CategoryModal';
-import { SearchProductInput, SearchProductOutput } from 'main/product/dtos/search-product.dto';
-
+import {
+  SearchProductInput,
+  SearchProductOutput,
+} from 'main/product/dtos/search-product.dto';
 
 const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
@@ -32,12 +55,12 @@ const ProductsPage = () => {
     name: '',
     price: '',
     category: '',
-  })
+  });
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
       token,
-      businessId: business.id
+      businessId: business.id,
     });
     window.electron.ipcRenderer.on(
       'get-products',
@@ -58,14 +81,13 @@ const ProductsPage = () => {
     );
   }, []);
 
-
   const filter = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
-  }
+  };
 
   const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter' && event.nativeEvent.isComposing === false) {
-      console.log(keyword)
+      console.log(keyword);
       if (keyword != '') {
         const searchData: SearchProductInput = {
           token,
@@ -100,7 +122,6 @@ const ProductsPage = () => {
     }
   };
 
-
   const changeDataHandler = (
     event: React.MouseEvent<unknown>,
     data: Product
@@ -109,10 +130,10 @@ const ProductsPage = () => {
 
     products.forEach((item) => {
       if (item.name === data.name) {
-        setId(item.id)
+        setId(item.id);
         setName(item.name);
         setPrice(item.price.toString());
-        setCategoryId(item.categoryId)
+        setCategoryId(item.categoryId);
       }
     });
   };
@@ -122,7 +143,7 @@ const ProductsPage = () => {
       window.electron.ipcRenderer.sendMessage('delete-product', {
         id: id,
         token,
-        businessId: business.id
+        businessId: business.id,
       });
 
       window.electron.ipcRenderer.on(
@@ -144,13 +165,13 @@ const ProductsPage = () => {
             console.error(error);
           }
         }
-      )
+      );
     }
     clearInputs();
   };
 
   const updateDataHandler = () => {
-    const prices = Number(price)
+    const prices = Number(price);
     const newData: UpdateProductInput = {
       id,
       name,
@@ -160,43 +181,43 @@ const ProductsPage = () => {
       businessId: business.id,
     };
 
-      window.electron.ipcRenderer.sendMessage('update-product', newData);
+    window.electron.ipcRenderer.sendMessage('update-product', newData);
 
-      window.electron.ipcRenderer.on(
-        'update-product',
-        ({ ok, error }: UpdateProductOutput) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-products', {
-              token,
-              businessId: business.id,
-            });
-            window.electron.ipcRenderer.on(
-              'get-products',
-              (args: GetProductsOutput) => {
-                setProducts(args.products as Product[]);
-              }
-            );
-          }
-          if (error) {
-            console.error(error);
-          }
+    window.electron.ipcRenderer.on(
+      'update-product',
+      ({ ok, error }: UpdateProductOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-products', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-products',
+            (args: GetProductsOutput) => {
+              setProducts(args.products as Product[]);
+            }
+          );
         }
-      );
+        if (error) {
+          console.error(error);
+        }
+      }
+    );
   };
 
   const changeStoreDataHandler = (
     event: React.ChangeEvent<HTMLInputElement>,
     dataName: string
   ) => {
-    const {value} = event.target;
+    const { value } = event.target;
 
     if (dataName === 'name') {
       products.map((item) => {
         if (item.name === value) {
-          setErrors({...errors, name: '동일한 상품명이 이미 존재합니다.'});
+          setErrors({ ...errors, name: '동일한 상품명이 이미 존재합니다.' });
           return;
         }
-      })
+      });
       const pattern = /^[ㄱ-ㅎ가-힣\s]*$/;
       if (!pattern.test(value)) {
         setErrors({
@@ -212,9 +233,12 @@ const ProductsPage = () => {
     } else if (dataName === 'price') {
       const pattern = /^[0-9]*$/;
       if (!pattern.test(value)) {
-        setErrors({ ...errors, price: '숫자 외의 문자는 작성하실 수 없습니다.' });
+        setErrors({
+          ...errors,
+          price: '숫자 외의 문자는 작성하실 수 없습니다.',
+        });
       } else if (value.startsWith('0')) {
-        setErrors({ ...errors, price: '판매가는 0으로 시작할 수 없습니다.'})
+        setErrors({ ...errors, price: '판매가는 0으로 시작할 수 없습니다.' });
       } else if (value == '' || value) {
         setErrors({ ...errors, price: '' });
         setPrice(value);
@@ -223,73 +247,81 @@ const ProductsPage = () => {
   };
 
   const clearInputs = () => {
-    setClicked(false)
+    setClicked(false);
 
-    setName('')
-    setPrice('')
+    setName('');
+    setPrice('');
     setCategoryId(0);
-    setErrors({name: '', price: '', category: ''})
+    setErrors({ name: '', price: '', category: '' });
   };
 
   const addDataHandler = () => {
-    if (name == '') {setErrors({...errors, name: '상품명이 입력되지 않았습니다.'}); return;}
-    if (price == '') {setErrors({ ...errors, price: '판매가가 입력되지 않았습니다.' }); return;}
-    if (price.length < 3) {setErrors({...errors, price: '100원 이상부터 작성할 수 있습니다.'}); return;}
+    if (name == '') {
+      setErrors({ ...errors, name: '상품명이 입력되지 않았습니다.' });
+      return;
+    }
+    if (price == '') {
+      setErrors({ ...errors, price: '판매가가 입력되지 않았습니다.' });
+      return;
+    }
+    if (price.length < 3) {
+      setErrors({ ...errors, price: '100원 이상부터 작성할 수 있습니다.' });
+      return;
+    }
     if (categoryId == 0) {
-      setErrors({...errors, category: '카테고리가 선택되지 않았습니다.'});
+      setErrors({ ...errors, category: '카테고리가 선택되지 않았습니다.' });
       return;
     }
 
+    const prices = Number(price);
+    const newData: CreateProductInput = {
+      name,
+      price: prices,
+      categoryId,
+      businessId: business.id,
+      token,
+    };
 
-    const prices = Number(price)
-        const newData: CreateProductInput = {
-          name,
-          price: prices,
-          categoryId,
-          businessId: business.id,
-          token,
-        };
+    window.electron.ipcRenderer.sendMessage('create-product', newData);
 
-        window.electron.ipcRenderer.sendMessage('create-product', newData);
-
-        window.electron.ipcRenderer.on(
-          'create-product',
-          ({ ok, error }: CreateProductOutput) => {
-            if (ok) {
-              window.electron.ipcRenderer.sendMessage('get-products', {
-                token,
-                businessId: business.id,
-              });
-              window.electron.ipcRenderer.on(
-                'get-products',
-                ({ ok, error, products }: GetProductsOutput) => {
-                  if (ok) {
-                    setProducts(products)
-                  }
-                  if (error) {
-                    console.error(error);
-                  }
-                }
-              );
-            }
-            if (error) {
-              console.log(error);
-              if (error.startsWith('최하위')) {
-                setErrors({
-                  ...errors,
-                  category: '카테고리는 소분류만 선택 가능합니다.',
-                });
-                return;
+    window.electron.ipcRenderer.on(
+      'create-product',
+      ({ ok, error }: CreateProductOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-products', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-products',
+            ({ ok, error, products }: GetProductsOutput) => {
+              if (ok) {
+                setProducts(products);
+              }
+              if (error) {
+                console.error(error);
               }
             }
+          );
+        }
+        if (error) {
+          console.log(error);
+          if (error.startsWith('최하위')) {
+            setErrors({
+              ...errors,
+              category: '카테고리는 소분류만 선택 가능합니다.',
+            });
+            return;
           }
-        );
-        clearInputs();
+        }
+      }
+    );
+    clearInputs();
   };
 
   const categoryClickHandler = () => {
     setIsOpen(true);
-  }
+  };
 
   const LAST_PAGE =
     products.length % 9 === 0
@@ -300,7 +332,7 @@ const ProductsPage = () => {
     setPage(parseInt(event.target.outerText));
   };
 
-  console.log(categories)
+  console.log(categories);
 
   return (
     <>
