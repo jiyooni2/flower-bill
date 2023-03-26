@@ -1,6 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Category } from './../../category/entities/category.entity';
-import { OrderProduct } from '../../orderProduct/entities/orderProduct.entity';
 import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
 @Entity()
@@ -11,12 +10,9 @@ export class Product extends BusinessRelatedEntity {
   @Column()
   price: number;
 
-  @ManyToOne((type) => Category, (category) => category.products)
+  @ManyToOne((type) => Category)
   @JoinColumn({ name: 'categoryId' })
   category: Category;
-
-  @OneToMany((type) => OrderProduct, (orderProduct) => orderProduct.product)
-  orderProducts: OrderProduct[];
 
   @Column()
   categoryId: number;
