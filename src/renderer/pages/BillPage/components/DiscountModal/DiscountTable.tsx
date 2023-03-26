@@ -36,7 +36,7 @@ const DiscountTable = ({orderProduct}: IProps) => {
 
   return (
     <>
-      <TableRow>
+      <TableRow key={orderProduct.id}>
         <TableCell size="small">{orderProduct.product.name}</TableCell>
         <TableCell size="small" style={{ width: '25%' }}>
           {orderProduct.product.price} 원
