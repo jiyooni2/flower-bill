@@ -242,12 +242,12 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                       </td>
                       <td className={styles.article}>{orderProduct.count}</td>
                       <td className={styles.price}>
-                        {orderProduct.product.price
+                        {orderProduct.orderPrice
                           .toString()
                           .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       </td>
                       <td className={styles.sum}>
-                        {orderProduct.orderPrice
+                        {(orderProduct.orderPrice * orderProduct.count )
                           .toString()
                           .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       </td>
