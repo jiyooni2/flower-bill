@@ -1,3 +1,4 @@
+import { BillResult } from './../common/dtos/bill-result.dto';
 import { GetBillsInput, GetBillsOutput } from './dtos/get-bills.dto';
 import {
   AppDataSource,
@@ -94,16 +95,22 @@ export class BillService {
     try {
       await authService.checkBusinessAuth(token, businessId);
 
-      const bill = await this.billRepository.findOne({
+      const bill: BillResult = await this.billRepository.findOne({
         where: { id },
         relations: {
-          orderProducts: {
-            product: true,
-          },
           store: true,
           business: true,
         },
       });
+
+      const orderProducts = await this.orderProductRepository.find({
+        where: { billId: id },
+        relations: {
+          product: true,
+        },
+      });
+
+      bill.orderProducts = orderProducts;
 
       if (!bill) {
         return { ok: false, error: '존재하지 않는 계산서입니다.' };
