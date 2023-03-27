@@ -2,20 +2,16 @@ import Modal from './Modal';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   businessState,
-  businessesState,
+  passwordCheckState,
   tokenState,
 } from 'renderer/recoil/states';
 import { useState } from 'react';
 import styles from './PasswordConfirmModal.module.scss';
-import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
 import {
   CheckPasswordInput,
   CheckPasswordOutput,
 } from 'main/auth/dtos/check-password.dto';
-import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
-import { Business } from 'main/business/entities/business.entity';
-import { Link } from 'react-router-dom';
-import { BrowserWindow } from 'electron';
+import { Button, Typography } from '@mui/material';
 
 interface IProps {
   isOpen: boolean;
@@ -24,8 +20,10 @@ interface IProps {
 
 const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
-  const [business, setBusiness] = useRecoilState(businessState);
+  const business = useRecoilValue(businessState);
   const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [checked, setChecked] = useRecoilState(passwordCheckState);
 
   const clickHandler = () => {
     const check: CheckPasswordInput = {
@@ -43,21 +41,34 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
       ({ ok, error }: CheckPasswordOutput) => {
         if (ok) {
           setIsOpen(false);
+          setChecked(true);
         }
         if (error) {
           console.log(error);
+          setChecked(false);
+          setError('비밀번호를 확인해주세요.');
         }
       }
     );
   };
 
+  const keyEnterHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key == 'Enter' && e.nativeEvent.isComposing === false) {
+      clickHandler();
+    }
+  };
+
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
+    if (event.target.value == '') {
+      setError('');
+    }
   };
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <div>
+      <div style={{ margin: '15px 10px' }}>
+        <Typography variant="h5">비밀번호 확인</Typography>
         <div>
           <p className={styles.label}>비밀번호를 입력해주십시오.</p>
           <p className={styles.pwContainer}>
@@ -65,16 +76,21 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
               type="password"
               className={styles.pwInput}
               onChange={changeHandler}
+              onKeyDown={keyEnterHandler}
             />
+            {<span className={styles.errorMessage}>{error}</span>}
           </p>
         </div>
-        <button
-          className={styles.deleteButton}
-          disabled={!password ? true : false}
-          onClick={clickHandler}
-        >
-          확인
-        </button>
+        <div style={{ width: '100%' }}>
+          <Button
+            variant="contained"
+            className={styles.deleteButton}
+            disabled={!password ? true : false}
+            onClick={clickHandler}
+          >
+            확인
+          </Button>
+        </div>
       </div>
     </Modal>
   );

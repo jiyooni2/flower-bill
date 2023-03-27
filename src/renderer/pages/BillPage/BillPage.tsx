@@ -16,6 +16,7 @@ import OrderProductBox from './components/OrderProductBox/OrderProductBox';
 import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
+import DiscountModal from './components/DiscountModal/DiscountModal';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -24,6 +25,7 @@ const BillPage = () => {
   const orderProducts = useRecoilValue(orderProductsState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
+  const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const store = useRecoilValue(storeState);
 
@@ -77,13 +79,16 @@ const BillPage = () => {
         setIsOpen={setIsSearchStoreOpen}
       />
       <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
+      <DiscountModal isOpen={isDiscountOpen} setIsOpen={setIsDiscountOpen} />
       <div className={styles.container}>
         <div className={styles.content_container} style={{ width: '50%' }}>
           <Typography
-            variant="h5"
+            variant="h6"
+            fontWeight={600}
             align="center"
             marginTop="15px"
             marginBottom="7px"
+            fontSize={'24px'}
           >
             계산서
           </Typography>
@@ -108,27 +113,28 @@ const BillPage = () => {
                   />
                 ))}
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                height: '100px',
-              }}
-            >
-              <Pagination
-                count={LAST_PAGE}
-                size="small"
-                color="standard"
-                defaultPage={1}
-                boundaryCount={1}
-                onChange={handlePage}
-              />
-            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              height: '50%',
+            }}
+          >
+            <Pagination
+              count={LAST_PAGE}
+              size="small"
+              color="standard"
+              defaultPage={1}
+              boundaryCount={1}
+              onChange={handlePage}
+            />
           </div>
           <div
             style={{
               flexDirection: 'column',
               justifyContent: 'center',
+              marginBottom: '15px',
             }}
           >
             <div style={{ width: '100%' }}>
@@ -149,8 +155,10 @@ const BillPage = () => {
               </div>
               <hr />
               <div className={styles.total}>
-                <p className={styles.totalName}>
-                  할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
+                <p className={styles.discount}>
+                  <button className={styles.discountBtn} onClick={() => setIsDiscountOpen(true)}>
+                    할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
+                  </button>
                 </p>
                 <h6 className={styles.totalNum}>
                   {discount ? addComma(discount) : 0} 원
@@ -171,7 +179,7 @@ const BillPage = () => {
               style={{
                 marginTop: '20px',
                 display: 'flex',
-                justifyContent: 'space-between',
+                flexDirection: 'row',
               }}
             >
               <Button
@@ -179,7 +187,7 @@ const BillPage = () => {
                 // color="secondary"
                 sx={{
                   height: '33px',
-                  width: '60%',
+                  width: '50%',
                   marginTop: '10px',
                   marginLeft: '10px',
                   backgroundColor: 'ghostwhite',
@@ -198,7 +206,7 @@ const BillPage = () => {
                 onClick={billClickHandler}
                 sx={{
                   height: '33px',
-                  width: '70%',
+                  width: '50%',
                   marginLeft: '15px',
                   marginTop: '10px',
                   marginRight: '10px',

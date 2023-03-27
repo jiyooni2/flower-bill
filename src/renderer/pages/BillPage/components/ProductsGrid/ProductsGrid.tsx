@@ -1,5 +1,5 @@
 import styles from './ProductsGrid.module.scss';
-import { Box, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
 import ProductBox from '../ProductBox/ProductBox';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -8,7 +8,8 @@ import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import { GetProductByCategoryInput, GetProductByCategoryOutput } from 'main/product/dtos/get-product-by-category.dto';
-
+import { Link } from 'react-router-dom';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const ProductsGrid = () => {
   const [categories, setCategories] = useRecoilState(categoriesState)
@@ -22,6 +23,7 @@ const ProductsGrid = () => {
   const [subId, setSubId] = useState<number>(0);
   const [subName, setSubName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
+
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -161,14 +163,16 @@ const ProductsGrid = () => {
         >
           <Box sx={{ width: '27%' }}>
             <FormControl fullWidth>
-              <InputLabel id="main">대분류</InputLabel>
+              <InputLabel id="main" style={{ marginTop: '-7px' }}>
+                대분류
+              </InputLabel>
               <Select
                 labelId="main"
                 value={mainName}
                 label="대분류"
+                size="small"
                 onChange={(event) => changeHandler(event, 'main')}
                 defaultValue={'none'}
-                className={styles.selects}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
                 {categories.map((item) => {
@@ -189,10 +193,13 @@ const ProductsGrid = () => {
           </Box>
           <Box sx={{ width: '27%' }}>
             <FormControl fullWidth>
-              <InputLabel id="sub">중분류</InputLabel>
+              <InputLabel id="sub" style={{ marginTop: '-7px' }}>
+                중분류
+              </InputLabel>
               <Select
                 labelId="sub"
                 value={subName}
+                size="small"
                 label="중분류"
                 onChange={(event) => changeHandler(event, 'sub')}
                 defaultValue={'none'}
@@ -217,10 +224,13 @@ const ProductsGrid = () => {
           </Box>
           <Box sx={{ width: '27%' }}>
             <FormControl fullWidth>
-              <InputLabel id="sub">소분류</InputLabel>
+              <InputLabel id="sub" style={{ marginTop: '-7px' }}>
+                소분류
+              </InputLabel>
               <Select
                 labelId="group"
                 value={groupName}
+                size="small"
                 label="소분류"
                 onChange={(event) => changeHandler(event, 'group')}
                 defaultValue={'none'}
@@ -246,7 +256,7 @@ const ProductsGrid = () => {
         </div>
 
         <div style={{ margin: '20px', height: '300px' }}>
-          {products ? (
+          {products && (
             <Grid
               container
               spacing={{ xs: 1, md: 2 }}
@@ -269,8 +279,36 @@ const ProductsGrid = () => {
                   </Grid>
                 ))}
             </Grid>
-          ) : (
-            <div>데이터를 가져오고 있습니다.</div>
+          )}
+          {products.length == 0 && (
+            <div>
+              <span
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '-38%',
+                  fontSize: '14px',
+                  color: 'dimgray',
+                }}
+              >
+                상품이 없습니다.
+              </span>
+              <Link
+                to={'/products'}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '5px',
+                  fontSize: '13px',
+                  color: 'darkslateblue',
+                  marginLeft: '2px'
+                }}
+              >
+                <Button variant="text" color='success'>
+                  상품 추가하러 가기 <ArrowForwardIcon sx={{ fontSize: '15px'}} />
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
         <div style={{ margin: '0 auto' }}>

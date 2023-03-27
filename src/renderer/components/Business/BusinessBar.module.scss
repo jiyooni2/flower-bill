@@ -5,7 +5,7 @@
 
 .container {
   padding: 30px;
-  width: 120px;
+  width: 90px;
   height: 100vh;
   background-color: #f1f1f1;
 
@@ -21,10 +21,10 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      width: 53px;
-      height: 53px;
+      width: 47px;
+      height: 47px;
       margin-top: 25px;
-      margin-left: 7px;
+      margin-left: -8px;
       cursor: pointer;
 
       & > img {

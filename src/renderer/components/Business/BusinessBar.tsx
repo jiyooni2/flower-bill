@@ -32,7 +32,7 @@ const BusinessBar = () => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
-          if (businesses.length <= 1) setBusiness(businesses[0])
+          setBusiness(businesses[0])
         } else {
           console.error(error);
         }
@@ -74,10 +74,10 @@ const BusinessBar = () => {
           <div className={styles.addBusiness}>
             <AddRoundedIcon
               sx={{
-                width: '60%',
+                width: '120%',
                 height: '70%',
                 color: '#73777B',
-                marginLeft: '13px',
+                marginLeft: '-4px',
                 cursor: 'pointer',
                 marginTop: '25px',
               }}

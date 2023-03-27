@@ -8,6 +8,7 @@ import MiniModal from './MiniModal';
 import { useRecoilValue } from 'recoil';
 import { orderProductsState } from 'renderer/recoil/states';
 import TrendingFlatOutlinedIcon from '@mui/icons-material/TrendingFlatOutlined';
+import DiscountTable from './DiscountTable';
 
 interface IProps {
   isOpen: boolean;
@@ -15,14 +16,7 @@ interface IProps {
 }
 
 const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
-  const orderProduct = useRecoilValue(orderProductsState);
-  const [discount, setDiscount] = useState('');
-
-  console.log(orderProduct);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDiscount(event.target.value);
-  };
+  const orderProducts = useRecoilValue(orderProductsState);
 
   const handleClick = () => {
     setIsOpen(false);
@@ -33,17 +27,14 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
       <Typography variant="h6" sx={{ margin: '15px auto 10px auto' }}>
         할인 추가하기
       </Typography>
-      {/* <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', marginLeft: '-50px' }}>
-        <TextField
-          placeholder="할인율"
-          multiline
-          className={styles.discount}
-          value={discount}
-          onChange={handleChange}
-        />
-        <Typography variant="h6" sx={{ marginTop: '10px'}}>%</Typography>
-      </div> */}
-      <div style={{ width: '90%', margin: '0 auto' }}>
+      <div
+        style={{
+          width: '90%',
+          margin: '0 auto',
+          height: '74%',
+          marginBottom: '13px',
+        }}
+      >
         <TableContainer>
           <Table>
             <TableHead>
@@ -51,48 +42,37 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
                 sx={{ fontWeight: 'bold', borderBottom: '1.5px solid' }}
               >
                 <TableCell size="small">상품</TableCell>
-                <TableCell size="small">금액</TableCell>
-                <TableCell size="small">할인</TableCell>
+                <TableCell size="small">상품 가격</TableCell>
+                <TableCell size="small">판매가</TableCell>
+                <TableCell size="small"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {orderProduct.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell size="small">{item.product.name}</TableCell>
-                  <TableCell size="small">{item.product.price} 원</TableCell>
-                  <TableCell
-                    size="small"
-                    sx={{ display: 'flex', flexDirection: 'row' }}
-                  >
-                    <div style={{ marginLeft: '5px' }}>
-                      <input
-                        className={styles.dataInput}
-                        value={discount}
-                        onChange={handleChange}
-                      />
-                      <span style={{ marginTop: '4px', marginLeft: '5px' }}>
-                        원
-                      </span>
-                      <span style={{ marginLeft: '10px' }}>→</span>
-                      <span style={{ marginLeft: '10px' }}>
-                        {Number(discount) / item.product.price} %
-                      </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
+              {orderProducts.map((item) => (
+                <DiscountTable key={item.id} orderProduct={item} />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+        {orderProducts.length == 0 && (
+          <span
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginTop: '100px',
+              fontSize: '14px',
+              color: 'dimgray',
+            }}
+          >
+            주문 상품이 없습니다.
+          </span>
+        )}
       </div>
-      <div></div>
-      {/* <Button
-        variant="contained"
-        onClick={handleClick}
-        sx={{ width: '100px', margin: '0 auto' }}
-      >
-        확인
-      </Button> */}
+      {/* <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Button variant="contained" onClick={handleClick} sx={{ width: '50%' }}>
+          확인
+        </Button>
+      </div> */}
     </MiniModal>
   );
 };
