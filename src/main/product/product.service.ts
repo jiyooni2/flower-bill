@@ -23,6 +23,7 @@ import {
   SearchProductInput,
   SearchProductOutput,
 } from './dtos/search-product.dto';
+import { CategoryResult } from 'main/common/dtos/category-result.dto';
 
 export class ProductService {
   private readonly productRepository: Repository<Product>;
@@ -181,14 +182,19 @@ export class ProductService {
     try {
       await authService.checkBusinessAuth(token, businessId);
 
-      const category = await this.categoryRepository.findOne({
+      const category: CategoryResult = await this.categoryRepository.findOne({
         where: { id: categoryId },
-        relations: { childCategories: true },
       });
 
       if (!category) {
         return { ok: false, error: '존재하지 않는 카테고리입니다.' };
       }
+
+      const childCategories = await this.categoryRepository.find({
+        where: { parentCategoryId: category.id },
+      });
+
+      category.childCategories = childCategories;
 
       if (category.businessId !== businessId) {
         return { ok: false, error: '해당 카테고리에 대한 권한이 없습니다.' };
