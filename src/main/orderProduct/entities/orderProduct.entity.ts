@@ -14,14 +14,14 @@ export class OrderProduct extends BusinessRelatedEntity {
   @Column()
   orderPrice: number;
 
-  @ManyToOne((type) => Product, (product) => product.orderProducts)
+  @ManyToOne((type) => Product, (product) => product)
   @JoinColumn({ name: 'productId' })
   product: Product;
 
   @Column()
   productId?: number;
 
-  @ManyToOne((type) => Bill, (bill) => bill.orderProducts, {
+  @ManyToOne((type) => Bill, (bill) => bill, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'billId' })
