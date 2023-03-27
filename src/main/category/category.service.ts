@@ -18,6 +18,7 @@ import {
   CreateCategoryOutput,
   CreateCategoryInput,
 } from './dtos/create-category.dto';
+import { CategoryResult } from 'main/common/dtos/category-result.dto';
 
 export class CategoryService {
   private readonly categoryRepository: Repository<Category>;
@@ -123,12 +124,21 @@ export class CategoryService {
       console.log(token, businessId);
       await authService.checkBusinessAuth(token, businessId);
 
-      const categories = await this.categoryRepository.find({
+      const categories: CategoryResult[] = await this.categoryRepository.find({
         relations: {
-          childCategories: true,
           parentCategory: true,
         },
       });
+
+      for (const category of categories) {
+        const childCategories = await this.categoryRepository.find({
+          where: {
+            parentCategoryId: category.id,
+          },
+        });
+
+        category.childCategories = childCategories;
+      }
 
       return { ok: true, categories };
     } catch (error: any) {
