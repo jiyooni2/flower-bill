@@ -49,7 +49,9 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
             </TableHead>
             <TableBody>
               {orderProducts.map((item) => (
-                <DiscountTable key={item.id} orderProduct={item} />
+                <TableRow key={item.billId}>
+                  <DiscountTable orderProduct={item} />
+                </TableRow>
               ))}
             </TableBody>
           </Table>
@@ -68,11 +70,16 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
           </span>
         )}
       </div>
-      {/* <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Button variant="contained" onClick={handleClick} sx={{ width: '50%' }}>
-          확인
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Button
+          variant="contained"
+          onClick={handleClick}
+          size="small"
+          sx={{ width: '50%', backgroundColor: 'lightgray' }}
+        >
+          닫기
         </Button>
-      </div> */}
+      </div>
     </MiniModal>
   );
 };

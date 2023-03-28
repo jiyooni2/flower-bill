@@ -36,28 +36,23 @@ const DiscountTable = ({orderProduct}: IProps) => {
 
   return (
     <>
-      <TableRow key={orderProduct.id}>
         <TableCell size="small">{orderProduct.product.name}</TableCell>
         <TableCell size="small" style={{ width: '25%' }}>
           {orderProduct.product.price} 원
         </TableCell>
         <TableCell size="small" align="center">
           {!clicked ? (
-            <>
               <input
                 className={styles.dataInput}
                 value={discount}
                 onChange={handleChange}
               />
-            </>
           ) : (
-            <>
               <input
                 className={styles.updatedInput}
                 value={discount}
                 onChange={handleChange}
               />
-            </>
           )}
           <span
             style={{ marginTop: '4px', marginLeft: '5px', fontSize: '14px' }}
@@ -77,7 +72,6 @@ const DiscountTable = ({orderProduct}: IProps) => {
         >
           <span onClick={updatePriceHandler}>저장</span>
         </TableCell>
-      </TableRow>
     </>
   );
 };
