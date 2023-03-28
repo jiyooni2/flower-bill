@@ -49,7 +49,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
 
     } else if (dataName === 'name') {
       if (value == '' || value) {
-        setErrors({ ...errors, name: '' });
+        setErrors({...errors, name: ''});
         setName(value);
       }
 
@@ -61,8 +61,8 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
           owner: '한글, 영문 외의 문자는 작성하실 수 없습니다.',
         });
         return;
-      } else {
-        setErrors({ ...errors, owner: 'ㅁ' });
+      } else if (value == '' || value) {
+        setErrors({ ...errors, owner: '' });
         setOwner(value);
       }
     } else if (dataName === 'address') {
@@ -80,6 +80,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
     if (!owner) {setErrors({...errors, owner: '사업자 성명이 입력되지 않았습니다.'}); return;}
 
     if (errors.address == '' && errors.businessNumber == '' && errors.name == '' && errors.owner == '') {
+      if (window.confirm('정말 생성하시겠습니까?')) {
         const newBusiness: CreateBusinessInput = {
           name,
           token,
@@ -93,10 +94,9 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
           'create-business',
           ({ ok, error }: CreateBusinessOutput) => {
             if (ok) {
-              console.log('yes');
               window.electron.ipcRenderer.sendMessage('get-businesses', {
                 token,
-                businessId: 1,
+                businessId: business.id,
               });
 
               window.electron.ipcRenderer.on(
@@ -116,6 +116,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
           }
         );
         console.log(newBusiness)
+      }
     }
     setBusinessNumber('');
     setName('');
