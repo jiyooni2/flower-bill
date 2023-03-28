@@ -162,17 +162,12 @@ const BillPage = () => {
               </div>
               <hr />
               <div className={styles.total}>
-                <p className={styles.discount}>
-                  <button
-                    className={styles.discountBtn}
-                    onClick={() => setIsDiscountOpen(true)}
-                  >
-                    할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
-                  </button>
+                <p className={styles.totalName}>
+                  할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
                 </p>
-                <h6 className={styles.totalNum}>
+                <p className={styles.totalNum}>
                   {discount ? addComma(discount) : 0} 원
-                </h6>
+                </p>
               </div>
               <hr />
               <div className={styles.total}>
@@ -187,9 +182,11 @@ const BillPage = () => {
             </div>
             <div
               style={{
-                marginTop: '20px',
+                marginTop: '15px',
                 display: 'flex',
-                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                gap: '10px',
               }}
             >
               <Button
@@ -197,11 +194,10 @@ const BillPage = () => {
                 // color="secondary"
                 sx={{
                   height: '33px',
-                  width: '50%',
-                  marginTop: '10px',
-                  marginLeft: '10px',
+                  width: '100%',
                   backgroundColor: 'ghostwhite',
                   opacity: '0.9',
+                  marginleft: '20px',
                   color: '#228af2',
                   '&:hover': {
                     color: 'lightskyblue',
@@ -213,18 +209,33 @@ const BillPage = () => {
               </Button>
               <Button
                 variant="contained"
-                onClick={billClickHandler}
+                onClick={() => setIsDiscountOpen(true)}
                 sx={{
                   height: '33px',
-                  width: '50%',
-                  marginLeft: '15px',
-                  marginTop: '10px',
-                  marginRight: '10px',
-                  backgroundColor: '#228bf2',
-                  color: '#e8f8e2',
+                  width: '100%',
+                  backgroundColor: 'ghostwhite',
+                  color: 'blueviolet',
+                  '&:hover': {
+                    color: 'lightskyblue',
+                  },
                 }}
               >
-                계산서 생성
+                판매가 수정하기
+              </Button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center'}}>
+              <Button
+                  variant="contained"
+                  onClick={billClickHandler}
+                  sx={{
+                    height: '33px',
+                    width: '100%',
+                    marginTop: '10px',
+                    backgroundColor: '#228bf2',
+                    color: '#e8f8e2',
+                  }}
+                >
+                  계산서 생성
               </Button>
             </div>
           </div>
