@@ -17,6 +17,7 @@ import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
 import DiscountModal from './components/DiscountModal/DiscountModal';
+import InfoModal from 'renderer/components/InfoModal/InfoModal';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -26,6 +27,7 @@ const BillPage = () => {
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const store = useRecoilValue(storeState);
 
@@ -67,13 +69,18 @@ const BillPage = () => {
   const billClickHandler = () => {
     console.log(store)
     if (!store.name || store.name == null) {
-      window.alert('판매처를 선택해주세요.')
+      setIsOpen(true);
     } else setIsBillOpen(true);
   };
 
 
   return (
     <>
+      <InfoModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        text={'판매처를 선택해주세요.'}
+      />
       <StoreSearchModal
         isOpen={isSearchStoreOpen}
         setIsOpen={setIsSearchStoreOpen}
@@ -156,7 +163,10 @@ const BillPage = () => {
               <hr />
               <div className={styles.total}>
                 <p className={styles.discount}>
-                  <button className={styles.discountBtn} onClick={() => setIsDiscountOpen(true)}>
+                  <button
+                    className={styles.discountBtn}
+                    onClick={() => setIsDiscountOpen(true)}
+                  >
                     할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
                   </button>
                 </p>
