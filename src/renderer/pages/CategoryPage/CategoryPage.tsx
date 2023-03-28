@@ -17,9 +17,11 @@ import { ChevronRight, ExpandMore, AddRounded } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Typography } from '@mui/material';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
+import { CategoryResult } from 'main/common/dtos/category-result.dto';
 
 const CategoryPage = () => {
   const [categories, setCategories] = useRecoilState(categoriesState);
+  const [currentCategory, setCurrentCategory] = useState<CategoryResult[]>();
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const [clicked, setClicked] = useState<boolean>(false);
@@ -42,6 +44,7 @@ const CategoryPage = () => {
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
+          setCurrentCategory(categories);
         } else {
           console.error(error);
         }
@@ -110,8 +113,8 @@ const CategoryPage = () => {
       return;
     }
 
-    if (categories.findIndex((item) => item.id.toString() == categoryId) > -1) {
-      window.alert('동일한 카테고리명이 이미 존재합니다.');
+    if (categories.findIndex((item) => item.name == categoryName) > -1) {
+      setErrors({ name: '동일한 카테고리명이 이미 존재합니다.' });
       return;
     } else {
       const newData: CreateCategoryInput = {
@@ -177,7 +180,7 @@ const CategoryPage = () => {
   //             if (ok) {
   //               setCategories(categories);
   //             } else if (error) {
-  //               window.alert(error);
+  //               console.error(error);
   //             }
   //           }
   //         );
@@ -211,7 +214,7 @@ const CategoryPage = () => {
   //                 console.log(categories)
   //                 setCategories(categories);
   //               } else if (error) {
-  //                 window.alert(error);
+  //                 console.error(error);
   //               }
   //             }
   //           );
@@ -250,7 +253,7 @@ const CategoryPage = () => {
     setCategoryId(e.target.value);
   };
 
-  const renderTree = (nodes: Category) => (
+  const renderTree = (nodes: CategoryResult) => (
     <TreeItem
       key={nodes.name}
       nodeId={nodes.name}
@@ -287,10 +290,12 @@ const CategoryPage = () => {
     const { value } = e.target;
     const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z-\s]*$/;
     if (!pattern.test(value)) {
-      setErrors({ name: '한글, 영문, 기호 - 외의 문자는 입력하실 수 없습니다.'})
-      console.log('aa')
+      setErrors({
+        name: '한글, 영문, 기호 - 외의 문자는 입력하실 수 없습니다.',
+      });
+      console.log('aa');
     } else if (value.startsWith(' ')) {
-      setErrors({ name: '첫 자리는 공백으로 시작하실 수 없습니다.'})
+      setErrors({ name: '첫 자리는 공백으로 시작하실 수 없습니다.' });
     } else if (value == '' || value) {
       setErrors({ name: '' });
       setCategoryName(value);
@@ -382,7 +387,10 @@ const CategoryPage = () => {
                       &apos;분류 추가하기&apos;를 눌러 카테고리를 추가하세요.
                     </span>
                   ) : (
-                    <span className={styles.infoMessage} style={{ marginTop: '16.5px'}}></span>
+                    <span
+                      className={styles.infoMessage}
+                      style={{ marginTop: '16.5px' }}
+                    ></span>
                   )}
                   <div className={styles.item}>
                     <p className={styles.labels}>분류명</p>
