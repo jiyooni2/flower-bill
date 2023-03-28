@@ -56,7 +56,7 @@ const BillsPage = () => {
         if (ok) {
           setCurrentBill(bill);
         } else {
-          alert(error);
+          console.log(error)
         }
       }
     );
