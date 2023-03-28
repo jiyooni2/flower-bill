@@ -39,7 +39,6 @@ const BuisnessPage = () => {
 
   const deleteDataHandler = () => {
     console.log(business);
-    if (window.confirm('정말 삭제하시겠습니까?')) {
       window.electron.ipcRenderer.sendMessage('delete-business', {
         businessId: business.id,
         token,
@@ -66,7 +65,6 @@ const BuisnessPage = () => {
           }
         }
       );
-    }
   };
 
   const updateDataHandler = () => {
