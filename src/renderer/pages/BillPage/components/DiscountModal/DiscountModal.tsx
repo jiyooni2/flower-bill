@@ -24,8 +24,8 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
 
   return (
     <MiniModal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <Typography variant="h6" sx={{ margin: '15px auto 10px auto' }}>
-        할인 추가하기
+      <Typography variant="h5" sx={{ margin: '25px auto 10px auto' }}>
+        판매가 수정하기
       </Typography>
       <div
         style={{

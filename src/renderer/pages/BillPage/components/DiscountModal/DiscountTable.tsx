@@ -41,19 +41,11 @@ const DiscountTable = ({orderProduct}: IProps) => {
           {orderProduct.product.price} 원
         </TableCell>
         <TableCell size="small" align="center">
-          {!clicked ? (
-              <input
-                className={styles.dataInput}
-                value={discount}
-                onChange={handleChange}
-              />
-          ) : (
-              <input
-                className={styles.updatedInput}
-                value={discount}
-                onChange={handleChange}
-              />
-          )}
+          <input
+            className={!clicked ? styles.dataInput : styles.updatedInput}
+            value={discount}
+            onChange={handleChange}
+          />
           <span
             style={{ marginTop: '4px', marginLeft: '5px', fontSize: '14px' }}
           >
@@ -70,7 +62,7 @@ const DiscountTable = ({orderProduct}: IProps) => {
             '&:hover': { color: '#228bf2' },
           }}
         >
-          <span onClick={updatePriceHandler}>저장</span>
+          {!clicked && <span onClick={updatePriceHandler}>저장</span>}
         </TableCell>
     </>
   );
