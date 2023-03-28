@@ -2,6 +2,7 @@ import Modal from './Modal';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   businessState,
+  businessesState,
   passwordCheckState,
   tokenState,
 } from 'renderer/recoil/states';
@@ -12,6 +13,9 @@ import {
   CheckPasswordOutput,
 } from 'main/auth/dtos/check-password.dto';
 import { Button, Typography } from '@mui/material';
+import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
+import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
+import { Business } from 'main/business/entities/business.entity';
 
 interface IProps {
   isOpen: boolean;
@@ -20,10 +24,11 @@ interface IProps {
 
 const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
-  const business = useRecoilValue(businessState);
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [checked, setChecked] = useRecoilState(passwordCheckState);
+  const [businesses, setBusinesses] = useRecoilState(businessesState);
+  const [business, setBusiness] = useRecoilState(businessState)
 
   const clickHandler = () => {
     const check: CheckPasswordInput = {
@@ -40,6 +45,32 @@ const PasswordConfirmModal = ({ isOpen, setIsOpen }: IProps) => {
       'check-password',
       ({ ok, error }: CheckPasswordOutput) => {
         if (ok) {
+          window.electron.ipcRenderer.sendMessage('delete-business', {
+            businessId: business.id,
+            token,
+          });
+
+          window.electron.ipcRenderer.on(
+            'delete-business',
+            ({ ok, error }: DeleteBusinessOutput) => {
+              if (ok) {
+                window.electron.ipcRenderer.sendMessage('get-businesses', {
+                  token,
+                  businessId: business.id,
+                });
+                window.electron.ipcRenderer.on(
+                  'get-businesses',
+                  (args: GetBusinessesOutput) => {
+                    setBusinesses(args.businesses as Business[]);
+                    setBusiness(businesses[0]);
+                  }
+                );
+              }
+              if (error) {
+                console.log(error);
+              }
+            }
+          );
           setIsOpen(false);
           setChecked(true);
         }
