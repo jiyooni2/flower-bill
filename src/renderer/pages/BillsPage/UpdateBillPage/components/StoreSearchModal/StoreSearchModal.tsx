@@ -52,7 +52,7 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
         if (ok) {
           setStoreList(stores);
         } else {
-          alert(error);
+          console.error(error);
         }
       }
     );

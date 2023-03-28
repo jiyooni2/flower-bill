@@ -3,16 +3,18 @@ import { Box, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Selec
 import ProductBox from '../ProductBox/ProductBox';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { billState, businessState, categoriesState, orderProductsState, productsState, tokenState } from 'renderer/recoil/states';
+import { billState, businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import { GetProductByCategoryInput, GetProductByCategoryOutput } from 'main/product/dtos/get-product-by-category.dto';
+import { BillResult } from 'main/common/dtos/bill-result.dto';
 
 
 const ProductsGrid = () => {
   const [categories, setCategories] = useRecoilState(categoriesState)
   const [products, setProducts] = useRecoilState(productsState);
+  // const [orderProduct, setOrderProduct] = useState<
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState)
   const [searchWord, setSearchWord] = useState('');
@@ -22,8 +24,8 @@ const ProductsGrid = () => {
   const [subId, setSubId] = useState<number>(0);
   const [subName, setSubName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
-  const [currentBill, setCurrentBill] = useRecoilState(billState);
-  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
+  const currentBill = useRecoilValue(billState);
+  const [orderProduct, setOrderProduct] = useState<BillResult>()
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -36,12 +38,12 @@ const ProductsGrid = () => {
         if (ok) {
           setCategories(categories);
         } else if (error) {
-          window.alert(error);
+          console.error(error);
         }
       }
     );
 
-    setOrderProducts(currentBill.orderProducts)
+    setOrderProduct(currentBill);
   }, [])
 
   const handlePage = (event: any) => {
@@ -71,7 +73,7 @@ const ProductsGrid = () => {
             if (ok) {
               setProducts(products);
             } else if (error) {
-              window.alert(error);
+              console.error(error);
             }
           }
         );
@@ -89,7 +91,7 @@ const ProductsGrid = () => {
               console.log(products)
               setProducts(products);
             } else if (error) {
-              window.alert(error);
+              console.error(error);
             }
           }
         );
@@ -126,7 +128,7 @@ const ProductsGrid = () => {
         if (ok) {
           setProducts(products);
         } else if (error) {
-          window.alert(error);
+          console.error(error);
         }
       }
     );

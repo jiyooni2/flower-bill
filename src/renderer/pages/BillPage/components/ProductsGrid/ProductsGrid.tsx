@@ -36,7 +36,7 @@ const ProductsGrid = () => {
         if (ok) {
           setCategories(categories);
         } else if (error) {
-          window.alert(error);
+          console.error(error);
         }
       }
     );
@@ -69,7 +69,7 @@ const ProductsGrid = () => {
             if (ok) {
               setProducts(products);
             } else if (error) {
-              window.alert(error);
+              console.error(error);
             }
           }
         );
@@ -87,7 +87,7 @@ const ProductsGrid = () => {
               console.log(products)
               setProducts(products);
             } else if (error) {
-              window.alert(error);
+              console.error(error);
             }
           }
         );
@@ -124,7 +124,7 @@ const ProductsGrid = () => {
         if (ok) {
           setProducts(products);
         } else if (error) {
-          window.alert(error);
+          console.error(error);
         }
       }
     );

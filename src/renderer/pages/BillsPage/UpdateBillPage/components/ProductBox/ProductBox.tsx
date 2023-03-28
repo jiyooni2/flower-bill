@@ -50,7 +50,7 @@ const ProductBox = ({ product }: IProps) => {
   };
 
   return (
-    <div className={styles.product_box} onClick={onProductClick} onDoubleClick={() => window.alert('hey!')}>
+    <div className={styles.product_box} onClick={onProductClick} onDoubleClick={() => console.error('hey!')}>
       <Typography
         sx={{ fontSize: '17px', marginBottom: '15px', fontWeight: '400', width: '80px' }}
       >

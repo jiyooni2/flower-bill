@@ -6,6 +6,7 @@ import { useState } from 'react';
 import './AuthForm.scss'
 import { Link, NavLink } from 'react-router-dom';
 import Modal from 'renderer/components/Modal/Modal';
+import InfoModal from 'renderer/components/InfoModal/InfoModal';
 
 interface Errors {
   text: string;
@@ -25,11 +26,12 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
     ownerId: '',
     password: '',
   });
+  const [confirmIsOpen, setComfirmIsOpen] = useState<boolean>(false);
 
 
   const validation = (nickname: string, ownerId: string, password: string) => {
     if (!nickname && !ownerId && !password ){
-      window.alert('모든 입력을 빠짐없이 작성해주세요.')
+      setComfirmIsOpen(true);
     } else if (!nickname || !ownerId || !password) {
       if (!nickname) {
         setNameError({ text: '닉네임을 입력해주십시오.' });
@@ -71,62 +73,69 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   };
 
   return (
-    <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <form onSubmit={handleSubmit} style={{ marginTop: '8%' }}>
-        <div className="form-wrapper">
-          <div className="text-wrapper">
-            <TextField
-              label="닉네임"
-              name="nickname"
-              error={nameError.text.length > 0}
-              variant="filled"
-              helperText={nameError.text.length > 0 && nameError.text}
-              onChange={handleChange}
-              value={nickname}
-            />
+    <>
+      <InfoModal
+        isOpen={confirmIsOpen}
+        setIsOpen={setComfirmIsOpen}
+        text={'모든 입력을 빠짐없이 작성해주세요.'}
+      />
+      <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
+        <form onSubmit={handleSubmit} style={{ marginTop: '8%' }}>
+          <div className="form-wrapper">
+            <div className="text-wrapper">
+              <TextField
+                label="닉네임"
+                name="nickname"
+                error={nameError.text.length > 0}
+                variant="filled"
+                helperText={nameError.text.length > 0 && nameError.text}
+                onChange={handleChange}
+                value={nickname}
+              />
+            </div>
+            <div className="text-wrapper">
+              <TextField
+                label="ID"
+                name="ownerId"
+                error={idError.text.length > 0}
+                helperText={idError.text.length > 0 && idError.text}
+                variant="filled"
+                onChange={handleChange}
+                value={ownerId}
+              />
+            </div>
+            <div className="text-wrapper">
+              <TextField
+                label="패스워드"
+                name="password"
+                error={passwordError.text.length > 0}
+                helperText={passwordError.text.length > 0 && passwordError.text}
+                variant="filled"
+                onChange={handleChange}
+                value={password}
+              />
+            </div>
+            <div className="signin-button">
+              <Button
+                variant="contained"
+                sx={{
+                  width: 'auto',
+                  backgroundColor: '#EEEEEE',
+                  color: '#1876d2',
+                  '&:hover': { backgroundColor: '#bccee4', color: 'white' },
+                }}
+                onClick={() => setIsOpen(false)}
+              >
+                닫기
+              </Button>
+              <Button type="submit" variant="contained" sx={{ width: 'auto' }}>
+                회원가입
+              </Button>
+            </div>
           </div>
-          <div className="text-wrapper">
-            <TextField
-              label="ID"
-              name="ownerId"
-              error={idError.text.length > 0}
-              helperText={idError.text.length > 0 && idError.text}
-              variant="filled"
-              onChange={handleChange}
-              value={ownerId}
-            />
-          </div>
-          <div className="text-wrapper">
-            <TextField
-              label="패스워드"
-              name="password"
-              error={passwordError.text.length > 0}
-              helperText={passwordError.text.length > 0 && passwordError.text}
-              variant="filled"
-              onChange={handleChange}
-              value={password}
-            />
-          </div>
-          <div className="signin-button">
-            <Button
-              variant="contained"
-              sx={{
-                width: 'auto',
-                backgroundColor: '#EEEEEE',
-                color: '#1876d2',
-                '&:hover': { backgroundColor: '#bccee4', color: 'white' },
-              }}
-              onClick={() => setIsOpen(false)}
-            >
-              닫기
-            </Button>
-            <Button type="submit" variant="contained" sx={{ width: 'auto' }}>
-              회원가입
-            </Button>
-          </div>
-        </div>
-      </form>
-    </Modal>
+        </form>
+      </Modal>
+    </>
   );
 };
 
