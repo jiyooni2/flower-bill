@@ -49,7 +49,6 @@ const StorePage = () => {
     name: '',
     owner: '',
     address: '',
-    bills: null,
   });
 
   useEffect(() => {
@@ -80,7 +79,7 @@ const StorePage = () => {
           if (ok) {
             setStores(stores);
           } else {
-            alert(error);
+            console.error(error);
           }
         }
       );
@@ -104,7 +103,6 @@ const StorePage = () => {
           name: item.name,
           owner: item.owner,
           address: item.address,
-          bills: item.bills,
         });
       }
     });
@@ -194,16 +192,11 @@ const StorePage = () => {
       name: '',
       owner: '',
       address: '',
-      bills: null,
     });
   };
 
   const addDataHandler = () => {
     setErrors(Validation({ storeNumber, storeName, owner, address }));
-    if (errors) {
-      return;
-    }
-
     if (
       stores.findIndex(
         (data) => data.businessNumber.toString() == storeNumber
@@ -230,7 +223,6 @@ const StorePage = () => {
           businessNumber: parseInt(storeNumber),
           owner: owner,
           address: address,
-          bills: null,
           business: business,
           businessId: business.id,
         };
