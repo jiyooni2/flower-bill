@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, businessesState, passwordCheckState, tokenState } from 'renderer/recoil/states';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
-import InfoModal from '../InfoModal/InfoModal';
+import InfoModal from './InfoModal/InfoModal';
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -18,9 +18,17 @@ const NavBar = () => {
 
 
   useEffect(() => {
+    let num;
+
+    if (business == undefined){
+      num = businesses[0]
+    } else {
+      num = business
+    }
+
     window.electron.ipcRenderer.sendMessage('get-businesses', {
       token,
-      businessId: business.id,
+      businessId: num.id,
     });
 
     window.electron.ipcRenderer.on(
@@ -44,7 +52,7 @@ const NavBar = () => {
 
   return (
     <>
-      <InfoModal isOpen={isOpen} setIsOpen={setIsOpen} text={'사업자를 먼저 생성해주세요.'} />
+      <InfoModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <nav className={styles.container}>
         <p className={styles.title} onClick={() => navigate(ROUTES.HOME)}>
           Flower Bill
