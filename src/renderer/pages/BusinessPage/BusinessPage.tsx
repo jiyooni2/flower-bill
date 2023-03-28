@@ -10,15 +10,14 @@ import {
   tokenState,
 } from 'renderer/recoil/states';
 import PasswordConfirmModal from './components/ConfirmModal/PasswordConfirmModal';
-import { LoginOutput } from 'main/auth/dtos/login.dto';
 import {
   UpdateBusinessInput,
   UpdateBusinessOutPut,
 } from 'main/business/dtos/update-busiess.dto';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
-import { GetBusinessOutput } from 'main/business/dtos/get-business.dto';
-import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
+
+
 const BuisnessPage = () => {
   const [business, setBusiness] = useRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
@@ -37,34 +36,11 @@ const BuisnessPage = () => {
     setAddress(business.address);
   }, [business]);
 
+  console.log(business)
+
   const deleteDataHandler = () => {
     console.log(business);
-      window.electron.ipcRenderer.sendMessage('delete-business', {
-        businessId: business.id,
-        token,
-      });
-
-      window.electron.ipcRenderer.on(
-        'delete-business',
-        ({ ok, error }: DeleteBusinessOutput) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-businesses', {
-              token,
-              businessId: business.id,
-            });
-            window.electron.ipcRenderer.on(
-              'get-businesses',
-              (args: GetBusinessesOutput) => {
-                setBusinesses(args.businesses as Business[]);
-                setBusiness(businesses[0]);
-              }
-            );
-          }
-          if (error) {
-            console.log(error);
-          }
-        }
-      );
+    setIsOpen(true);
   };
 
   const updateDataHandler = () => {
