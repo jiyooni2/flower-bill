@@ -1,13 +1,46 @@
 import styles from './BillPartPage.module.scss';
 import { useRecoilValue } from 'recoil';
-import { billState, businessState, tokenState} from 'renderer/recoil/states';
+import { billState, businessState, tokenState } from 'renderer/recoil/states';
 import { Paper } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { BillResult } from 'main/common/dtos/bill-result.dto';
+import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 
 const BillPartPage = () => {
+  const token = useRecoilValue(tokenState);
+  const business = useRecoilValue(businessState)
   const bill = useRecoilValue(billState);
+  const [currentBill, setCurrentBill] = useState<BillResult>({
+    id: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    orderProducts: [],
+    store: null,
+    business: null,
+    businessId: 0,
+  });
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-bill', {
+      token,
+      id: bill.id,
+      businessId: business.id,
+    });
+
+    window.electron.ipcRenderer.on(
+      'get-bill',
+      ({ ok, error, bill }: GetBillOutput) => {
+        if (ok) {
+          setCurrentBill(bill);
+        } else {
+          console.error(error);
+        }
+      }
+    );
+  }, []);
 
   let sum = 0;
-  bill.orderProducts.map((items) => {
+  currentBill.orderProducts.map((items) => {
     sum += items.orderPrice * items.count;
   });
   const date = new Date();
@@ -158,7 +191,7 @@ const BillPartPage = () => {
                 <th>금액</th>
               </tr>
             </tbody>
-            {bill.orderProducts.map((orderProduct) => {
+            {currentBill.orderProducts.map((orderProduct) => {
               return (
                 <tbody key={orderProduct.productId}>
                   <tr>
@@ -182,7 +215,10 @@ const BillPartPage = () => {
           </table>
           <table style={{ width: '100%' }}>
             <tbody>
-              <tr style={{ display: 'flex', justifyContent: 'space-between' }} className={styles.sumDiv}>
+              <tr
+                style={{ display: 'flex', justifyContent: 'space-between' }}
+                className={styles.sumDiv}
+              >
                 <td className={styles.lastSum}>합&ensp;&ensp;계</td>
                 <td
                   style={{

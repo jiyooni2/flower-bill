@@ -5,31 +5,45 @@ import { billState, businessState, categoriesState, storeState, tokenState } fro
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { Category } from 'main/category/entities/category.entity';
+import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
+import { BillResult } from 'main/common/dtos/bill-result.dto';
 
 const DetailBillPage = () => {
-  const bill = useRecoilValue(billState);
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
-  const [categories, setCategories] = useRecoilState(categoriesState)
-  const [store, setStore] = useRecoilState(storeState)
+  const [bill, setBill] = useRecoilState(billState)
+  const [currentBill, setCurrentBill] = useState<BillResult>({
+    id: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    orderProducts: [],
+    store: null,
+    business: null,
+    businessId: 0,
+  });
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-categories', {
+    window.electron.ipcRenderer.sendMessage('get-bill', {
       token,
+      id: bill.id,
       businessId: business.id,
     });
+
     window.electron.ipcRenderer.on(
-      'get-categories',
-      (args: GetCategoriesOutput) => {
-        setCategories(args.categories as Category[]);
+      'get-bill',
+      ({ ok, error, bill }: GetBillOutput) => {
+        if (ok) {
+          setBill(bill)
+          setCurrentBill(bill);
+        } else {
+          console.error(error);
+        }
       }
     );
-
-    setStore(bill.store)
-  }, [])
+  }, []);
 
   return (
     <>
@@ -60,10 +74,11 @@ const DetailBillPage = () => {
                 cursor: 'pointer',
                 fontSize: '13px',
                 width: '150px',
-                paddingLeft: '20px'
+                paddingLeft: '20px',
               }}
             >
-              계산서 수정하기 <ArrowRightAltIcon sx={{ color: 'black', marginLeft: '10px'}} />
+              계산서 수정하기{' '}
+              <ArrowRightAltIcon sx={{ color: 'black', marginLeft: '10px' }} />
             </Button>
           </Link>
         </div>
@@ -179,7 +194,7 @@ const DetailBillPage = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {bill.orderProducts.map((item) => (
+                      {currentBill.orderProducts.map((item) => (
                         <TableRow
                           key={item.productId}
                           sx={{
