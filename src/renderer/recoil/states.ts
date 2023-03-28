@@ -18,7 +18,6 @@ const storeState = atom<Store>({
     businessNumber: 0,
     owner: '',
     address: '',
-    bills: [],
   },
 });
 
@@ -89,11 +88,9 @@ const billState = atom<Bill>({
       businessNumber: 0,
       name: '',
       owner: '',
-      bills: [],
       business: null,
       businessId: 0,
     },
-    orderProducts: [],
     business: {
       name: '',
       businessNumber: 0,
