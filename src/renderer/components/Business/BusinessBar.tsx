@@ -14,6 +14,10 @@ const BusinessBar = () => {
   const [businesses, setBusinesses] = useRecoilState(businessesState);
   const [business, setBusiness] = useRecoilState(businessState)
   const token = useRecoilValue(tokenState);
+  const [clicked, setClicked] = useState<boolean>(false);
+  const [clickedData, setClickedData] = useState({
+    name: '',
+  })
 
   useEffect(() => {
     let businessId;
@@ -42,6 +46,10 @@ const BusinessBar = () => {
 
   const clickHandler = (item: Business) => {
     setBusiness(item)
+    setClicked(true);
+    setClickedData({
+      name: item.name
+    })
   };
 
   return (
@@ -54,12 +62,12 @@ const BusinessBar = () => {
               {businesses.map((business) => (
                 <div key={business.id}>
                   <div
-                    className={styles.box}
+                    className={clicked && clickedData.name == business.name ? styles.clickedBox : styles.box}
                     onClick={() => clickHandler(business)}
                   >
                     <span
                       style={{
-                        fontSize: '30px',
+                        fontSize: '28px',
                         color: 'black',
                         marginTop: '2px',
                       }}

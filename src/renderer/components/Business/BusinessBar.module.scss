@@ -35,6 +35,28 @@
       }
     }
 
+    .clickedBox {
+      background-color: skyblue;
+      border: 4px solid rgb(222, 222, 254);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 47px;
+      height: 47px;
+      margin-top: 25px;
+      margin-left: -8px;
+      cursor: pointer;
+
+      & > img {
+        border-radius: 10px;
+        width: 100%;
+        height: 100%;
+        object-fit:cover;
+      }
+    }
+
     .addBusiness {
       display: flex;
       flex-direction: column;
