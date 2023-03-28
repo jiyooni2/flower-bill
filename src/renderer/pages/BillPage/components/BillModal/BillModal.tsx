@@ -234,7 +234,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               </tbody>
               {orderProducts.map((orderProduct) => {
                 return (
-                  <tbody key={orderProduct.productId}>
+                  <tbody key={orderProduct.id}>
                     <tr>
                       <td className={styles.item}>{`${month} / ${day}`}</td>
                       <td className={styles.item}>
