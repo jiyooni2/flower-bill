@@ -33,6 +33,10 @@
         height: 100%;
         object-fit:cover;
       }
+
+      &:hover {
+        background-color: rgb(218, 180, 226);
+      }
     }
 
     .clickedBox {
