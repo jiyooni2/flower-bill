@@ -168,11 +168,17 @@ const StorePage = () => {
       }
     } else if (dataName === 'address') {
       const addressPattern = /^[ㄱ-ㅎ가-힣a-zA-Z_-]*$/;
-      if (!addressPattern.test(value)) {
-        setErrors({ ...errors, address: '특수문자는 -와 _만 입력 가능합니다' });
-      } else if (value == '' || value) {
+      if (value) {
+        if (!addressPattern.test(value)) {
+          setErrors({ ...errors, address: '특수문자는 -와 _만 입력 가능합니다' });
+        }
+        else {
+          setErrors({ ...errors, address: '' });
+          setAddress(value);
+        }
+      } else if (value == "") {
         setErrors({ ...errors, address: '' });
-        setAddress(value);
+        setAddress('');
       }
     }
   };
@@ -215,8 +221,7 @@ const StorePage = () => {
       if (
         storeName != '' &&
         storeNumber != '' &&
-        owner != '' &&
-        address != ''
+        owner != ''
       ) {
         const newData: Store = {
           name: storeName,
