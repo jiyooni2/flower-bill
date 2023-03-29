@@ -62,7 +62,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
         });
         return;
       } else {
-        setErrors({ ...errors, owner: 'ㅁ' });
+        setErrors({ ...errors, owner: '' });
         setOwner(value);
       }
     } else if (dataName === 'address') {
