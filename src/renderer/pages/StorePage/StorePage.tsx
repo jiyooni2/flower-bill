@@ -498,7 +498,11 @@ const StorePage = () => {
                           : styles.item
                       }
                     >
-                      <p className={styles.labels}>사업장 소재지</p>
+                      <p className={styles.labels}>
+                        사업장 소재지
+                        <br />
+                        <span style={{ fontSize: '12px'}}>(선택)</span>
+                      </p>
                       <input
                         name="address"
                         value={address}
