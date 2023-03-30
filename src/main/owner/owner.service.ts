@@ -8,7 +8,6 @@ import { authService } from './../main';
 
 export class OwnerService {
   private readonly ownerRepository: Repository<Owner>;
-  private readonly ACCESS_KEY = 'AAA';
 
   constructor() {
     this.ownerRepository = AppDataSource.getRepository(Owner);
