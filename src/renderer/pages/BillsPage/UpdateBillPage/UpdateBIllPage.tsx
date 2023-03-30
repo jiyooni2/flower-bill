@@ -100,7 +100,7 @@ const UpdateBillPage = () => {
             marginTop="15px"
             marginBottom="7px"
           >
-            계산서!!!!
+            계산서
           </Typography>
           <Table>
             <TableHead>
