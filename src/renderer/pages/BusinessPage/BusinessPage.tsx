@@ -4,6 +4,7 @@ import styles from './BusinessPage.module.scss';
 import { Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
+  accessState,
   businessState,
   businessesState,
   passwordCheckState,
@@ -28,6 +29,7 @@ const BuisnessPage = () => {
   const [address, setAddress] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const checked = useRecoilValue(passwordCheckState);
+  const access = useRecoilValue(accessState)
 
   useEffect(() => {
     setBusinessNumber(business.businessNumber.toString());
@@ -97,9 +99,6 @@ const BuisnessPage = () => {
 
   return (
     <>
-      {!checked ? (
-        <PasswordConfirmModal isOpen={isOpen} setIsOpen={setIsOpen} />
-      ) : (
         <div className={styles.container}>
           <div className={styles.content}>
             <div className={styles.infoContent}>
@@ -175,7 +174,6 @@ const BuisnessPage = () => {
             </div>
           </div>
         </div>
-      )}
     </>
   );
 };

@@ -16,7 +16,6 @@ const NavBar = () => {
   const [hasBusinesses, setHasBusinesses] = useState<boolean>(false);
   const [checked, setChecked] = useRecoilState(passwordCheckState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -49,13 +48,11 @@ const NavBar = () => {
 
   const businessClickHandler = () => {
     setChecked(false);
-    setModalIsOpen(true);
     hasBusinesses ? navigate(ROUTES.SELLER) : setIsOpen(true);
   }
 
   return (
     <>
-      <PasswordConfirmModal isOpen={modalIsOpen} setIsOpen={setModalIsOpen} />
       <InfoModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <nav className={styles.container}>
         <p className={styles.title} onClick={() => navigate(ROUTES.HOME)}>
