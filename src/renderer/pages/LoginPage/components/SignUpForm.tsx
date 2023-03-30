@@ -1,4 +1,4 @@
-import { TextField, Typography } from '@mui/material';
+import { IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import useInputs from 'renderer/hooks/useInputs';
 import { Owner } from 'renderer/types';
 import { Button } from '@mui/material';
@@ -7,9 +7,12 @@ import './AuthForm.scss'
 import { Link, NavLink } from 'react-router-dom';
 import Modal from 'renderer/components/Modal/Modal';
 import InfoModal from 'renderer/components/InfoModal/InfoModal';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 interface Errors {
-  text: string;
+  name: string;
+  id: string;
+  password: string;
 }
 
 interface IProps {
@@ -18,43 +21,49 @@ interface IProps {
 }
 
 const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
-  const [nameError, setNameError] = useState<Errors>({ text: '' });
-  const [idError, setIdError] = useState<Errors>({ text: '' });
-  const [passwordError, setPasswordError] = useState<Errors>({ text: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<Errors>({ name: '', id: '', password: '' });
   const [{ nickname, ownerId, password }, handleChange] = useInputs<Owner>({
     nickname: '',
     ownerId: '',
     password: '',
   });
-  const [confirmIsOpen, setComfirmIsOpen] = useState<boolean>(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
 
 
   const validation = (nickname: string, ownerId: string, password: string) => {
     if (!nickname && !ownerId && !password ){
-      setComfirmIsOpen(true);
+      setErrors({ name: '닉네임이 입력되지 않았습니다.', id: '아이디가 입력되지 않았습니다.', password: '비밀번호가 입력되지 않았습니다.' });
     } else if (!nickname || !ownerId || !password) {
       if (!nickname) {
-        setNameError({ text: '닉네임을 입력해주십시오.' });
+        setErrors({ ...errors, name: '닉네임이 입력되지 않았습니다.' });
       } else if (nickname && nickname.length < 3) {
-        setNameError({ text: '3글자 이상 입력바랍니다.' });
+        setErrors({ ...errors, name: '3글자 이상 입력해주십시오.' });
       } else {
-        setNameError({ text: '' });
+        setErrors({ ...errors, name: '' });
       }
 
       if (!ownerId) {
-        setIdError({ text: '아이디를 입력해주십시오.' });
+        setErrors({ ...errors, id: '아이디가 입력되지 않았습니다.' });
       } else if (ownerId && ownerId.length < 3) {
-        setIdError({ text: '3글자 이상 입력바랍니다.' });
+        setErrors({ ...errors, id: '3글자 이상 입력해주십시오.' });
       } else {
-        setIdError({ text: '' });
+        setErrors({ ...errors, id: '' });
       }
 
       console.log(password)
 
       if (password === '') {
-        setPasswordError({ text: '비밀번호를 입력해주십시오.' });
+        setErrors({ ...errors, password: '비밀번호가 입력되지 않았습니다.' });
       } else {
-        setPasswordError({ text: '' });
+        setErrors({ ...errors, password: '' });
       }
     } else {
       window.electron.ipcRenderer.sendMessage('create-owner', {
@@ -74,11 +83,6 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
 
   return (
     <>
-      <InfoModal
-        isOpen={confirmIsOpen}
-        setIsOpen={setComfirmIsOpen}
-        text={'모든 입력을 빠짐없이 작성해주세요.'}
-      />
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <form onSubmit={handleSubmit} style={{ marginTop: '8%' }}>
           <div className="form-wrapper">
@@ -86,9 +90,9 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
               <TextField
                 label="닉네임"
                 name="nickname"
-                error={nameError.text.length > 0}
+                error={errors.name.length > 0}
                 variant="filled"
-                helperText={nameError.text.length > 0 && nameError.text}
+                helperText={errors.name.length > 0 && errors.name}
                 onChange={handleChange}
                 value={nickname}
               />
@@ -97,8 +101,8 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
               <TextField
                 label="ID"
                 name="ownerId"
-                error={idError.text.length > 0}
-                helperText={idError.text.length > 0 && idError.text}
+                error={errors.id.length > 0}
+                helperText={errors.id.length > 0 && errors.id}
                 variant="filled"
                 onChange={handleChange}
                 value={ownerId}
@@ -108,11 +112,22 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
               <TextField
                 label="패스워드"
                 name="password"
-                error={passwordError.text.length > 0}
-                helperText={passwordError.text.length > 0 && passwordError.text}
+                error={errors.password.length > 0}
+                helperText={errors.password.length > 0 && errors.password}
                 variant="filled"
                 onChange={handleChange}
+                type={showPassword ? 'text' : 'password'}
                 value={password}
+                InputProps={{
+                  endAdornment: (
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                  ),
+                }}
               />
             </div>
             <div className="signin-button">
