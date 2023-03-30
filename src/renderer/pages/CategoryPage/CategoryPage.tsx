@@ -283,10 +283,10 @@ const CategoryPage = () => {
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z-\s]*$/;
+    const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z0-9-\s]*$/;
     if (!pattern.test(value)) {
       setErrors({
-        name: '한글, 영문, 기호 - 외의 문자는 입력하실 수 없습니다.',
+        name: '기호 - 외의 특수문자는 입력하실 수 없습니다.',
       });
       console.log('aa');
     } else if (value.startsWith(' ')) {
