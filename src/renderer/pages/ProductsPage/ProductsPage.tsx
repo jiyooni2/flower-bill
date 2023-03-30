@@ -50,12 +50,22 @@ const ProductsPage = () => {
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [categoryId, setCategoryId] = useRecoilState(categoryIdState);
+  const [categoryName, setCategoryName] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [errors, setErrors] = useState({
     name: '',
     price: '',
     category: '',
   });
+
+  useEffect(() => {
+    console.log(categoryId)
+    categories.map((cat) => {
+      if (cat.id == categoryId) {
+        return setCategoryName(cat.name)
+      }
+    });
+  }, [categoryId])
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -134,6 +144,7 @@ const ProductsPage = () => {
         setName(item.name);
         setPrice(item.price.toString());
         setCategoryId(item.categoryId);
+        setCategoryName(item.category.name)
       }
     });
   };
@@ -332,8 +343,6 @@ const ProductsPage = () => {
     setPage(parseInt(event.target.outerText));
   };
 
-  console.log(categories);
-
   return (
     <>
       <CategoryModal isOpen={isOpen} setIsOpen={setIsOpen} />
@@ -527,7 +536,7 @@ const ProductsPage = () => {
                       <p className={styles.categoryLabel}>카테고리</p>
                       {categoryId ? (
                         <input
-                          value={categoryId}
+                          value={categoryName}
                           className={styles.dataInput}
                           style={{ backgroundColor: 'white', color: 'black' }}
                           onChange={(event) =>
