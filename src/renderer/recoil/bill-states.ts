@@ -32,9 +32,15 @@ const billMemoState = atom<string>({
   default: '',
 });
 
+const alertState = atom<boolean>({
+  key: 'alertState',
+  default: false,
+})
+
 export {
   billMemoState,
   billProductsState,
   billOrderProductsState,
   billOrderProductState,
+  alertState,
 };
