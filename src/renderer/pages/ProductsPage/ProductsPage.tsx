@@ -218,11 +218,11 @@ const ProductsPage = () => {
           return;
         }
       });
-      const pattern = /^[ㄱ-ㅎ가-힣\s]*$/;
+      const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z\s]*$/;
       if (!pattern.test(value)) {
         setErrors({
           ...errors,
-          name: '한글, 공백 외의 문자는 작성하실 수 없습니다.',
+          name: '한글, 영문, 공백 외의 문자는 작성하실 수 없습니다.',
         });
       } else if (value.startsWith(' ')) {
         setErrors({ ...errors, name: '첫 번째 자리는 공백이 될 수 없습니다.' });
