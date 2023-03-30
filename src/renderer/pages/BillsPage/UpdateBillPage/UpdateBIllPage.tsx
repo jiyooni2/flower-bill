@@ -24,16 +24,22 @@ import {
 } from '@mui/material';
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
+import { BillResult } from 'main/common/dtos/bill-result.dto';
+import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
+import DiscountModal from 'renderer/pages/BillPage/components/DiscountModal/DiscountModal';
 
 const UpdateBillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
-  const orderProducts = useRecoilValue(orderProductsState);
+  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
+  const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-  const [currentBill, setCurrentBill] = useRecoilState(billState);
+  const [bill, setBill] = useRecoilState(billState);
+  const [currentBill, setCurrentBill] = useState<BillResult>();
+
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -73,6 +79,8 @@ const UpdateBillPage = () => {
     setIsBillOpen(true);
   };
 
+  console.log(currentBill)
+
   return (
     <>
       <StoreSearchModal
@@ -80,6 +88,7 @@ const UpdateBillPage = () => {
         setIsOpen={setIsSearchStoreOpen}
       />
       <BillModal isOpen={isBillOpen} setIsOpen={setIsBillOpen} />
+      <DiscountModal isOpen={isDiscountOpen} setIsOpen={setIsDiscountOpen} />
       <div className={styles.container}>
         <div
           className={`${styles.content_container} ${styles.bill_container}`}
@@ -91,7 +100,7 @@ const UpdateBillPage = () => {
             marginTop="15px"
             marginBottom="7px"
           >
-            계산서
+            계산서!!!!
           </Typography>
           <Table>
             <TableHead>
@@ -158,15 +167,6 @@ const UpdateBillPage = () => {
             <hr />
             <div className={styles.total}>
               <p className={styles.totalName}>
-                할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
-              </p>
-              <h6 className={styles.totalNum}>
-                {discount ? addComma(discount) : 0} 원
-              </h6>
-            </div>
-            <hr />
-            <div className={styles.total}>
-              <p className={styles.totalName}>
                 합&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;계
               </p>
               <p className={styles.totalNum}>
@@ -177,38 +177,60 @@ const UpdateBillPage = () => {
           </div>
           <div
             style={{
-              width: '100%',
-              marginTop: '20px',
+              marginTop: '15px',
               display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginLeft: '2px',
+              justifyContent: 'center',
+              width: '100%',
+              gap: '10px',
             }}
           >
             <Button
-              variant="outlined"
-              color="secondary"
+              variant="contained"
+              // color="secondary"
               sx={{
                 height: '33px',
-                width: '60%',
-                marginLeft: '20px',
-                marginTop: '10px',
+                width: '100%',
+                backgroundColor: 'ghostwhite',
+                opacity: '0.9',
+                marginleft: '20px',
+                color: '#228af2',
+                '&:hover': {
+                  color: 'lightskyblue',
+                },
               }}
               onClick={() => setIsSearchStoreOpen(true)}
             >
-              판매처 변경하기
+              판매처 선택하기
             </Button>
+            <Button
+              variant="contained"
+              onClick={() => setIsDiscountOpen(true)}
+              sx={{
+                height: '33px',
+                width: '100%',
+                backgroundColor: 'ghostwhite',
+                color: 'blueviolet',
+                '&:hover': {
+                  color: 'lightskyblue',
+                },
+              }}
+            >
+              판매가 수정하기
+            </Button>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Button
               variant="contained"
               onClick={billClickHandler}
               sx={{
                 height: '33px',
-                width: '65%',
-                marginLeft: '20px',
+                width: '100%',
                 marginTop: '10px',
+                backgroundColor: '#228bf2',
+                color: '#e8f8e2',
               }}
             >
-              계산서 저장하기
+              계산서 생성
             </Button>
           </div>
         </div>

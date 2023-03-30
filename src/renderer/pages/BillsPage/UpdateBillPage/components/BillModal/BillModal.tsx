@@ -43,7 +43,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
         if (ok) {
           setBill(bill);
           setCurrentBill(bill);
-          console.log(bill);
         } else {
           console.log(error);
         }
@@ -117,9 +116,9 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   // };
 
   let sum = 0;
-  currentBill && currentBill.orderProducts.map((items) => {
-    sum += items.orderPrice * items.count;
-  });
+  orderProducts.map((items) => {
+      sum += items.orderPrice * items.count;
+    });
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -279,8 +278,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   <th>공급가액</th>
                 </tr>
               </tbody>
-              {currentBill &&
-                currentBill.orderProducts.map((orderProduct) => {
+              {orderProducts.map((orderProduct) => {
                   return (
                     <tbody key={orderProduct.product.id}>
                       <tr>
@@ -290,12 +288,12 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                         </td>
                         <td className={styles.article}>{orderProduct.count}</td>
                         <td className={styles.price}>
-                          {orderProduct.product.price
+                          {orderProduct.orderPrice
                             .toString()
                             .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         </td>
                         <td className={styles.sum}>
-                          {orderProduct.orderPrice
+                          {(orderProduct.orderPrice * orderProduct.count)
                             .toString()
                             .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         </td>

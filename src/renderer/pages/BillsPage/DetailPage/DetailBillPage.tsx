@@ -1,7 +1,7 @@
 import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BillPartPage from '../BillPart/BillPartPage';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { billState, businessState, categoriesState, storeState, tokenState } from 'renderer/recoil/states';
+import { billState, businessState, categoriesState, orderProductsState, storeState, tokenState } from 'renderer/recoil/states';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Link } from 'react-router-dom';
@@ -15,6 +15,7 @@ const DetailBillPage = () => {
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
   const [bill, setBill] = useRecoilState(billState)
+  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState)
   const [currentBill, setCurrentBill] = useState<BillResult>({
     id: 0,
     createdAt: new Date(),
@@ -38,6 +39,7 @@ const DetailBillPage = () => {
         if (ok) {
           setBill(bill)
           setCurrentBill(bill);
+          setOrderProducts(bill.orderProducts)
         } else {
           console.error(error);
         }

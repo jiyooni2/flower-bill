@@ -40,7 +40,6 @@ const ProductBox = ({ product }: IProps) => {
           return {
             ...orderProduct,
             count: orderProduct.count + 1,
-            orderPrice: orderProduct.orderPrice + product.price,
           };
         }
 

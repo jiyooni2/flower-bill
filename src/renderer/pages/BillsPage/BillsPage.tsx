@@ -48,7 +48,6 @@ const BillsPage = () => {
         if (ok) {
           setBill(bill);
           setCurrentBill(bill);
-          console.log(bill)
         } else {
           console.log(error)
         }

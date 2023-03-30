@@ -85,7 +85,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
         </div>
         <div style={{ marginTop: '3px', width: '30%' }}>
           <span className={styles.cutText}>
-            {orderProduct.orderPrice.toLocaleString('ko-KR')}원
+            {(orderProduct.count * orderProduct.orderPrice).toLocaleString('ko-KR')}원
           </span>
         </div>
         <div className={styles.count} style={{ width: '30%' }}>
