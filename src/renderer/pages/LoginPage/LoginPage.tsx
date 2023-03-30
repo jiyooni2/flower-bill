@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, TextField, Typography } from '@mui/material';
+import { Alert, AlertTitle, Button, TextField, Typography } from '@mui/material';
 import Modal from 'renderer/components/Modal/Modal';
 import SignUpForm from './components/SignUpForm';
 import useInputs from 'renderer/hooks/useInputs';
@@ -17,6 +17,10 @@ const LoginPage = () => {
   });
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
   const [token, setToken] = useRecoilState(tokenState);
+  const [errors, setErrors] = useState({
+    id: '',
+    password: '',
+  })
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,8 +38,14 @@ const LoginPage = () => {
           setToken(token);
         } else {
           console.error(error);
+          if (error.startsWith('없는')) {
+            setErrors({ id: '아이디를 확인해주세요.', password: '비밀번호를 확인해주세요.'})
+          } else if (error.startsWith('비밀번호를')) {
+            setErrors({ id: '', password: '비밀번호를 확인해주세요.'})
+          } else {
+            setErrors({ id: '', password: ''})
+          }
         }
-        //set token, businessId
       }
     );
   };
@@ -61,6 +71,8 @@ const LoginPage = () => {
                 variant="filled"
                 onChange={handleChange}
                 value={ownerId}
+                error={errors.id.length > 0}
+                helperText={errors.id}
               />
             </div>
 
@@ -72,6 +84,8 @@ const LoginPage = () => {
                 type="password"
                 onChange={handleChange}
                 value={password}
+                error={errors.password.length > 0}
+                helperText={errors.password}
               />
             </div>
 
