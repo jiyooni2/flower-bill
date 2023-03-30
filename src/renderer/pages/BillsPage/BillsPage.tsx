@@ -1,22 +1,32 @@
 import { GetBillsOutput } from "main/bill/dtos/get-bills.dto";
 import { Bill } from "main/bill/entities/bill.entity";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { billListState, billState, businessState, businessesState, storesState, tokenState } from "renderer/recoil/states";
 import styles from './BillsPage.module.scss'
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
+import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
 import { GetBillOutput } from "main/bill/dtos/get-bill.dto";
 import { Link } from "react-router-dom";
-import SettingsSharpIcon from '@mui/icons-material/SettingsSharp';
+import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
+import ReactToPrint from "react-to-print";
+import { BillResult } from "main/common/dtos/bill-result.dto";
+import BillModal from "./UpdateBillPage/components/BillModal/BillModal";
+import { alertState } from "renderer/recoil/bill-states";
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const BillsPage = () => {
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
   const [bills, setBills] = useRecoilState(billListState)
-  const [currentBill, setCurrentBill] = useRecoilState(billState)
+  const [bill, setBill] = useRecoilState(billState)
+  const [currentBill, setCurrentBill] = useState<BillResult>()
   const [page, setPage] = useState(0);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [alert, setAlert] = useRecoilState(alertState)
+  const successRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+
     window.electron.ipcRenderer.sendMessage('get-bills', {
       token,
       businessId: business.id,
@@ -25,6 +35,25 @@ const BillsPage = () => {
     window.electron.ipcRenderer.on('get-bills', (args: GetBillsOutput) => {
       setBills(args.bills as Bill[]);
     });
+
+    window.electron.ipcRenderer.sendMessage('get-bill', {
+      token,
+      id: bill.id,
+      businessId: business.id
+    });
+
+    window.electron.ipcRenderer.on(
+      'get-bill',
+      ({ ok, error, bill }: GetBillOutput) => {
+        if (ok) {
+          setBill(bill);
+          setCurrentBill(bill);
+          console.log(bill)
+        } else {
+          console.log(error)
+        }
+      }
+    );
   }, [])
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -54,7 +83,7 @@ const BillsPage = () => {
       'get-bill',
       ({ ok, error, bill }: GetBillOutput) => {
         if (ok) {
-          setCurrentBill(bill);
+          setBill(bill);
         } else {
           console.log(error)
         }
@@ -62,8 +91,14 @@ const BillsPage = () => {
     );
   };
 
+  if (alert == true) {
+    setTimeout(() => setAlert(false), 1500);
+    setAlert(true)
+  }
+
   return (
     <>
+      <BillModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={styles.container}>
         <div style={{ marginTop: '-1.5%', marginBottom: '25px' }}>
           <input
@@ -83,6 +118,8 @@ const BillsPage = () => {
                   <TableCell>발행 날짜</TableCell>
                   <TableCell>판매처</TableCell>
                   <TableCell>구매처</TableCell>
+                  <TableCell>구매한 상품 수</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -106,6 +143,20 @@ const BillsPage = () => {
                       <TableCell>{convertTime(bill.createdAt)}</TableCell>
                       <TableCell>{bill.business.name}</TableCell>
                       <TableCell>{bill.store.name}</TableCell>
+                      <TableCell>
+                        {currentBill && currentBill.orderProducts.length} 개
+                      </TableCell>
+                      <TableCell>
+                        {alert == false ? (<LocalPrintshopIcon
+                          sx={{
+                            cursor: 'pointer',
+                            '&:hover': { color: 'darkslategrey' },
+                          }}
+                          onClick={() => setIsOpen(true)}
+                        />) : (
+                          <span ref={successRef} style={{ color: 'green'}}><CheckCircleOutlineIcon sx={{ color: 'forestgreen'}} /></span>
+                        )}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
