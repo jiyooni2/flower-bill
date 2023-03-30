@@ -58,7 +58,7 @@ const BillPartPage = () => {
           marginLeft: '10px',
         }}
       >
-        <div style={{ width: '6.2cm', height: '490px', marginTop: '15px' }}>
+        <div style={{ width: '6.2cm', height: '490px', marginTop: '35px' }}>
           <table
             style={{ width: '100%', border: '0' }}
             cellPadding="0"
