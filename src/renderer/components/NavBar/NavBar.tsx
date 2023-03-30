@@ -6,6 +6,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, businessesState, passwordCheckState, tokenState } from 'renderer/recoil/states';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import InfoModal from './InfoModal/InfoModal';
+import PasswordConfirmModal from 'renderer/pages/BusinessPage/components/ConfirmModal/PasswordConfirmModal';
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const NavBar = () => {
   const [hasBusinesses, setHasBusinesses] = useState<boolean>(false);
   const [checked, setChecked] = useRecoilState(passwordCheckState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -47,11 +49,13 @@ const NavBar = () => {
 
   const businessClickHandler = () => {
     setChecked(false);
+    setModalIsOpen(true);
     hasBusinesses ? navigate(ROUTES.SELLER) : setIsOpen(true);
   }
 
   return (
     <>
+      <PasswordConfirmModal isOpen={modalIsOpen} setIsOpen={setModalIsOpen} />
       <InfoModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <nav className={styles.container}>
         <p className={styles.title} onClick={() => navigate(ROUTES.HOME)}>
