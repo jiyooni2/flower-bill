@@ -63,11 +63,13 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
         }
       }
     );
+  };
 
+  const afterPrint = () => {
     setIsOpen(false);
     setOrderProducts([]);
     movePage('/bills');
-  };
+  }
 
   let sum = 0;
   orderProducts.map((items) => {
@@ -282,6 +284,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             </Button>
             <ReactToPrint
               onBeforePrint={handleClick}
+              onAfterPrint={afterPrint}
               trigger={() => (
                 <Button
                   variant="contained"
