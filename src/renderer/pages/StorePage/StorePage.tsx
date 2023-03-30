@@ -135,11 +135,11 @@ const StorePage = () => {
         setStoreNumber(value);
       }
     } else if (dataName === 'storeName') {
-      const namePattern = /^[ㄱ-ㅎ가-힣0-9\s]*$/;
+      const namePattern = /^[ㄱ-ㅎ가-힣0-9a-zA-Z\s]*$/;
       if (!namePattern.test(value)) {
         setErrors({
           ...errors,
-          storeName: '한글, 숫자, 공백 외의 문자는 작성하실 수 없습니다.',
+          storeName: '공백 외의 특수문자는 작성하실 수 없습니다.',
         });
       } else if (value.startsWith(' ')) {
         setErrors({
