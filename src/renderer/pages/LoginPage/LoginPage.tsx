@@ -120,7 +120,7 @@ const LoginPage = () => {
                 </span>
                 <Button
                   variant="text"
-                  onClick={() => setIsSignUpPageOpen(true)}
+                  onClick={() => {setIsSignUpPageOpen(true); setOwnerId(''); setPassword('')}}
                   sx={{
                     color: 'steelblue',
                     '&:hover': {
