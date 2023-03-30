@@ -71,7 +71,7 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
         ownerId,
         password,
       });
-      window.location.replace('/')
+      setIsOpen(false);
     }
   };
 
