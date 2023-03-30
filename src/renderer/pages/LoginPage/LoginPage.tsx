@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { Alert, AlertTitle, Button, TextField, Typography } from '@mui/material';
 import Modal from 'renderer/components/Modal/Modal';
 import SignUpForm from './components/SignUpForm';
@@ -11,10 +11,8 @@ import { loginState, tokenState } from 'renderer/recoil/states';
 
 const LoginPage = () => {
   const [isSignUpPageOpen, setIsSignUpPageOpen] = useState<boolean>(false);
-  const [{ ownerId, password }, handleChange] = useInputs<LoginInput>({
-    ownerId: '',
-    password: '',
-  });
+  const [ownerId, setOwnerId] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
   const [token, setToken] = useRecoilState(tokenState);
   const [errors, setErrors] = useState({
@@ -22,7 +20,23 @@ const LoginPage = () => {
     password: '',
   })
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleChangeID = (e:ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value == '' || e.target.value) {
+      setErrors({...errors, id : ''})
+      setOwnerId(e.target.value)
+    }
+  }
+
+  const handleChangePW = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value == '' || e.target.value) {
+      setErrors({ ...errors, password: '' });
+      setPassword(e.target.value)
+    }
+  };
+
+  const handleSubmit = (
+    event: React.FormEvent<HTMLFormElement | HTMLInputElement>
+  ) => {
     event.preventDefault();
 
     window.electron.ipcRenderer.sendMessage('login', {
@@ -39,11 +53,14 @@ const LoginPage = () => {
         } else {
           console.error(error);
           if (error.startsWith('없는')) {
-            setErrors({ id: '아이디를 확인해주세요.', password: '비밀번호를 확인해주세요.'})
+            setErrors({
+              id: '아이디를 확인해주세요.',
+              password: '비밀번호를 확인해주세요.',
+            });
           } else if (error.startsWith('비밀번호를')) {
-            setErrors({ id: '', password: '비밀번호를 확인해주세요.'})
+            setErrors({ id: '', password: '비밀번호를 확인해주세요.' });
           } else {
-            setErrors({ id: '', password: ''})
+            setErrors({ id: '', password: '' });
           }
         }
       }
@@ -69,7 +86,7 @@ const LoginPage = () => {
                 label="ID"
                 name="ownerId"
                 variant="filled"
-                onChange={handleChange}
+                onChange={handleChangeID}
                 value={ownerId}
                 error={errors.id.length > 0}
                 helperText={errors.id}
@@ -82,7 +99,7 @@ const LoginPage = () => {
                 name="password"
                 variant="filled"
                 type="password"
-                onChange={handleChange}
+                onChange={handleChangePW}
                 value={password}
                 error={errors.password.length > 0}
                 helperText={errors.password}
