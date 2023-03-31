@@ -42,7 +42,7 @@ const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [categories, setCategories] = useRecoilState(categoriesState);
-  const [products, setProducts] = useState<Product>(null);
+  const [products, setProducts] = useState<Product[]>(null);
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -57,6 +57,24 @@ const ProductsPage = () => {
     price: '',
     category: '',
   });
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-products', {
+      token,
+      businessId: business.id,
+    });
+    window.electron.ipcRenderer.on(
+      'get-products',
+      ({ ok, error, products }: GetProductsOutput) => {
+        if (ok) {
+          setProducts(products);
+        }
+        if (error) {
+          console.error(error);
+        }
+      }
+    );
+  }, [])
 
   useEffect(() => {
     console.log(categoryId)
@@ -287,12 +305,15 @@ const ProductsPage = () => {
       token,
     };
 
+    console.log(newData)
+
     window.electron.ipcRenderer.sendMessage('create-product', newData);
 
     window.electron.ipcRenderer.on(
       'create-product',
       ({ ok, error }: CreateProductOutput) => {
         if (ok) {
+          console.log('After ok', products);
           window.electron.ipcRenderer.sendMessage('get-products', {
             token,
             businessId: business.id,
@@ -302,6 +323,7 @@ const ProductsPage = () => {
             ({ ok, error, products }: GetProductsOutput) => {
               if (ok) {
                 setProducts(products);
+                console.log(products)
               }
               if (error) {
                 console.error(error);
