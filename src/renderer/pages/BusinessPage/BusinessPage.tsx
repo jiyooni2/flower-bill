@@ -15,6 +15,9 @@ import {
 } from 'main/business/dtos/update-busiess.dto';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
+import PasswordConfirmModal from './components/ConfirmModal/PasswordConfirmModal';
+import { CheckPasswordOutput } from 'main/auth/dtos/check-password.dto';
+import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
 
 
 const BuisnessPage = () => {
@@ -25,7 +28,6 @@ const BuisnessPage = () => {
   const [name, setName] = useState<string>('');
   const [businessOwnerName, setBusinessOwnerName] = useState<string>('');
   const [address, setAddress] = useState<string>('');
-  const [isOpen, setIsOpen] = useState<boolean>(true);
 
   useEffect(() => {
     setBusinessNumber(business.businessNumber.toString());
@@ -34,11 +36,28 @@ const BuisnessPage = () => {
     setAddress(business.address);
   }, [business]);
 
-  console.log(business)
-
   const deleteDataHandler = () => {
-    console.log(business);
-    setIsOpen(true);
+    window.electron.ipcRenderer.on(
+      'delete-business',
+      ({ ok, error }: DeleteBusinessOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-businesses', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-businesses',
+            (args: GetBusinessesOutput) => {
+              setBusinesses(args.businesses as Business[]);
+              setBusiness(businesses[0]);
+            }
+          );
+        }
+        if (error) {
+          console.log(error);
+        }
+      }
+    );
   };
 
   const updateDataHandler = () => {
