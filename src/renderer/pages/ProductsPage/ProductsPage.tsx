@@ -351,10 +351,14 @@ const ProductsPage = () => {
     setIsOpen(true);
   };
 
-  const LAST_PAGE =
-    products != undefined && products?.length % 9 === 0
+  let LAST_PAGE = 0;
+  if (products != undefined) {
+    LAST_PAGE = products?.length % 9 === 0
       ? Math.round(products?.length / 9)
       : Math.floor(products?.length / 9) + 1;
+  } else if (products == null) {
+    LAST_PAGE = 0;
+  }
 
   const handlePage = (event: any) => {
     setPage(parseInt(event.target.outerText));
