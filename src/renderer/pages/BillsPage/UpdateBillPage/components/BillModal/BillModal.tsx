@@ -1,9 +1,12 @@
 import styles from './BillModal.module.scss';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
+  billListState,
   billState,
   businessState,
+  memoState,
   orderProductsState,
+  storeState,
   tokenState,
 } from 'renderer/recoil/states';
 import Modal from './Modal';
@@ -14,6 +17,9 @@ import { BillResult } from 'main/common/dtos/bill-result.dto';
 import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import ReactToPrint from 'react-to-print';
 import { alertState } from 'renderer/recoil/bill-states';
+import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
+import { UpdateBillInput, UpdateBillOutput } from 'main/bill/dtos/update-bill.dto';
+import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
 
 interface IProps {
   isOpen: boolean;
@@ -23,11 +29,14 @@ interface IProps {
 const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
+  const memo = useRecoilValue(memoState)
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
   const [memoIsOpen, setMemoIsOpen] = useState<boolean>(false);
+  const [bills, setBills] = useRecoilState(billListState)
   const [bill, setBill] = useRecoilState(billState)
   const [currentBill, setCurrentBill] = useState<BillResult>();
   const [alert, setAlert] = useRecoilState(alertState);
+  const store = useRecoilValue(storeState);
   const printRef = useRef();
 
   useEffect(() => {
@@ -56,64 +65,53 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     setAlert(true);
   };
 
-  // const handleClick = async () => {
-  //   const orderProductInputs: CreateOrderProductInput[] = [];
+  const updateBillhandler = () => {
+    const orderProductInputs: CreateOrderProductInput[] = [];
 
-  //   currentBill.orderProducts.map(
-  //     (orderProduct) => {
-  //       orderProductInputs.push(
-  //         {
-  //           count: orderProduct.count,
-  //           productId: orderProduct.product.id,
-  //           orderPrice: orderProduct.orderPrice,
-  //         }
-  //       )
-  //     }
-  //   );
+    currentBill.orderProducts.map((orderProduct) => {
+      orderProductInputs.push({
+        count: orderProduct.count,
+        productId: orderProduct.product.id,
+        orderPrice: orderProduct.orderPrice,
+      });
+    });
 
-  //   let storeId;
-  //   if (store.id == undefined) {
-  //     storeId = bill.store.id
-  //   } else {
-  //     storeId = store.id
-  //   }
+    const newBill: UpdateBillInput = {
+      businessId: bill.businessId,
+      id: bill.id,
+      token,
+      storeId: store.id,
+      memo,
+      orderProductInputs : [...orderProductInputs],
+    };
 
-  //   const newBill: UpdateBillInput = {
-  //     businessId: bill.businessId,
-  //     id: bill.id,
-  //     token,
-  //     storeId: storeId,
-  //     memo,
-  //     ...orderProductInputs,
-  //   };
+    console.log(newBill);
 
-  //   console.log(newBill)
+    window.electron.ipcRenderer.sendMessage('update-bill', newBill);
+    window.electron.ipcRenderer.on(
+      'update-bill',
+      ({ ok, error }: UpdateBillOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-bills', newBill);
+          window.electron.ipcRenderer.on(
+            'get-bills',
+            ({ ok, error, bills }: GetBillsOutput) => {
+              if (ok) {
+                setBills(bills);
+              } else if (error) {
+                console.log(error);
+              }
+            }
+          );
+        } else if (error) {
+          console.log(error);
+        }
+      }
+    );
 
-  //   window.electron.ipcRenderer.sendMessage('update-bill', newBill);
-  //   window.electron.ipcRenderer.on(
-  //     'update-bill',
-  //     ({ ok, error }: UpdateBillOutput) => {
-  //       if (ok) {
-  //         window.electron.ipcRenderer.sendMessage('get-bills', newBill);
-  //         window.electron.ipcRenderer.on(
-  //           'get-bills',
-  //           ({ ok, error, bills }: GetBillsOutput) => {
-  //             if (ok) {
-  //               setBills(bills)
-  //             } else if (error) {
-  //               console.log(error);
-  //             }
-  //           }
-  //         );
-  //       } else if (error) {
-  //         console.log(error);
-  //       }
-  //     }
-  //   );
-
-  //   setOrderProducts([]);
-  //   setIsOpen(false);
-  // };
+    setOrderProducts([]);
+    setIsOpen(false);
+  };
 
   let sum = 0;
   orderProducts.map((items) => {
@@ -167,7 +165,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                       (공급받는자용)
                     </span>
                   </td>
-                  <td className={styles.name}>{bill.store.owner} 님</td>
+                  <td className={styles.name}>{store.owner ? store.owner : bill.store.owner} 님</td>
                   <td className={styles.for}>&ensp;귀하</td>
                 </tr>
               </tbody>
@@ -279,28 +277,28 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 </tr>
               </tbody>
               {orderProducts.map((orderProduct) => {
-                  return (
-                    <tbody key={orderProduct.product.id}>
-                      <tr>
-                        <td className={styles.item}>{`${month} / ${day}`}</td>
-                        <td className={styles.item}>
-                          {orderProduct.product.name}
-                        </td>
-                        <td className={styles.article}>{orderProduct.count}</td>
-                        <td className={styles.price}>
-                          {orderProduct.orderPrice
-                            .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                        </td>
-                        <td className={styles.sum}>
-                          {(orderProduct.orderPrice * orderProduct.count)
-                            .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                        </td>
-                      </tr>
-                    </tbody>
-                  );
-                })}
+                return (
+                  <tbody key={orderProduct.product.id}>
+                    <tr>
+                      <td className={styles.item}>{`${month} / ${day}`}</td>
+                      <td className={styles.item}>
+                        {orderProduct.product.name}
+                      </td>
+                      <td className={styles.article}>{orderProduct.count}</td>
+                      <td className={styles.price}>
+                        {orderProduct.orderPrice
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      </td>
+                      <td className={styles.sum}>
+                        {(orderProduct.orderPrice * orderProduct.count)
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      </td>
+                    </tr>
+                  </tbody>
+                );
+              })}
             </table>
             <div
               className={styles.sumDiv}
@@ -330,13 +328,30 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             </div>
           </div>
           <div>
+            <Button
+                  variant="contained"
+                  color="info"
+                  style={{
+                    height: '32px',
+                    width: '48%',
+                    float: 'left',
+                    display: 'flex',
+                    bottom: '-10px',
+                    right: 0,
+                  }}
+                  onClick={updateBillhandler}
+                >
+                  저장하기
+                </Button>
+          </div>
+          <div>
             <ReactToPrint
               trigger={() => (
                 <Button
                   variant="contained"
                   style={{
                     height: '32px',
-                    width: '100%',
+                    width: '48%',
                     float: 'right',
                     display: 'flex',
                     bottom: '-10px',
