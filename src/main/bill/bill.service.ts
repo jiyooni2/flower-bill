@@ -178,7 +178,12 @@ export class BillService {
         const orderProducts = [];
         for (const orderProductInput of orderProductInputs) {
           let orderProduct = new OrderProduct();
-          orderProduct = { ...orderProduct, ...orderProductInput, bill };
+          orderProduct = {
+            ...orderProduct,
+            ...orderProductInput,
+            billId: bill.id,
+            businessId,
+          };
           orderProducts.push(orderProduct);
         }
         await this.orderProductRepository
@@ -189,7 +194,10 @@ export class BillService {
           .execute();
       }
 
-      await this.billRepository.update({ id }, { ...updateBillInput });
+      await this.billRepository.update(
+        { id },
+        { ...updateBillInput, businessId }
+      );
 
       return { ok: true };
     } catch (error: any) {
