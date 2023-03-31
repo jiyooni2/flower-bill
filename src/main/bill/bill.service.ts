@@ -1,3 +1,4 @@
+import { Business } from './../business/entities/business.entity';
 import { BillResult } from './../common/dtos/bill-result.dto';
 import { GetBillsInput, GetBillsOutput } from './dtos/get-bills.dto';
 import {
@@ -196,6 +197,7 @@ export class BillService {
     }
   }
 
+  //수정
   async getBillByStore({
     storeId,
     page,
@@ -216,7 +218,7 @@ export class BillService {
         .createQueryBuilder()
         .select()
         .where('storeId=:storeId', { storeId: store.id })
-        .orderBy('bill.id')
+        .orderBy(`${Bill.name}.id`)
         .offset(page)
         .limit(10)
         .getMany();
@@ -227,6 +229,7 @@ export class BillService {
     }
   }
 
+  //수정
   async getBills({
     token,
     businessId,
@@ -236,11 +239,11 @@ export class BillService {
       await authService.checkBusinessAuth(token, businessId);
 
       const bills = await this.billRepository
-        .createQueryBuilder('bill')
-        .leftJoinAndSelect('bill.store', 'store')
-        .leftJoinAndSelect('bill.business', 'business')
+        .createQueryBuilder(Bill.name)
+        .leftJoinAndSelect(`${Bill.name}.store`, Store.name)
+        .leftJoinAndSelect(`${Bill.name}.business`, Business.name)
         .where('bill.businessId=:businessId', { businessId })
-        .orderBy('bill.id')
+        .orderBy(`${Bill.name}.id`)
         .offset(page)
         .limit(10)
         .getMany();

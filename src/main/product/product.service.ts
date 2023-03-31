@@ -34,6 +34,7 @@ export class ProductService {
     this.categoryRepository = AppDataSource.getRepository(Category);
   }
 
+  //수정
   async getProducts({
     page,
     token,
@@ -45,7 +46,7 @@ export class ProductService {
       const products = await this.productRepository
         .createQueryBuilder()
         .select()
-        .orderBy('product.id')
+        .orderBy(`${Product.name}.id`)
         .offset(page)
         .limit(10)
         .getMany();
@@ -148,6 +149,8 @@ export class ProductService {
     }
   }
 
+  //수정
+
   async searchProduct({
     keyword,
     page,
@@ -162,7 +165,7 @@ export class ProductService {
         .select()
         .where(`name LIKE "%${keyword}%"`)
         .andWhere(`businessId=:businessId`, { businessId })
-        .orderBy('product.id')
+        .orderBy(`${Product.name}.id`)
         .offset(page)
         .limit(10)
         .getMany();
@@ -173,6 +176,7 @@ export class ProductService {
     }
   }
 
+  //수정
   async getProductByCategory({
     categoryId,
     page,
@@ -210,7 +214,7 @@ export class ProductService {
           .select()
           .where('categoryId=:categoryId', { categoryId })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy('product.id')
+          .orderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
           .getMany();
@@ -228,7 +232,7 @@ export class ProductService {
             ),
           })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy('product.id')
+          .orderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
           .getMany();
@@ -260,7 +264,7 @@ export class ProductService {
             ids: subCategoryIds,
           })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy('product.id')
+          .orderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
           .getMany();
