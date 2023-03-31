@@ -4,13 +4,11 @@ import styles from './BusinessPage.module.scss';
 import { Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
-  accessState,
   businessState,
   businessesState,
   passwordCheckState,
   tokenState,
 } from 'renderer/recoil/states';
-import PasswordConfirmModal from './components/ConfirmModal/PasswordConfirmModal';
 import {
   UpdateBusinessInput,
   UpdateBusinessOutPut,
@@ -28,8 +26,6 @@ const BuisnessPage = () => {
   const [businessOwnerName, setBusinessOwnerName] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  const checked = useRecoilValue(passwordCheckState);
-  const access = useRecoilValue(accessState)
 
   useEffect(() => {
     setBusinessNumber(business.businessNumber.toString());
