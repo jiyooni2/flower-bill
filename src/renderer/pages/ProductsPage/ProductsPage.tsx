@@ -334,10 +334,12 @@ const ProductsPage = () => {
     setIsOpen(true);
   };
 
+  console.log('Products', products)
+
   const LAST_PAGE =
-    products.length % 9 === 0
-      ? Math.round(products.length / 9)
-      : Math.floor(products.length / 9) + 1;
+    products != undefined && products?.length % 9 === 0
+      ? Math.round(products?.length / 9)
+      : Math.floor(products?.length / 9) + 1;
 
   const handlePage = (event: any) => {
     setPage(parseInt(event.target.outerText));
@@ -371,9 +373,9 @@ const ProductsPage = () => {
                           },
                         }}
                       >
-                        <TableCell component="th" align="left">
+                        {/* <TableCell component="th" align="left">
                           ID
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell component="th" align="left">
                           상품명
                         </TableCell>
@@ -386,7 +388,7 @@ const ProductsPage = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {products &&
+                      {products != undefined &&
                         products.slice((page - 1) * 9, page * 9).map((item) => (
                           <TableRow
                             key={item.name}
@@ -398,13 +400,13 @@ const ProductsPage = () => {
                               },
                             }}
                           >
-                            <TableCell
+                            {/* <TableCell
                               component="th"
                               align="left"
                               sx={{ width: '10%' }}
                             >
                               {item.id}
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell
                               component="th"
                               align="left"
