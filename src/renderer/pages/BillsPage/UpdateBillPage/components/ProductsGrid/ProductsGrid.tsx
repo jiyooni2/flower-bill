@@ -1,5 +1,5 @@
 import styles from './ProductsGrid.module.scss';
-import { Box, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
 import ProductBox from '../ProductBox/ProductBox';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -9,6 +9,8 @@ import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import { GetProductByCategoryInput, GetProductByCategoryOutput } from 'main/product/dtos/get-product-by-category.dto';
 import { BillResult } from 'main/common/dtos/bill-result.dto';
+import { Link } from 'react-router-dom';
+import { ArrowForward } from '@mui/icons-material';
 
 
 const ProductsGrid = () => {
@@ -51,10 +53,14 @@ const ProductsGrid = () => {
     setPage(pageNow);
   };
 
-  const LAST_PAGE =
+  let LAST_PAGE = 1;
+  if (products != undefined) {
     products.length % 9 === 0
       ? Math.round(products.length / 9)
       : Math.floor(products.length / 9) + 1;
+  } else if (products == null) {
+    LAST_PAGE = 1;
+  }
 
   const filterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -252,7 +258,7 @@ const ProductsGrid = () => {
         </div>
 
         <div style={{ margin: '20px', height: '300px' }}>
-          {products ? (
+          {products && (
             <Grid
               container
               spacing={{ xs: 1, md: 2 }}
@@ -275,9 +281,39 @@ const ProductsGrid = () => {
                   </Grid>
                 ))}
             </Grid>
-          ) : (
-            <div>데이터를 가져오고 있습니다.</div>
           )}
+          {(products != undefined && products?.length == 0 && (
+            <div>
+              <span
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '-38%',
+                  fontSize: '14px',
+                  color: 'dimgray',
+                }}
+              >
+                상품이 없습니다.
+              </span>
+              <Link
+                to={'/products'}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '5px',
+                  fontSize: '13px',
+                  color: 'darkslateblue',
+                  marginLeft: '2px',
+                }}
+              >
+                <Button variant="text" color="success">
+                  상품 추가하러 가기{' '}
+                  <ArrowForward sx={{ fontSize: '15px' }} />
+                </Button>
+              </Link>
+            </div>
+          )) ||
+            ''}
         </div>
         <div style={{ margin: '0 auto' }}>
           <Pagination

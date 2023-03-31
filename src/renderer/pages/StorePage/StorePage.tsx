@@ -338,7 +338,7 @@ const StorePage = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {stores &&
+                      {stores != undefined &&
                         stores.length > 0 &&
                         stores.map((store) => (
                           <TableRow
