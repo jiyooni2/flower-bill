@@ -39,7 +39,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
   const updateOrderProduct = (product: Product, name: string) => {
     setOrderProducts(
       orderProducts.map((orderProduct) => {
-        if (orderProduct.product.id === product.id) {
+        if (orderProduct?.product?.id === product.id) {
           if (name === 'INCREASE') {
             return {
               ...orderProduct,
@@ -94,7 +94,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
             justifyContent: 'left',
           }}
         >
-          {orderProduct.product.name}
+          {orderProduct != undefined && orderProduct.product?.name || ''}
         </div>
         <div
           style={{

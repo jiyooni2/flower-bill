@@ -54,7 +54,7 @@ const ProductBox = ({ product }: IProps) => {
       <Typography
         sx={{ fontSize: '17px', marginBottom: '15px', fontWeight: '400', width: '80px' }}
       >
-        {product.name}
+        {product != undefined && product?.name || ''}
       </Typography>
       <Typography sx={{ fontSize: '15px', fontWeight: '500' }} align="right">
         {product.price.toLocaleString('ko-KR')}원

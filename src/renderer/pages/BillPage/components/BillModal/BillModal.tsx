@@ -1,6 +1,7 @@
 import styles from './BillModal.module.scss';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
+  billListState,
   businessState,
   memoState,
   orderProductsState,
@@ -33,6 +34,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const [memoIsOpen, setMemoIsOpen] = useState<boolean>(false);
   const printRef = useRef();
   const movePage = useNavigate();
+  const [bills, setBills] = useRecoilState(billListState)
 
   const handleClick = async () => {
     const orderProductInputs = orderProducts.map((orderProduct) => ({
@@ -55,11 +57,11 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     });
     window.electron.ipcRenderer.on(
       'create-bill',
-      ({ ok, error, bill }: GetBillOutput) => {
+      ({ ok, error }: GetBillOutput) => {
         if (ok) {
-          console.log(bill);
+          console.log('ok')
         } else if (error) {
-          console.log(error);
+          console.error(error);
         }
       }
     );

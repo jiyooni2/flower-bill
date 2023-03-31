@@ -18,6 +18,7 @@ import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
 import DiscountModal from './components/DiscountModal/DiscountModal';
 import InfoModal from 'renderer/components/InfoModal/InfoModal';
+import { BillResult } from 'main/common/dtos/bill-result.dto';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -45,6 +46,8 @@ const BillPage = () => {
     );
   }, []);
 
+  console.log('OrderProducts', orderProducts)
+
   const handlePage = (event: any) => {
     const pageNow = parseInt(event.target.outerText);
     setPage(pageNow)
@@ -57,18 +60,22 @@ const BillPage = () => {
 
   const discount = 0;
 
-  const LAST_PAGE =
-    orderProducts?.length % 4 === 0
-      ? Math.round(orderProducts?.length / 4)
-      : Math.floor(orderProducts?.length / 4) + 1;
+  let LAST_PAGE;
+  if (orderProducts == null) {
+    LAST_PAGE = 0;
+  } else if (orderProducts != undefined || orderProducts) {
+    LAST_PAGE =
+      orderProducts?.length % 4 === 0
+        ? Math.round(orderProducts?.length / 4)
+        : Math.floor(orderProducts?.length / 4) + 1;
+  }
 
   const addComma = (data: number) => {
     return `${data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
   };
 
   const billClickHandler = () => {
-    console.log(store)
-    if (!store.name || store.name == null) {
+    if (store != undefined && !store.name || store.name == '') {
       setIsOpen(true);
     } else setIsBillOpen(true);
   };

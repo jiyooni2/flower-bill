@@ -70,10 +70,10 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
         ({ ok, error, stores }: SearchStoreOutput) => {
           if (ok) {
             setStoreList(stores);
-            if (stores.length == 0) setSearch(false)
+            if (stores.length != undefined && stores.length == 0) setSearch(false)
             else setSearch(true)
           } else {
-            console.log(error);
+            console.error(error);
           }
         }
       );
@@ -145,8 +145,8 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {storeList.map((row) => (
-                <TableRow key={row.name} sx={{}}>
+              {storeList != undefined && storeList?.map((row) => (
+                <TableRow key={row.name || row.id} sx={{}}>
                   <TableCell component="th" scope="row">
                     <Button
                       sx={{ marginTop: '-5px', marginBottom: '-5px' }}
@@ -155,7 +155,7 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
                       선택
                     </Button>
                   </TableCell>
-                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.name || ''}</TableCell>
                   <TableCell>{row.owner}</TableCell>
                   <TableCell>{row.businessNumber}</TableCell>
                   <TableCell>{row.address}</TableCell>

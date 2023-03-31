@@ -47,10 +47,14 @@ const ProductsGrid = () => {
     setPage(pageNow);
   };
 
-  const LAST_PAGE =
-    products.length % 9 === 0
+  let LAST_PAGE = 0;
+  if (products != undefined || products) {
+    LAST_PAGE = products.length % 9 === 0
       ? Math.round(products.length / 9)
       : Math.floor(products.length / 9) + 1;
+  } else if (products == null) {
+    LAST_PAGE = 0;
+  }
 
   const filterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -84,7 +88,6 @@ const ProductsGrid = () => {
           'search-product',
           ({ ok, error, products }: SearchProductOutput) => {
             if (ok) {
-              console.log(products)
               setProducts(products);
             } else if (error) {
               console.error(error);
@@ -175,15 +178,15 @@ const ProductsGrid = () => {
                 defaultValue={'none'}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories.map((item) => {
+                {categories != undefined && categories.map((item) => {
                   if (item.level === 1) {
                     return (
                       <MenuItem
                         key={item.id}
-                        value={item.name}
+                        value={item.name == null ? '' : item?.name}
                         onClick={() => categoryChangeHandler(item.id, 'main')}
                       >
-                        {item.name}
+                        {item.name == null ? '' : item?.name}
                       </MenuItem>
                     );
                   }
@@ -206,15 +209,15 @@ const ProductsGrid = () => {
                 className={styles.selects}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories.map((item) => {
+                {categories != undefined && categories.map((item) => {
                   if (item.level === 2 && item.parentCategoryId === mainId) {
                     return (
                       <MenuItem
                         key={item.id}
-                        value={item.name}
+                        value={item.name == null ? '' : item?.name}
                         onClick={() => categoryChangeHandler(item.id, 'sub')}
                       >
-                        {item.name}
+                        {item.name == null ? '' : item?.name}
                       </MenuItem>
                     );
                   }
@@ -237,15 +240,15 @@ const ProductsGrid = () => {
                 className={styles.selects}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories.map((item) => {
+                {categories != undefined && categories?.map((item) => {
                   if (item.level === 3 && item.parentCategoryId === subId) {
                     return (
                       <MenuItem
                         key={item.id}
-                        value={item.name}
+                        value={item.name == null ? '' : item?.name}
                         onClick={() => categoryChangeHandler(item.id, 'group')}
                       >
-                        {item.name}
+                        {item.name == null ? '' : item?.name}
                       </MenuItem>
                     );
                   }
@@ -280,7 +283,7 @@ const ProductsGrid = () => {
                 ))}
             </Grid>
           )}
-          {products.length == 0 && (
+          {products != undefined && products?.length == 0 && (
             <div>
               <span
                 style={{
@@ -309,7 +312,7 @@ const ProductsGrid = () => {
                 </Button>
               </Link>
             </div>
-          )}
+          ) || ''}
         </div>
         <div style={{ margin: '0 auto' }}>
           <Pagination

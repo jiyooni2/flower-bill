@@ -48,7 +48,7 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {orderProducts.map((item) => (
+              {orderProducts?.map((item) => (
                 <TableRow key={item.billId}>
                   <DiscountTable orderProduct={item} />
                 </TableRow>
@@ -56,7 +56,7 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
             </TableBody>
           </Table>
         </TableContainer>
-        {orderProducts.length == 0 && (
+        {orderProducts != undefined && orderProducts?.length == 0 && (
           <span
             style={{
               display: 'flex',
