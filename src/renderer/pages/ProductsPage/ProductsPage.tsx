@@ -62,7 +62,7 @@ const ProductsPage = () => {
     console.log(categoryId)
     categories.map((cat) => {
       if (cat.id == categoryId) {
-        return setCategoryName(cat.name)
+        return setCategoryName(cat?.name)
       }
     });
   }, [categoryId])
@@ -223,12 +223,6 @@ const ProductsPage = () => {
     const { value } = event.target;
 
     if (dataName === 'name') {
-      products.map((item) => {
-        if (item.name === value) {
-          setErrors({ ...errors, name: '동일한 상품명이 이미 존재합니다.' });
-          return;
-        }
-      });
       const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z\s]*$/;
       if (!pattern.test(value)) {
         setErrors({
@@ -236,7 +230,7 @@ const ProductsPage = () => {
           name: '한글, 영문, 공백 외의 문자는 작성하실 수 없습니다.',
         });
       } else if (value.startsWith(' ')) {
-        setErrors({ ...errors, name: '첫 번째 자리는 공백이 될 수 없습니다.' });
+        setErrors({ ...errors, name: '공백으로 시작할 수 없습니다.' });
       } else if (value == '' || value) {
         setErrors({ ...errors, name: '' });
         setName(value);
@@ -249,7 +243,7 @@ const ProductsPage = () => {
           price: '숫자 외의 문자는 작성하실 수 없습니다.',
         });
       } else if (value.startsWith('0')) {
-        setErrors({ ...errors, price: '판매가는 0으로 시작할 수 없습니다.' });
+        setErrors({ ...errors, price: '0으로 시작할 수 없습니다.' });
       } else if (value == '' || value) {
         setErrors({ ...errors, price: '' });
         setPrice(value);
@@ -427,7 +421,7 @@ const ProductsPage = () => {
                               className={styles.cutText}
                               sx={{ width: '45%' }}
                             >
-                              {categories.map((cat) => {
+                              {categories != undefined && categories.map((cat) => {
                                 if (cat.id === item.categoryId) {
                                   if (cat.parentCategory.parentCategory) {
                                     return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
@@ -526,7 +520,6 @@ const ProductsPage = () => {
                         onChange={(event) =>
                           changeStoreDataHandler(event, 'price')
                         }
-                        minLength={3}
                       />
                     </div>
                     {errors.price && (
