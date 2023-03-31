@@ -66,10 +66,15 @@ const UpdateBillPage = () => {
 
   const discount = 0;
 
-  const LAST_PAGE =
-    orderProducts.length % 4 === 0
+  let LAST_PAGE = 1;
+  if (orderProducts != undefined) {
+    LAST_PAGE = orderProducts.length % 4 === 0
       ? Math.round(orderProducts.length / 4)
       : Math.floor(orderProducts.length / 4) + 1;
+  } else if (orderProducts == null) {
+    LAST_PAGE = 1;
+  }
+
 
   const addComma = (data: number) => {
     return `${data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
@@ -78,8 +83,6 @@ const UpdateBillPage = () => {
   const billClickHandler = () => {
     setIsBillOpen(true);
   };
-
-  console.log(currentBill)
 
   return (
     <>
