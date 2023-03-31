@@ -316,14 +316,15 @@ const ProductsPage = () => {
           console.log('After ok', products);
           window.electron.ipcRenderer.sendMessage('get-products', {
             token,
+            page: page,
             businessId: business.id,
           });
           window.electron.ipcRenderer.on(
             'get-products',
             ({ ok, error, products }: GetProductsOutput) => {
               if (ok) {
+                console.log('getProductsOK', products);
                 setProducts(products);
-                console.log(products)
               }
               if (error) {
                 console.error(error);
