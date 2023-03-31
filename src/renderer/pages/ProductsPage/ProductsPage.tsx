@@ -42,7 +42,7 @@ const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [categories, setCategories] = useRecoilState(categoriesState);
-  const [products, setProducts] = useState<Product[]>(null);
+  const [products, setProducts] = useState<Product[]>();
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -67,6 +67,7 @@ const ProductsPage = () => {
       'get-products',
       ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
+          console.log(products)
           setProducts(products);
         }
         if (error) {
@@ -77,7 +78,6 @@ const ProductsPage = () => {
   }, [])
 
   useEffect(() => {
-    console.log(categoryId)
     categories.map((cat) => {
       if (cat.id == categoryId) {
         return setCategoryName(cat?.name)
@@ -94,6 +94,7 @@ const ProductsPage = () => {
       'get-products',
       (args: GetProductsOutput) => {
         setProducts(args.products as Product[]);
+        console.log(products)
       }
     );
 
@@ -314,9 +315,10 @@ const ProductsPage = () => {
       ({ ok, error }: CreateProductOutput) => {
         if (ok) {
           console.log('After ok', products);
+          console.log('Get', token, page-1, business.id)
           window.electron.ipcRenderer.sendMessage('get-products', {
             token,
-            page: page,
+            page: page - 1,
             businessId: business.id,
           });
           window.electron.ipcRenderer.on(
@@ -351,13 +353,13 @@ const ProductsPage = () => {
     setIsOpen(true);
   };
 
-  let LAST_PAGE = 0;
+  let LAST_PAGE = 1;
   if (products != undefined) {
     LAST_PAGE = products?.length % 9 === 0
       ? Math.round(products?.length / 9)
       : Math.floor(products?.length / 9) + 1;
   } else if (products == null) {
-    LAST_PAGE = 0;
+    LAST_PAGE = 1;
   }
 
   const handlePage = (event: any) => {
