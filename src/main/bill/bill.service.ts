@@ -250,7 +250,7 @@ export class BillService {
         .createQueryBuilder(Bill.name)
         .leftJoinAndSelect(`${Bill.name}.store`, Store.name)
         .leftJoinAndSelect(`${Bill.name}.business`, Business.name)
-        .where('bill.businessId=:businessId', { businessId })
+        .where(`${Bill.name}.businessId=:businessId`, { businessId })
         .orderBy(`${Bill.name}.id`)
         .offset(page)
         .limit(10)
