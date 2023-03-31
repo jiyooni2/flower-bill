@@ -122,7 +122,7 @@ const BillsPage = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {bills.slice(page * 10, page * 10 + 10).map((bill) => {
+                {bills != undefined && bills.slice(page * 10, page * 10 + 10).map((bill) => {
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={bill.id}>
                       <TableCell>
@@ -143,7 +143,7 @@ const BillsPage = () => {
                       <TableCell>{bill.business.name}</TableCell>
                       <TableCell>{bill.store.name}</TableCell>
                       <TableCell>
-                        {currentBill && currentBill.orderProducts.length} 개
+                        {currentBill != undefined && currentBill.orderProducts.length} 개
                       </TableCell>
                       <TableCell>
                         {alert == false ? (<LocalPrintshopIcon
@@ -164,7 +164,7 @@ const BillsPage = () => {
           </TableContainer>
           <TablePagination
             component="div"
-            count={bills.length}
+            count={bills != undefined && bills.length}
             rowsPerPage={10}
             page={page}
             onPageChange={handleChangePage}
