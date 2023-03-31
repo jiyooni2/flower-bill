@@ -1,0 +1,12 @@
+.minimodal_container {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40%;
+  height: 65%;
+  border-radius: 5px;
+  background-color: white;
+}
