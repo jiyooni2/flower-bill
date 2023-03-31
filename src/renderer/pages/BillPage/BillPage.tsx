@@ -58,9 +58,9 @@ const BillPage = () => {
   const discount = 0;
 
   const LAST_PAGE =
-    orderProducts.length % 4 === 0
-      ? Math.round(orderProducts.length / 4)
-      : Math.floor(orderProducts.length / 4) + 1;
+    orderProducts?.length % 4 === 0
+      ? Math.round(orderProducts?.length / 4)
+      : Math.floor(orderProducts?.length / 4) + 1;
 
   const addComma = (data: number) => {
     return `${data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
@@ -115,7 +115,7 @@ const BillPage = () => {
                 .slice((page - 1) * 4, page * 4)
                 .map((orderProduct) => (
                   <OrderProductBox
-                    key={orderProduct.product.id}
+                    key={orderProduct.id}
                     orderProduct={orderProduct}
                   />
                 ))}
