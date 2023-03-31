@@ -42,11 +42,11 @@ const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [categories, setCategories] = useRecoilState(categoriesState);
-  const [products, setProducts] = useRecoilState(productsState);
+  const [products, setProducts] = useState<Product>(null);
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [id, setId] = useState<number>();
+  const [id, setId] = useState<number>(0);
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [categoryId, setCategoryId] = useRecoilState(categoryIdState);
@@ -138,7 +138,8 @@ const ProductsPage = () => {
   ) => {
     setClicked(true);
 
-    products.forEach((item) => {
+    if (products != undefined) {
+      products.forEach((item) => {
       if (item.name === data.name) {
         setId(item.id);
         setName(item.name);
@@ -147,6 +148,7 @@ const ProductsPage = () => {
         setCategoryName(item.category.name)
       }
     });
+    }
   };
 
   const deleteDataHandler = () => {
@@ -182,11 +184,10 @@ const ProductsPage = () => {
   };
 
   const updateDataHandler = () => {
-    const prices = Number(price);
     const newData: UpdateProductInput = {
       id,
       name,
-      price: prices,
+      price: Number(price),
       categoryId,
       token,
       businessId: business.id,
@@ -278,10 +279,9 @@ const ProductsPage = () => {
       return;
     }
 
-    const prices = Number(price);
     const newData: CreateProductInput = {
       name,
-      price: prices,
+      price: Number(price),
       categoryId,
       businessId: business.id,
       token,
@@ -311,13 +311,13 @@ const ProductsPage = () => {
         }
         if (error) {
           console.log(error);
-          if (error.startsWith('최하위')) {
-            setErrors({
-              ...errors,
-              category: '카테고리는 소분류만 선택 가능합니다.',
-            });
-            return;
-          }
+          // if (error.startsWith('최하위')) {
+          //   setErrors({
+          //     ...errors,
+          //     category: '카테고리는 소분류만 선택 가능합니다.',
+          //   });
+          //   return;
+          // }
         }
       }
     );
@@ -327,8 +327,6 @@ const ProductsPage = () => {
   const categoryClickHandler = () => {
     setIsOpen(true);
   };
-
-  console.log('Products', products)
 
   const LAST_PAGE =
     products != undefined && products?.length % 9 === 0
@@ -367,9 +365,9 @@ const ProductsPage = () => {
                           },
                         }}
                       >
-                        {/* <TableCell component="th" align="left">
+                        <TableCell component="th" align="left">
                           ID
-                        </TableCell> */}
+                        </TableCell>
                         <TableCell component="th" align="left">
                           상품명
                         </TableCell>
@@ -394,13 +392,13 @@ const ProductsPage = () => {
                               },
                             }}
                           >
-                            {/* <TableCell
+                            <TableCell
                               component="th"
                               align="left"
                               sx={{ width: '10%' }}
                             >
                               {item.id}
-                            </TableCell> */}
+                            </TableCell>
                             <TableCell
                               component="th"
                               align="left"
