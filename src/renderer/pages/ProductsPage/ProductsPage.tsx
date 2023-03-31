@@ -59,25 +59,6 @@ const ProductsPage = () => {
   });
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-products', {
-      token,
-      businessId: business.id,
-    });
-    window.electron.ipcRenderer.on(
-      'get-products',
-      ({ ok, error, products }: GetProductsOutput) => {
-        if (ok) {
-          console.log(products)
-          setProducts(products);
-        }
-        if (error) {
-          console.error(error);
-        }
-      }
-    );
-  }, [])
-
-  useEffect(() => {
     categories.map((cat) => {
       if (cat.id == categoryId) {
         return setCategoryName(cat?.name)
@@ -92,9 +73,14 @@ const ProductsPage = () => {
     });
     window.electron.ipcRenderer.on(
       'get-products',
-      (args: GetProductsOutput) => {
-        setProducts(args.products as Product[]);
-        console.log(products)
+      ({ ok, error, products }: GetProductsOutput) => {
+        if (ok) {
+          console.log(products);
+          setProducts(products);
+        }
+        if (error) {
+          console.error(error);
+        }
       }
     );
 
