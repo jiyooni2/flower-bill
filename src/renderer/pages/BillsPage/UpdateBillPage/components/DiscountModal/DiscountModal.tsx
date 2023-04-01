@@ -49,7 +49,7 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
             </TableHead>
             <TableBody>
               {orderProducts?.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.product.id}>
                   <DiscountTable orderProduct={item} />
                 </TableRow>
               ))}
