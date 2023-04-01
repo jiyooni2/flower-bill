@@ -6,8 +6,6 @@ import {
   orderProductsState,
   tokenState,
   businessState,
-  storeState,
-  billState,
 } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
@@ -24,21 +22,19 @@ import {
 } from '@mui/material';
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
-import { BillResult } from 'main/common/dtos/bill-result.dto';
-import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import DiscountModal from 'renderer/pages/BillPage/components/DiscountModal/DiscountModal';
+import { Link } from 'react-router-dom';
+import { ArrowBackRounded } from '@mui/icons-material';
 
 const UpdateBillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
-  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
+  const orderProducts = useRecoilValue(orderProductsState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-  const [bill, setBill] = useRecoilState(billState);
-  const [currentBill, setCurrentBill] = useState<BillResult>();
 
 
   useEffect(() => {
@@ -75,7 +71,6 @@ const UpdateBillPage = () => {
     LAST_PAGE = 1;
   }
 
-
   const addComma = (data: number) => {
     return `${data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
   };
@@ -97,14 +92,14 @@ const UpdateBillPage = () => {
           className={`${styles.content_container} ${styles.bill_container}`}
           style={{ width: '50%' }}
         >
-          <Typography
-            variant="h5"
-            align="center"
-            marginTop="15px"
-            marginBottom="7px"
-          >
-            계산서
-          </Typography>
+            <Typography
+              variant="h5"
+              align="center"
+              marginTop="15px"
+              marginBottom="7px"
+            >
+              계산서
+            </Typography>
           <Table>
             <TableHead>
               <TableRow sx={{ fontWeight: 'bold' }}>

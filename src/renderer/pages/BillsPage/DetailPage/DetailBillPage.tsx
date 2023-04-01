@@ -99,9 +99,72 @@ const DetailBillPage = () => {
                 marginTop: '10px',
               }}
             >
+              <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginLeft: '20px',
+                    marginRight: '0px',
+                  }}
+                >
+                  <Card
+                    sx={{
+                      width: '95%',
+                      backgroundColor: 'floralwhite',
+                      height: '100%',
+                      marginBottom: '15px',
+                    }}
+                  >
+                    <CardContent>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ marginLeft: '3px' }}
+                        >
+                          구매처명:{' '}
+                          <span style={{ color: 'black' }}>
+                            {bill.store.name}
+                          </span>
+                          <br />
+                          <span>
+                            사업자 번호 :{' '}
+                            <span style={{ color: 'black' }}>
+                              {bill.store.businessNumber}
+                            </span>
+                          </span>
+                        </Typography>
+                      <br />
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ marginLeft: '3px' }}
+                      >
+                        판매일시 :{' '}
+                        <span style={{ color: 'black' }}>
+                          {bill.createdAt &&
+                            `${bill.createdAt.getFullYear()}년 ${bill.createdAt.getMonth()}월 ${bill.createdAt.getDate()}일 `}
+                          {bill.createdAt &&
+                            `${bill.createdAt.getHours()}시 ${bill.createdAt.getMinutes()}분 ${bill.createdAt.getSeconds()}초`}
+                        </span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ marginLeft: '3px', height: '52px' }}
+                      >
+                        <span>
+                          메모:{' '}
+                          <span style={{ color: 'black' }}>{bill.memo}</span>
+                        </span>
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
               <div
                 style={{
-                  height: '320px',
+                  height: '333px',
                   width: '100%',
                   overflow: 'auto',
                 }}
@@ -146,81 +209,6 @@ const DetailBillPage = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
-              </div>
-            </div>
-            <div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  marginLeft: '20px',
-                  marginRight: '0px',
-                }}
-              >
-                <Card
-                  sx={{
-                    width: '95%',
-                    backgroundColor: 'floralwhite',
-                    height: '100%',
-                    marginBottom: '15px',
-                  }}
-                >
-                  <CardContent>
-                    <Typography
-                      gutterBottom
-                      variant="h5"
-                      component="div"
-                      sx={{ fontWeight: '500' }}
-                    >
-                      {bill.business.name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ marginLeft: '3px' }}
-                    >
-                      <span>
-                        사업자 번호 :{' '}
-                        <span style={{ color: 'black' }}>
-                          {bill.business.businessNumber}
-                        </span>
-                      </span>
-                      <br />
-                      <span>
-                        판매처 주소 :{' '}
-                        <span style={{ color: 'black' }}>
-                          {bill.business.address}
-                        </span>
-                      </span>
-                    </Typography>
-                    <br />
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ marginLeft: '3px' }}
-                    >
-                      판매일시 :{' '}
-                      <span style={{ color: 'black' }}>
-                        {bill.createdAt &&
-                          `${bill.createdAt.getFullYear()}년 ${bill.createdAt.getMonth()}월 ${bill.createdAt.getDate()}일 `}
-                        {bill.createdAt &&
-                          `${bill.createdAt.getHours()}시 ${bill.createdAt.getMinutes()}분 ${bill.createdAt.getSeconds()}초`}
-                      </span>
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ marginLeft: '3px', height: '52px' }}
-                    >
-                      <span>
-                        메모:{' '}
-                        <span style={{ color: 'black' }}>
-                          {bill.memo}
-                        </span>
-                      </span>
-                    </Typography>
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </div>
