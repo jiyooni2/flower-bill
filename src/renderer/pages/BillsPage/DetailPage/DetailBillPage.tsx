@@ -13,6 +13,7 @@ import { BillResult } from 'main/common/dtos/bill-result.dto';
 import { CheckCircleOutline, LocalPrintshopSharp } from '@mui/icons-material';
 import { alertState } from 'renderer/recoil/bill-states';
 import BillModal from '../UpdateBillPage/components/BillModal/BillModal';
+import ReactToPrint from 'react-to-print';
 
 const DetailBillPage = () => {
   const token = useRecoilValue(tokenState)
@@ -22,7 +23,7 @@ const DetailBillPage = () => {
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState)
   const [alert, setAlert] = useRecoilState(alertState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const successRef = useRef<HTMLElement>(null);
+  const printRef = useRef<HTMLElement>(null);
   // const [currentBill, setCurrentBill] = useState<BillResult>();
 
 
@@ -33,7 +34,6 @@ const DetailBillPage = () => {
 
   return (
     <>
-      <BillModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div
         style={{
           justifyContent: 'none',
@@ -71,23 +71,31 @@ const DetailBillPage = () => {
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', gap: '0px' }}>
           <div style={{ width: '11cm', margin: '1%' }}>
-            <BillPartPage bill={bill} orderProducts={orderProducts} />
+            <BillPartPage
+              bill={bill}
+              orderProducts={orderProducts}
+              ref={printRef}
+            />
             {alert == false ? (
-              <Button
-                variant="contained"
-                sx={{
-                  width: '96%',
-                  marginLeft: '3.5%',
-                  fontSize: '15px',
-                  height: '35px',
-                }}
-                onClick={() => setIsOpen(true)}
-                startIcon={<LocalPrintshopSharp />}
-              >
-                프린트하기
-              </Button>
+              <ReactToPrint
+                trigger={() => (
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: '96%',
+                      marginLeft: '3.5%',
+                      fontSize: '15px',
+                      height: '35px',
+                    }}
+                    startIcon={<LocalPrintshopSharp />}
+                  >
+                    프린트하기
+                  </Button>
+                )}
+                content={() => printRef.current}
+              />
             ) : (
-              <span ref={successRef} style={{ color: 'green' }}>
+              <span ref={printRef} style={{ color: 'green' }}>
                 <CheckCircleOutline sx={{ color: 'forestgreen' }} />
               </span>
             )}
@@ -117,23 +125,23 @@ const DetailBillPage = () => {
                     }}
                   >
                     <CardContent>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ marginLeft: '3px' }}
-                        >
-                          구매처명:{' '}
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ marginLeft: '3px' }}
+                      >
+                        구매처명:{' '}
+                        <span style={{ color: 'black' }}>
+                          {bill.store.name}
+                        </span>
+                        <br />
+                        <span>
+                          사업자 번호 :{' '}
                           <span style={{ color: 'black' }}>
-                            {bill.store.name}
+                            {bill.store.businessNumber}
                           </span>
-                          <br />
-                          <span>
-                            사업자 번호 :{' '}
-                            <span style={{ color: 'black' }}>
-                              {bill.store.businessNumber}
-                            </span>
-                          </span>
-                        </Typography>
+                        </span>
+                      </Typography>
                       <br />
                       <Typography
                         variant="body2"
