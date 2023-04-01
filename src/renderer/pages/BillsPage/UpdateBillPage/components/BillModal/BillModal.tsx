@@ -39,26 +39,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const store = useRecoilValue(storeState);
   const printRef = useRef();
 
-  useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-bill', {
-      token,
-      id: bill.id,
-      businessId: business.id,
-    });
-
-    window.electron.ipcRenderer.on(
-      'get-bill',
-      ({ ok, error, bill }: GetBillOutput) => {
-        if (ok) {
-          setBill(bill);
-          setCurrentBill(bill);
-        } else {
-          console.log(error);
-        }
-      }
-    );
-  }, []);
-
   const afterPrint = () => {
     setOrderProducts([]);
     setIsOpen(false);

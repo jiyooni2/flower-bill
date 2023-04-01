@@ -2,7 +2,7 @@ import { GetBillsOutput } from "main/bill/dtos/get-bills.dto";
 import { Bill } from "main/bill/entities/bill.entity";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { billListState, billState, businessState, businessesState, storesState, tokenState } from "renderer/recoil/states";
+import { billListState, billState, businessState, businessesState, detailBillState, orderProductsState, storesState, tokenState } from "renderer/recoil/states";
 import styles from './BillsPage.module.scss'
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
 import { GetBillOutput } from "main/bill/dtos/get-bill.dto";
@@ -19,11 +19,8 @@ const BillsPage = () => {
   const business = useRecoilValue(businessState)
   const [bills, setBills] = useRecoilState(billListState)
   const [bill, setBill] = useRecoilState(billState)
-  const [currentBill, setCurrentBill] = useState<BillResult>()
+  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState)
   const [page, setPage] = useState(0);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [alert, setAlert] = useRecoilState(alertState)
-  const successRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
 
@@ -35,24 +32,6 @@ const BillsPage = () => {
     window.electron.ipcRenderer.on('get-bills', (args: GetBillsOutput) => {
       setBills(args.bills as Bill[]);
     });
-
-    window.electron.ipcRenderer.sendMessage('get-bill', {
-      token,
-      id: bill.id,
-      businessId: business.id
-    });
-
-    window.electron.ipcRenderer.on(
-      'get-bill',
-      ({ ok, error, bill }: GetBillOutput) => {
-        if (ok) {
-          setBill(bill);
-          setCurrentBill(bill);
-        } else {
-          console.log(error)
-        }
-      }
-    );
   }, [])
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -72,6 +51,7 @@ const BillsPage = () => {
   }
 
   const detailHandler = (id: number) => {
+    console.log('DetailHandler' , id)
     window.electron.ipcRenderer.sendMessage('get-bill', {
       token,
       id,
@@ -82,7 +62,9 @@ const BillsPage = () => {
       'get-bill',
       ({ ok, error, bill }: GetBillOutput) => {
         if (ok) {
-          setBill(bill);
+          // setDetailBill(bill);
+          setOrderProducts(bill.orderProducts)
+          setBill(bill)
         } else {
           console.log(error)
         }
@@ -90,14 +72,10 @@ const BillsPage = () => {
     );
   };
 
-  if (alert == true) {
-    setTimeout(() => setAlert(false), 1500);
-    setAlert(true)
-  }
+
 
   return (
     <>
-      <BillModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={styles.container}>
         <div style={{ marginTop: '-1.5%', marginBottom: '25px' }}>
           <input
@@ -117,7 +95,7 @@ const BillsPage = () => {
                   <TableCell>발행 날짜</TableCell>
                   <TableCell>판매처</TableCell>
                   <TableCell>구매처</TableCell>
-                  <TableCell>구매한 상품 수</TableCell>
+                  {/* <TableCell>구매한 상품 수</TableCell> */}
                   <TableCell></TableCell>
                 </TableRow>
               </TableHead>
@@ -142,19 +120,11 @@ const BillsPage = () => {
                       <TableCell>{convertTime(bill.createdAt)}</TableCell>
                       <TableCell>{bill.business.name}</TableCell>
                       <TableCell>{bill.store.name}</TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         {currentBill != undefined && currentBill.orderProducts.length} 개
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
-                        {alert == false ? (<LocalPrintshopIcon
-                          sx={{
-                            cursor: 'pointer',
-                            '&:hover': { color: 'darkslategrey' },
-                          }}
-                          onClick={() => setIsOpen(true)}
-                        />) : (
-                          <span ref={successRef} style={{ color: 'green'}}><CheckCircleOutlineIcon sx={{ color: 'forestgreen'}} /></span>
-                        )}
+                        삭제
                       </TableCell>
                     </TableRow>
                   );

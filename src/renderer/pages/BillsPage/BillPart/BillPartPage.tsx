@@ -1,48 +1,25 @@
 import styles from './BillPartPage.module.scss';
 import { useRecoilValue } from 'recoil';
-import { billState, businessState, tokenState } from 'renderer/recoil/states';
+import { billState, businessState, orderProductsState, tokenState } from 'renderer/recoil/states';
 import { Paper } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { BillResult } from 'main/common/dtos/bill-result.dto';
 import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
+import { Bill } from 'main/bill/entities/bill.entity';
+import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 
-const BillPartPage = () => {
-  const token = useRecoilValue(tokenState);
-  const business = useRecoilValue(businessState)
-  const bill = useRecoilValue(billState);
-  const [currentBill, setCurrentBill] = useState<BillResult>({
-    id: 0,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    orderProducts: [],
-    store: null,
-    business: null,
-    businessId: 0,
-  });
+interface IProps {
+  bill: Bill;
+  orderProducts: OrderProduct[];
+}
 
-  useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-bill', {
-      token,
-      id: bill.id,
-      businessId: business.id,
-    });
-
-    window.electron.ipcRenderer.on(
-      'get-bill',
-      ({ ok, error, bill }: GetBillOutput) => {
-        if (ok) {
-          setCurrentBill(bill);
-        } else {
-          console.error(error);
-        }
-      }
-    );
-  }, []);
+const BillPartPage = ({bill, orderProducts}: IProps) => {
 
   let sum = 0;
-  currentBill.orderProducts.map((items) => {
-    sum += items.orderPrice * items.count;
-  });
+  orderProducts != undefined &&
+    orderProducts.map((items) => {
+      sum += items.orderPrice * items.count;
+    });
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -53,9 +30,10 @@ const BillPartPage = () => {
       <Paper
         style={{
           width: '7cm',
-          height: '103%',
+          height: '88%',
           padding: '15px',
           marginLeft: '10px',
+          marginBottom: '20px'
         }}
       >
         <div style={{ width: '6.2cm', height: '490px', marginTop: '35px' }}>
@@ -191,27 +169,30 @@ const BillPartPage = () => {
                 <th>금액</th>
               </tr>
             </tbody>
-            {currentBill.orderProducts.map((orderProduct) => {
-              return (
-                <tbody key={orderProduct.productId}>
-                  <tr>
-                    <td className={styles.item}>{`${month} / ${day}`}</td>
-                    <td className={styles.item}>{orderProduct.product.name}</td>
-                    <td className={styles.article}>{orderProduct.count}</td>
-                    <td className={styles.price}>
-                      {orderProduct.product.price
-                        .toString()
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    </td>
-                    <td className={styles.sum}>
-                      {orderProduct.orderPrice
-                        .toString()
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    </td>
-                  </tr>
-                </tbody>
-              );
-            })}
+            {orderProducts != undefined &&
+              orderProducts.map((orderProduct) => {
+                return (
+                  <tbody key={orderProduct.productId}>
+                    <tr>
+                      <td className={styles.item}>{`${month} / ${day}`}</td>
+                      <td className={styles.item}>
+                        {orderProduct.product.name}
+                      </td>
+                      <td className={styles.article}>{orderProduct.count}</td>
+                      <td className={styles.price}>
+                        {orderProduct.product.price
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      </td>
+                      <td className={styles.sum}>
+                        {orderProduct.orderPrice
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      </td>
+                    </tr>
+                  </tbody>
+                );
+              })}
           </table>
           <table style={{ width: '100%' }}>
             <tbody>
