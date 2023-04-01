@@ -1,10 +1,5 @@
 import styles from './BillPartPage.module.scss';
-import { useRecoilValue } from 'recoil';
-import { billState, businessState, orderProductsState, tokenState } from 'renderer/recoil/states';
 import { Paper } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { BillResult } from 'main/common/dtos/bill-result.dto';
-import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import { Bill } from 'main/bill/entities/bill.entity';
 import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 
@@ -33,7 +28,7 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
           height: '88%',
           padding: '15px',
           marginLeft: '10px',
-          marginBottom: '20px'
+          marginBottom: '20px',
         }}
       >
         <div style={{ width: '6.2cm', height: '490px', marginTop: '35px' }}>
@@ -104,11 +99,11 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
               <tr>
                 <th>상호</th>
                 <td style={{ width: '25%', fontSize: '15px' }} align="center">
-                  {bill.store.name}
+                  {bill.business.name}
                 </td>
                 <th style={{ width: '14%' }}>성명</th>
                 <td style={{ width: '20%', fontSize: '15px' }} align="center">
-                  {bill.store.owner}
+                  {bill.business.businessOwnerName}
                 </td>
               </tr>
               <tr>
