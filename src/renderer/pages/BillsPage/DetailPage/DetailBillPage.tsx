@@ -12,19 +12,17 @@ import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import { BillResult } from 'main/common/dtos/bill-result.dto';
 import { CheckCircleOutline, LocalPrintshopSharp } from '@mui/icons-material';
 import { alertState } from 'renderer/recoil/bill-states';
-import BillModal from '../UpdateBillPage/components/BillModal/BillModal';
 import ReactToPrint from 'react-to-print';
+import BillModal from './BillModal/BillModal';
 
 const DetailBillPage = () => {
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
-  // const detailBill = useRecoilValue(detailBillState);
   const bill = useRecoilValue(billState)
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState)
   const [alert, setAlert] = useRecoilState(alertState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const printRef = useRef<HTMLElement>(null);
-  // const [currentBill, setCurrentBill] = useState<BillResult>();
+  const printRef = useRef<HTMLElement>();
 
 
   if (alert == true) {
@@ -34,6 +32,7 @@ const DetailBillPage = () => {
 
   return (
     <>
+      <BillModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div
         style={{
           justifyContent: 'none',
@@ -74,26 +73,21 @@ const DetailBillPage = () => {
             <BillPartPage
               bill={bill}
               orderProducts={orderProducts}
-              ref={printRef}
             />
             {alert == false ? (
-              <ReactToPrint
-                trigger={() => (
-                  <Button
-                    variant="contained"
-                    sx={{
-                      width: '96%',
-                      marginLeft: '3.5%',
-                      fontSize: '15px',
-                      height: '35px',
-                    }}
-                    startIcon={<LocalPrintshopSharp />}
-                  >
-                    프린트하기
-                  </Button>
-                )}
-                content={() => printRef.current}
-              />
+              <Button
+                variant="contained"
+                sx={{
+                  width: '96%',
+                  marginLeft: '3.5%',
+                  fontSize: '15px',
+                  height: '35px',
+                }}
+                onClick={() => setIsOpen(true)}
+                startIcon={<LocalPrintshopSharp />}
+              >
+                프린트하기
+              </Button>
             ) : (
               <span ref={printRef} style={{ color: 'green' }}>
                 <CheckCircleOutline sx={{ color: 'forestgreen' }} />
