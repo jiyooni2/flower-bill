@@ -10,13 +10,10 @@ import {
   tokenState,
 } from 'renderer/recoil/states';
 import Modal from './Modal';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@mui/material';
 import MemoModal from '../MemoModal/MemoModal';
-import { BillResult } from 'main/common/dtos/bill-result.dto';
-import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import ReactToPrint from 'react-to-print';
-import { alertState } from 'renderer/recoil/bill-states';
 import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
 import { UpdateBillInput, UpdateBillOutput } from 'main/bill/dtos/update-bill.dto';
 import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
@@ -34,38 +31,38 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const [memoIsOpen, setMemoIsOpen] = useState<boolean>(false);
   const [bills, setBills] = useRecoilState(billListState)
   const [bill, setBill] = useRecoilState(billState)
-  const [currentBill, setCurrentBill] = useState<BillResult>();
-  const [alert, setAlert] = useRecoilState(alertState);
   const store = useRecoilValue(storeState);
   const printRef = useRef();
 
+
   const afterPrint = () => {
+    console.log('Yes!')
     setOrderProducts([]);
     setIsOpen(false);
-    setAlert(true);
   };
 
   const updateBillhandler = () => {
     const orderProductInputs: CreateOrderProductInput[] = [];
 
-    currentBill.orderProducts.map((orderProduct) => {
+    orderProducts.map((item) => {
+      console.log(item);
       orderProductInputs.push({
-        count: orderProduct.count,
-        productId: orderProduct.product.id,
-        orderPrice: orderProduct.orderPrice,
+        count: item.count,
+        productId: item.product.id,
+        orderPrice: item.orderPrice,
       });
+      console.log(orderProductInputs)
     });
 
+    const storeId = store.id != 0 ? store.id : bill.storeId
     const newBill: UpdateBillInput = {
       businessId: bill.businessId,
       id: bill.id,
       token,
-      storeId: store.id,
+      storeId: storeId,
       memo,
-      orderProductInputs : [...orderProductInputs],
+      orderProductInputs: [...orderProductInputs],
     };
-
-    console.log(newBill);
 
     window.electron.ipcRenderer.sendMessage('update-bill', newBill);
     window.electron.ipcRenderer.on(
@@ -83,6 +80,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               }
             }
           );
+          console.log('done')
         } else if (error) {
           console.log(error);
         }
@@ -145,7 +143,9 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                       (공급받는자용)
                     </span>
                   </td>
-                  <td className={styles.name}>{store.owner ? store.owner : bill.store.owner} 님</td>
+                  <td className={styles.name}>
+                    {store.owner ? store.owner : bill.store.owner} 님
+                  </td>
                   <td className={styles.for}>&ensp;귀하</td>
                 </tr>
               </tbody>
@@ -309,20 +309,20 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
           </div>
           <div>
             <Button
-                  variant="contained"
-                  color="info"
-                  style={{
-                    height: '32px',
-                    width: '48%',
-                    float: 'left',
-                    display: 'flex',
-                    bottom: '-10px',
-                    right: 0,
-                  }}
-                  onClick={updateBillhandler}
-                >
-                  저장하기
-                </Button>
+              variant="contained"
+              color="info"
+              style={{
+                height: '32px',
+                width: '48%',
+                float: 'left',
+                display: 'flex',
+                bottom: '-10px',
+                right: 0,
+              }}
+              onClick={updateBillhandler}
+            >
+              저장하기
+            </Button>
           </div>
           <div>
             <ReactToPrint
