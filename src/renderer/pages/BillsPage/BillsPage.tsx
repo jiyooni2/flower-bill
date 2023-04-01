@@ -13,6 +13,8 @@ import { BillResult } from "main/common/dtos/bill-result.dto";
 import BillModal from "./UpdateBillPage/components/BillModal/BillModal";
 import { alertState } from "renderer/recoil/bill-states";
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { Delete } from "@mui/icons-material";
+import { DeleteBillOutput } from "main/bill/dtos/delete-bill.dto";
 
 const BillsPage = () => {
   const token = useRecoilValue(tokenState)
@@ -23,7 +25,6 @@ const BillsPage = () => {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-
     window.electron.ipcRenderer.sendMessage('get-bills', {
       token,
       businessId: business.id,
@@ -67,6 +68,35 @@ const BillsPage = () => {
           setBill(bill)
         } else {
           console.log(error)
+        }
+      }
+    );
+  };
+
+  const deleteHandler = (id: number) => {
+    window.electron.ipcRenderer.sendMessage('delete-bill', {
+      token,
+      id,
+      businessId: business.id,
+    });
+
+    window.electron.ipcRenderer.on(
+      'delete-bill',
+      ({ ok, error }: DeleteBillOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-bills', {
+            token,
+            businessId: business.id,
+            page: page,
+          });
+          window.electron.ipcRenderer.on(
+            'get-bills',
+            (args: GetBillsOutput) => {
+               setBills(args.bills as Bill[]);
+            }
+          );
+        } else {
+          console.log(error);
         }
       }
     );
@@ -123,7 +153,7 @@ const BillsPage = () => {
                       <TableCell>
                         {orderProducts != undefined && orderProducts.length} 개
                       </TableCell>
-                      <TableCell>삭제</TableCell>
+                      <TableCell><Delete sx={{ fontSizee: '16px', cursor: 'pointer', marginBottom: '-10px', color: 'crimson', }} onClick={() => deleteHandler(bill.id)} /></TableCell>
                     </TableRow>
                   );
                 })}
