@@ -6,9 +6,10 @@ import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 interface IProps {
   bill: Bill;
   orderProducts: OrderProduct[];
+  ref: MutableRefObject<HTMLElement>;
 }
 
-const BillPartPage = ({bill, orderProducts}: IProps) => {
+const BillPartPage = ({bill, orderProducts, ref}: IProps) => {
 
   let sum = 0;
   orderProducts != undefined &&
@@ -31,7 +32,7 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
           marginBottom: '20px',
         }}
       >
-        <div style={{ width: '6.2cm', height: '490px', marginTop: '35px' }}>
+        <div style={{ width: '6.2cm', height: '490px', marginTop: '35px' }} ref={ref}>
           <table
             style={{ width: '100%', border: '0' }}
             cellPadding="0"
