@@ -118,6 +118,34 @@ const passwordCheckState = atom<boolean>({
   default: false,
 })
 
+const detailBillState = atom<Bill>({
+  key: 'detailBillState',
+  default: {
+    memo: '',
+    store: {
+      businessNumber: 0,
+      name: '',
+      owner: '',
+      business: null,
+      businessId: 0,
+    },
+    business: {
+      name: '',
+      businessNumber: 0,
+      businessOwnerName: '',
+      address: '',
+      owner: null,
+      ownerId: 0,
+    },
+    businessId: 0,
+  },
+});
+
+const blurState = atom<boolean>({
+  key: 'blurState',
+  default: false,
+});
+
 export {
   loginState,
   tokenState,
@@ -134,4 +162,6 @@ export {
   billListState,
   categoryIdState,
   passwordCheckState,
+  detailBillState,
+  blurState,
 };
