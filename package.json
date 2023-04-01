@@ -195,8 +195,8 @@
     "webpack-merge": "^5.8.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "Flower Bill",
+    "appId": "org.erb.FlowerBill",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
