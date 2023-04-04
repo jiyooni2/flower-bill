@@ -47,7 +47,7 @@ export class BillService {
 
       if (storeId) {
         const store = await this.storeRepository.findOne({
-          where: { id: storeId },
+          where: { id: storeId, businessId },
         });
 
         if (!store) {
@@ -101,12 +101,16 @@ export class BillService {
       await authService.checkBusinessAuth(token, businessId);
 
       const bill: BillResult = await this.billRepository.findOne({
-        where: { id },
+        where: { id, businessId },
         relations: {
           store: true,
           business: true,
         },
       });
+
+      if (!bill) {
+        return { ok: false, error: '존재하지 않는 계산서입니다.' };
+      }
 
       const orderProducts = await this.orderProductRepository.find({
         where: { billId: id },
@@ -116,10 +120,6 @@ export class BillService {
       });
 
       bill.orderProducts = orderProducts;
-
-      if (!bill) {
-        return { ok: false, error: '존재하지 않는 계산서입니다.' };
-      }
 
       return { ok: true, bill };
     } catch (error: any) {
@@ -135,7 +135,9 @@ export class BillService {
     try {
       await authService.checkBusinessAuth(token, businessId);
 
-      const bill = await this.billRepository.findOne({ where: { id } });
+      const bill = await this.billRepository.findOne({
+        where: { id, businessId },
+      });
 
       if (!bill) {
         return { ok: false, error: '존재하지 않는 계산서입니다.' };
@@ -159,7 +161,9 @@ export class BillService {
     try {
       await authService.checkBusinessAuth(token, businessId);
 
-      const bill = await this.billRepository.findOne({ where: { id } });
+      const bill = await this.billRepository.findOne({
+        where: { id, businessId },
+      });
 
       if (!bill) {
         return { ok: false, error: '없는 게산서입니다.' };
@@ -167,7 +171,7 @@ export class BillService {
 
       if (updateBillInput.storeId) {
         const store = await this.storeRepository.findOne({
-          where: { id: updateBillInput.storeId },
+          where: { id: updateBillInput.storeId, businessId },
         });
 
         if (!store) {
@@ -220,7 +224,7 @@ export class BillService {
       await authService.checkBusinessAuth(token, businessId);
 
       const store = await this.storeRepository.findOne({
-        where: { id: storeId },
+        where: { id: storeId, businessId },
       });
       if (!store) {
         return { ok: false, error: '없는 스토어입니다.' };

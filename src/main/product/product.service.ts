@@ -46,6 +46,7 @@ export class ProductService {
       const products = await this.productRepository
         .createQueryBuilder()
         .select()
+        .where(`businessId=:businessId`, { businessId })
         .orderBy(`${Product.name}.id`)
         .offset(page)
         .limit(10)
@@ -75,6 +76,10 @@ export class ProductService {
 
       if (!category) {
         return { ok: false, error: '없는 카테고리입니다.' };
+      }
+
+      if (category.businessId !== businessId) {
+        return { ok: false, error: '해당 스토어에 대한 권한이 없습니다.' };
       }
 
       if (category.level !== 3) {
@@ -110,6 +115,7 @@ export class ProductService {
       if (!product) {
         return { ok: false, error: '존재하지 않는 상품입니다.' };
       }
+
       if (product.businessId !== businessId) {
         return { ok: false, error: '해당 상품에 권한이 없습니다.' };
       }
@@ -194,15 +200,15 @@ export class ProductService {
         return { ok: false, error: '존재하지 않는 카테고리입니다.' };
       }
 
+      if (category.businessId !== businessId) {
+        return { ok: false, error: '해당 카테고리에 대한 권한이 없습니다.' };
+      }
+
       const childCategories = await this.categoryRepository.find({
         where: { parentCategoryId: category.id },
       });
 
       category.childCategories = childCategories;
-
-      if (category.businessId !== businessId) {
-        return { ok: false, error: '해당 카테고리에 대한 권한이 없습니다.' };
-      }
 
       const { level: categoryLevel } = category;
 
