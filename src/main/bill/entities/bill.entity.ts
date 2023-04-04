@@ -12,7 +12,7 @@ export class Bill extends BusinessRelatedEntity {
 
   @ManyToOne((type) => Store)
   @JoinColumn({ name: 'storeId' })
-  store: Store;
+  store?: Store;
 
   @Column()
   storeId?: number;

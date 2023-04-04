@@ -6,7 +6,7 @@ import { AuthInput } from './../../common/dtos/auth.dto';
 export interface CreateBillInput
   extends Pick<Bill, 'memo' | 'transactionDate'>,
     AuthInput {
-  storeId: number;
+  storeId?: number;
   businessId: number;
   orderProductInputs: CreateOrderProductInput[];
 }

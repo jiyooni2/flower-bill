@@ -45,17 +45,21 @@ export class BillService {
 
       await authService.checkBusinessAuth(token, businessId);
 
-      const store = await this.storeRepository.findOne({
-        where: { id: storeId },
-      });
+      if (storeId) {
+        const store = await this.storeRepository.findOne({
+          where: { id: storeId },
+        });
 
-      if (!store) {
-        return { ok: false, error: '존재하지 않는 스토어입니다.' };
+        if (!store) {
+          return { ok: false, error: '존재하지 않는 스토어입니다.' };
+        }
       }
 
       //insert bill
       const bill = new Bill();
-      bill.storeId = storeId;
+      if (storeId) {
+        bill.storeId = storeId;
+      }
       bill.transactionDate = transactionDate;
       bill.memo = memo;
       bill.businessId = businessId;
