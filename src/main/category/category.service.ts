@@ -107,6 +107,9 @@ export class CategoryService {
 
       const category = await this.categoryRepository.findOne({ where: { id } });
 
+      if (category.businessId != businessId) {
+        return { ok: false, error: '해당 카테고리에 대한 권한이 없습니다.' };
+      }
       if (!category) {
         return { ok: false, error: '존재하지 않는 카테고리입니다.' };
       }
@@ -121,10 +124,12 @@ export class CategoryService {
     businessId,
   }: GetCategoriesInput): Promise<GetCategoriesOutput> {
     try {
-      console.log(token, businessId);
       await authService.checkBusinessAuth(token, businessId);
 
       const categories: CategoryResult[] = await this.categoryRepository.find({
+        where: {
+          businessId,
+        },
         relations: {
           parentCategory: true,
         },
@@ -134,6 +139,7 @@ export class CategoryService {
         const childCategories = await this.categoryRepository.find({
           where: {
             parentCategoryId: category.id,
+            businessId,
           },
         });
 
@@ -150,11 +156,12 @@ export class CategoryService {
     token,
     businessId,
     name,
+    id,
   }: UpdateCategoryInput): Promise<UpdateCategoryOutput> {
     try {
       await authService.checkBusinessAuth(token, businessId);
 
-      await this.categoryRepository.update({ id: businessId }, { name });
+      await this.categoryRepository.update({ id, businessId }, { name });
 
       return { ok: true };
     } catch (error: any) {
