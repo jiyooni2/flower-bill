@@ -22,4 +22,12 @@ export class Business extends CoreEntity {
 
   @Column()
   ownerId: number;
+
+  //업태
+  @Column()
+  typeofBusiness?: string;
+
+  //업종
+  @Column()
+  sector?: string;
 }

@@ -5,7 +5,12 @@ import { AuthInput } from './../../common/dtos/auth.dto';
 export interface CreateBusinessInput
   extends Pick<
       Business,
-      'name' | 'businessNumber' | 'businessOwnerName' | 'address'
+      | 'name'
+      | 'businessNumber'
+      | 'businessOwnerName'
+      | 'address'
+      | 'typeofBusiness'
+      | 'sector'
     >,
     AuthInput {}
 

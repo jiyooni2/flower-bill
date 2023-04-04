@@ -6,7 +6,12 @@ export interface UpdateBusinessInput
   extends Partial<
       Pick<
         Business,
-        'businessNumber' | 'address' | 'name' | 'businessOwnerName'
+        | 'businessNumber'
+        | 'address'
+        | 'name'
+        | 'businessOwnerName'
+        | 'typeofBusiness'
+        | 'sector'
       >
     >,
     AuthInput {

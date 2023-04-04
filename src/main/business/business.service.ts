@@ -35,6 +35,8 @@ export class BusinessService {
     businessNumber,
     businessOwnerName,
     address,
+    typeofBusiness,
+    sector,
     token,
   }: CreateBusinessInput): Promise<CreateBusinessOutput> {
     try {
@@ -55,6 +57,8 @@ export class BusinessService {
           businessNumber,
           businessOwnerName,
           address,
+          typeofBusiness,
+          sector,
           ownerId: owner.id,
         })
         .execute();
@@ -91,6 +95,8 @@ export class BusinessService {
     businessNumber,
     businessOwnerName,
     address,
+    typeofBusiness,
+    sector,
     name,
   }: UpdateBusinessInput): Promise<UpdateBusinessOutPut> {
     try {
@@ -103,6 +109,8 @@ export class BusinessService {
           businessOwnerName,
           address,
           name,
+          typeofBusiness,
+          sector,
         }
       );
 
