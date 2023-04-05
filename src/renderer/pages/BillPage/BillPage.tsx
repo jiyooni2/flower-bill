@@ -28,7 +28,6 @@ const BillPage = () => {
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const store = useRecoilValue(storeState);
 
@@ -75,19 +74,12 @@ const BillPage = () => {
   };
 
   const billClickHandler = () => {
-    if (store != undefined && !store.name || store.name == '') {
-      setIsOpen(true);
-    } else setIsBillOpen(true);
+    setIsBillOpen(true);
   };
 
 
   return (
     <>
-      <InfoModal
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        text={'판매처를 선택해주세요.'}
-      />
       <StoreSearchModal
         isOpen={isSearchStoreOpen}
         setIsOpen={setIsSearchStoreOpen}
