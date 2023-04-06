@@ -20,11 +20,15 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
   const [address, setAddress] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [owner, setOwner] = useState<string>('');
+  const [type, setType] = useState<string>('');
+  const [sector, setSector] = useState<string>('');
   const [errors, setErrors] = useState({
     businessNumber: '',
     name: '',
     address: '',
     owner: '',
+    type: '',
+    sector: '',
   })
   const numberRef = useRef<HTMLInputElement>();
   const nameRef = useRef<HTMLInputElement>();
@@ -32,8 +36,10 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, dataName: string) => {
     const { value } = event.target;
+
+    const numPattern = /^[0-9]*$/;
+    const engkor = /^[ㄱ-ㅎ가-힣a-zA-Z]*$/;
     if (dataName === 'businessNumber') {
-      const numPattern = /^[0-9]*$/;
       if (!numPattern.test(value)) {
         setErrors({
           ...errors,
@@ -54,7 +60,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       }
 
     } else if (dataName === 'owner') {
-      const engkor = /^[ㄱ-ㅎ가-힣a-zA-Z]*$/;
       if (!engkor.test(value)) {
         setErrors({
           ...errors,
@@ -67,6 +72,25 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       }
     } else if (dataName === 'address') {
       setAddress(value)
+    } else if (dataName === 'sector') {
+      if (!engkor.test(value)) {
+        setErrors({
+          ...errors,
+          sector: '한글, 영문 외의 문자는 작성하실 수 없습니다.',
+        });
+      } else if (value || value == '') {
+        setErrors({ ...errors, sector: '' });
+      }
+    } else if (dataName === 'type') {
+      setType(value)
+      if (!engkor.test(value)) {
+        setErrors({
+          ...errors,
+          type: '한글, 영문 외의 문자는 작성하실 수 없습니다. ',
+        });
+      } else if (value || value == '') {
+        setErrors({ ...errors, type: '' });
+      }
     }
 
     if (businessNumber.length == 10 && name.length > 0) {
@@ -196,6 +220,35 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
               }
               helperText={errors.address}
               value={address}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TextField
+              ref={nameRef}
+              sx={{ width: '90%' }}
+              error={errors.sector.length > 0}
+              label="업종 (선택)"
+              name="owner"
+              variant="filled"
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange(event, 'sector')
+              }
+              helperText={errors.sector}
+              value={sector}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <TextField
+              sx={{ width: '90%' }}
+              error={errors.type.length > 0}
+              label="업태 (선택)"
+              name="address"
+              variant="filled"
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange(event, 'type')
+              }
+              helperText={errors.type}
+              value={type}
             />
           </div>
         </div>
