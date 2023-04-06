@@ -91,6 +91,16 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       } else if (value || value == '') {
         setErrors({ ...errors, type: '' });
       }
+    } else if (dataName === 'sector') {
+      setSector(value)
+      if (!engkor.test(value)) {
+        setErrors({
+          ...errors,
+          sector: '한글, 영문 외의 문자는 작성하실 수 없습니다. ',
+        });
+      } else if (value || value == '') {
+        setErrors({ ...errors, sector: '' });
+      }
     }
 
     if (businessNumber.length == 10 && name.length > 0) {
@@ -99,11 +109,15 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
   }
 
   const handleSubmit = () => {
-    if (!businessNumber) {setErrors({...errors, businessNumber: '사업자 번호가 입력되지 않았습니다.'}); return;}
-    if (!name) {setErrors({...errors, name: '상호가 입력되지 않았습니다.'}); return;}
-    if (!owner) {setErrors({...errors, owner: '사업자 성명이 입력되지 않았습니다.'}); return;}
-
-    if (errors.address == '' && errors.businessNumber == '' && errors.name == '' && errors.owner == '') {
+    if (businessNumber == '' && name == '' && owner == '') {
+      setErrors({ ...errors, businessNumber: '사업자 등록 번호가 입력되지 않았습니다.', name: '상호명이 입력되지 않았습니다.', owner: '사업자명이 입력되지 않았습니다.' })
+      return;
+    } else if (businessNumber == '' || name == '' || owner == ''){
+      if (!businessNumber) {setErrors({...errors, businessNumber: '사업자 등록 번호가 입력되지 않았습니다.'}); return;}
+      if (!name) {setErrors({ ...errors, name: '상호가 입력되지 않았습니다.' }); return;}
+      if (!owner) {setErrors({...errors, owner: '사업자명이 입력되지 않았습니다.'}); return;}
+      return;
+    } else {
         const newBusiness: CreateBusinessInput = {
           name,
           token,
@@ -139,13 +153,12 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
             }
           }
         );
-        console.log(newBusiness)
+        setBusinessNumber('');
+        setName('');
+        setAddress('');
+        setOwner('');
+        setIsOpen(false);
     }
-    setBusinessNumber('');
-    setName('');
-    setAddress('');
-    setOwner('');
-    setIsOpen(false);
   };
 
   return (
