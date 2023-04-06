@@ -294,6 +294,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 bottom: '-10px',
                 left: 0,
               }}
+              onClick={() => setIsOpen(false)}
             >
               닫기
             </Button>
