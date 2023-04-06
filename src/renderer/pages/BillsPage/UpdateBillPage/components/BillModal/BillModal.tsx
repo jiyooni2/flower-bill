@@ -17,6 +17,7 @@ import ReactToPrint from 'react-to-print';
 import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
 import { UpdateBillInput, UpdateBillOutput } from 'main/bill/dtos/update-bill.dto';
 import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
+import { useNavigate } from 'react-router-dom';
 
 interface IProps {
   isOpen: boolean;
@@ -33,13 +34,8 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const [bill, setBill] = useRecoilState(billState)
   const store = useRecoilValue(storeState);
   const printRef = useRef();
+  const navigate = useNavigate();
 
-
-  const afterPrint = () => {
-    console.log('Yes!')
-    setOrderProducts([]);
-    setIsOpen(false);
-  };
 
   const updateBillhandler = () => {
     const orderProductInputs: CreateOrderProductInput[] = [];
@@ -89,6 +85,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
 
     setOrderProducts([]);
     setIsOpen(false);
+    navigate('/bills')
   };
 
   let sum = 0;
@@ -103,11 +100,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   return (
     <>
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <MemoModal
-          isOpen={memoIsOpen}
-          setIsOpen={setMemoIsOpen}
-          key={business.id}
-        />
         <div style={{ height: '410px' }}>
           <div
             style={{ height: '97%', overflow: 'auto', marginBottom: '12px' }}
@@ -313,7 +305,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               color="info"
               style={{
                 height: '32px',
-                width: '48%',
+                width: '100%',
                 float: 'left',
                 display: 'flex',
                 bottom: '-10px',
@@ -323,27 +315,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             >
               저장하기
             </Button>
-          </div>
-          <div>
-            <ReactToPrint
-              trigger={() => (
-                <Button
-                  variant="contained"
-                  style={{
-                    height: '32px',
-                    width: '48%',
-                    float: 'right',
-                    display: 'flex',
-                    bottom: '-10px',
-                    right: 0,
-                  }}
-                >
-                  재발행하기
-                </Button>
-              )}
-              onAfterPrint={afterPrint}
-              content={() => printRef.current}
-            />
           </div>
         </div>
       </Modal>
