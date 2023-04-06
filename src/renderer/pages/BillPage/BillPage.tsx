@@ -17,8 +17,7 @@ import { Pagination, Table, TableCell, TableHead, TableRow, Typography } from '@
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
 import DiscountModal from './components/DiscountModal/DiscountModal';
-import InfoModal from 'renderer/components/InfoModal/InfoModal';
-import { BillResult } from 'main/common/dtos/bill-result.dto';
+import MemoModal from './components/MemoModal/MemoModal';
 
 const BillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -28,8 +27,8 @@ const BillPage = () => {
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
+  const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-  const store = useRecoilValue(storeState);
 
 
   useEffect(() => {
@@ -80,6 +79,11 @@ const BillPage = () => {
 
   return (
     <>
+      <MemoModal
+        isOpen={isMemoOpen}
+        setIsOpen={setIsMemoOpen}
+        key={business.id}
+      />
       <StoreSearchModal
         isOpen={isSearchStoreOpen}
         setIsOpen={setIsSearchStoreOpen}
@@ -193,48 +197,69 @@ const BillPage = () => {
                 // color="secondary"
                 sx={{
                   height: '33px',
-                  width: '100%',
+                  width: '110%',
                   backgroundColor: 'ghostwhite',
                   opacity: '0.9',
                   marginleft: '20px',
                   color: '#228af2',
                   '&:hover': {
+                    background: '#6b5fb9',
+                    opacity: '0.9',
                     color: 'lightskyblue',
                   },
                 }}
                 onClick={() => setIsSearchStoreOpen(true)}
               >
-                판매처 선택하기
+                판매처 선택
               </Button>
               <Button
                 variant="contained"
                 onClick={() => setIsDiscountOpen(true)}
                 sx={{
                   height: '33px',
-                  width: '100%',
+                  width: '110%',
                   backgroundColor: 'ghostwhite',
-                  color: 'blueviolet',
+                  color: '#228af2',
                   '&:hover': {
+                    background: '#6b5fb9',
+                    opacity: '0.9',
                     color: 'lightskyblue',
                   },
                 }}
               >
-                판매가 수정하기
+                판매가 수정
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => setIsMemoOpen(true)}
+                sx={{
+                  height: '33px',
+                  width: '100%',
+                  backgroundColor: 'ghostwhite',
+                  color: '#228af2',
+                  '&:hover': {
+                    background: '#6b5fb9',
+                    opacity: '0.9',
+                    color: 'lightskyblue',
+                  },
+                }}
+              >
+                메모 추가
               </Button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center'}}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <Button
-                  variant="contained"
-                  onClick={billClickHandler}
-                  sx={{
-                    height: '33px',
-                    width: '100%',
-                    marginTop: '10px',
-                    backgroundColor: '#228bf2',
-                    color: '#e8f8e2',
-                  }}
-                >
-                  계산서 생성
+                variant="contained"
+                onClick={billClickHandler}
+                sx={{
+                  height: '33px',
+                  width: '100%',
+                  marginTop: '10px',
+                  backgroundColor: '#228bf2',
+                  color: '#e8f8e2',
+                }}
+              >
+                계산서 생성
               </Button>
             </div>
           </div>
