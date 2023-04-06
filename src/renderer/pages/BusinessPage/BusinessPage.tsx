@@ -37,27 +37,34 @@ const BuisnessPage = () => {
   }, [business]);
 
   const deleteDataHandler = () => {
-    window.electron.ipcRenderer.on(
-      'delete-business',
-      ({ ok, error }: DeleteBusinessOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-businesses', {
-            token,
-            businessId: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-businesses',
-            (args: GetBusinessesOutput) => {
-              setBusinesses(args.businesses as Business[]);
-              setBusiness(businesses[0]);
-            }
-          );
+    if (window.confirm('정말 삭제하시겠습니까?')) {
+      window.electron.ipcRenderer.sendMessage('delete-business', {
+        token,
+        businessId: business.id,
+      });
+
+      window.electron.ipcRenderer.on(
+        'delete-business',
+        ({ ok, error }: DeleteBusinessOutput) => {
+          if (ok) {
+            window.electron.ipcRenderer.sendMessage('get-businesses', {
+              token,
+              businessId: business.id,
+            });
+            window.electron.ipcRenderer.on(
+              'get-businesses',
+              (args: GetBusinessesOutput) => {
+                setBusinesses(args.businesses as Business[]);
+                setBusiness(businesses[0]);
+              }
+            );
+          }
+          if (error) {
+            console.log(error);
+          }
         }
-        if (error) {
-          console.log(error);
-        }
-      }
-    );
+      );
+    }
   };
 
   const updateDataHandler = () => {
