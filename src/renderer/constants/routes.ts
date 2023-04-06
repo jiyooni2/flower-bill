@@ -9,6 +9,7 @@ const ROUTES = {
   SELLER: '/seller',
   CATEGORY: '/category',
   LOGIN: '/login',
+  CONFIRM: '/password-confirm',
 };
 
 export default ROUTES;

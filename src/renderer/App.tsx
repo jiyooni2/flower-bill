@@ -12,7 +12,8 @@ import BusinessPage from './pages/BusinessPage/BusinessPage';
 import ProductsPage from './pages/ProductsPage/ProductsPage';
 import BillsPage from './pages/BillsPage/BillsPage';
 import DetailBillPage from './pages/BillsPage/DetailPage/DetailBillPage';
-import UpdateBillPage from './pages/BillsPage/UpdateBillPage/UpdateBillPage';
+import UpdateBillPage from './pages/BillsPage/UpdateBillPage/UpdateBIllPage';
+import ConfirmPage from './pages/BusinessPage/components/Confirmpage/Confirmpage';
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
             <Route path={ROUTES.PRODUCTS} element={<ProductsPage />} />
             <Route path={ROUTES.SELLER} element={<BusinessPage />} />
             <Route path={ROUTES.CATEGORY} element={<CategoryPage />} />
+            <Route path={ROUTES.CONFIRM} element={<ConfirmPage />} />
           </Routes>
         </Layout>
       </Router>

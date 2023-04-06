@@ -48,7 +48,7 @@ const NavBar = () => {
 
   const businessClickHandler = () => {
     setChecked(false);
-    hasBusinesses ? navigate(ROUTES.SELLER) : setIsOpen(true);
+    hasBusinesses ? navigate(ROUTES.CONFIRM) : setIsOpen(true);
   }
 
   return (
