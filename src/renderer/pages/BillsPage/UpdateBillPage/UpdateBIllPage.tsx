@@ -25,6 +25,7 @@ import BillModal from './components/BillModal/BillModal';
 import DiscountModal from 'renderer/pages/BillPage/components/DiscountModal/DiscountModal';
 import { Link } from 'react-router-dom';
 import { ArrowBackRounded } from '@mui/icons-material';
+import MemoModal from './components/MemoModal/MemoModal';
 
 const UpdateBillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -33,6 +34,7 @@ const UpdateBillPage = () => {
   const orderProducts = useRecoilValue(orderProductsState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
+  const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
 
@@ -81,6 +83,11 @@ const UpdateBillPage = () => {
 
   return (
     <>
+      <MemoModal
+        isOpen={isMemoOpen}
+        setIsOpen={setIsMemoOpen}
+        key={business.id}
+      />
       <StoreSearchModal
         isOpen={isSearchStoreOpen}
         setIsOpen={setIsSearchStoreOpen}
@@ -92,14 +99,14 @@ const UpdateBillPage = () => {
           className={`${styles.content_container} ${styles.bill_container}`}
           style={{ width: '50%' }}
         >
-            <Typography
-              variant="h5"
-              align="center"
-              marginTop="15px"
-              marginBottom="7px"
-            >
-              계산서
-            </Typography>
+          <Typography
+            variant="h5"
+            align="center"
+            marginTop="15px"
+            marginBottom="7px"
+          >
+            계산서
+          </Typography>
           <Table>
             <TableHead>
               <TableRow sx={{ fontWeight: 'bold' }}>
@@ -186,34 +193,55 @@ const UpdateBillPage = () => {
               variant="contained"
               // color="secondary"
               sx={{
+                width: '40%',
                 height: '33px',
-                width: '100%',
                 backgroundColor: 'ghostwhite',
                 opacity: '0.9',
                 marginleft: '20px',
                 color: '#228af2',
                 '&:hover': {
+                  background: '#6b5fb9',
+                  opacity: '0.9',
                   color: 'lightskyblue',
                 },
               }}
               onClick={() => setIsSearchStoreOpen(true)}
             >
-              판매처 선택하기
+              판매처
             </Button>
             <Button
               variant="contained"
               onClick={() => setIsDiscountOpen(true)}
               sx={{
+                width: '40%',
                 height: '33px',
-                width: '100%',
                 backgroundColor: 'ghostwhite',
-                color: 'blueviolet',
+                color: '#228af2',
                 '&:hover': {
+                  background: '#6b5fb9',
+                  opacity: '0.9',
                   color: 'lightskyblue',
                 },
               }}
             >
-              판매가 수정하기
+              판매가
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => setIsMemoOpen(true)}
+              sx={{
+                width: '40%',
+                height: '33px',
+                backgroundColor: 'ghostwhite',
+                color: '#228af2',
+                '&:hover': {
+                  background: '#6b5fb9',
+                  opacity: '0.9',
+                  color: 'lightskyblue',
+                },
+              }}
+            >
+              메모
             </Button>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -228,7 +256,7 @@ const UpdateBillPage = () => {
                 color: '#e8f8e2',
               }}
             >
-              계산서 생성
+              계산서 수정하기
             </Button>
           </div>
         </div>
