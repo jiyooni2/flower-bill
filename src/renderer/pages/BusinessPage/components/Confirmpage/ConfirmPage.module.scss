@@ -1,0 +1,60 @@
+.label {
+  display: flex;
+  width: 100%;
+  align-content: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: 19px;
+}
+
+.container {
+  margin-bottom: 14px;
+}
+
+
+.pwContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 60px;
+}
+
+.pwInput {
+  width: 40%;
+  height: 36px;
+  font-size: 17px;
+  border-radius: 5px;
+  border: 1px solid darkgray;
+  opacity: 0.9;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.deleteButton {
+  float: right;
+  width: 50px;
+  height: 36px;
+}
+
+.errorMessage {
+  margin-top: -10px;
+  display: flex;
+  justify-content: left;
+  font-size: 14px;
+  color: crimson;
+  display: flex;
+  justify-content: center;
+}
+
+.error {
+  width: 40%;
+  height: 36px;
+  font-size: 17px;
+  border-radius: 5px;
+  border: 2px solid crimson;
+  background: rgb(255, 242, 245);
+  opacity: 0.9;
+  padding-left: 8px;
+  padding-right: 8px;
+}
