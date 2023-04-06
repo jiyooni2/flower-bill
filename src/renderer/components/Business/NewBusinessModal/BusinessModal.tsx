@@ -225,7 +225,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
             <TextField
               sx={{ width: '90%' }}
               error={errors.address.length > 0}
-              label="사업장 소재지(선택)"
+              label="사업장 소재지 (선택)"
               name="address"
               variant="filled"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
