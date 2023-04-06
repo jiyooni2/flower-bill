@@ -104,3 +104,17 @@
 @page {
   margin: 3mm;
 }
+
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  padding-right: 0px;
+  margin-top: -1px;
+  padding-left: 0px;
+  // font-size: 2px;
+
+  &:hover {
+    background: rgb(250, 249, 255);
+  }
+}

@@ -116,14 +116,14 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
                   colSpan={3}
                   style={{ fontSize: '15px', textAlign: 'center' }}
                 >
-                  {bill.store.address}
+                  {bill.business.address}
                 </td>
               </tr>
               <tr>
                 <th>업태</th>
-                <td align="center">{/* 업태 */}</td>
+                <td align="center">{bill.business.typeofBusiness}</td>
                 <th>종목</th>
-                <td align="center">{/* 업종 */}</td>
+                <td align="center">{bill.business.sector}</td>
               </tr>
             </tbody>
           </table>

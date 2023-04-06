@@ -189,11 +189,11 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 <tr>
                   <th>상호</th>
                   <td style={{ width: '25%', fontSize: '13px' }} align="center">
-                    {bill.store.name}
+                    {bill.business.name}
                   </td>
                   <th style={{ width: '14%' }}>성명</th>
                   <td style={{ width: '20%', fontSize: '13px' }} align="center">
-                    {bill.store.owner}
+                    {bill.business.businessOwnerName}
                   </td>
                 </tr>
                 <tr>
@@ -206,14 +206,14 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                     colSpan={3}
                     style={{ fontSize: '13px', textAlign: 'center' }}
                   >
-                    {bill.store.address}
+                    {bill.business.address}
                   </td>
                 </tr>
                 <tr>
                   <th>업태</th>
-                  <td align="center">{/* 업태 */}</td>
+                  <td align="center">{bill.business.typeofBusiness}</td>
                   <th>종목</th>
-                  <td align="center">{/* 업종 */}</td>
+                  <td align="center">{bill.business.sector}</td>
                 </tr>
               </tbody>
             </table>

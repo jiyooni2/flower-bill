@@ -31,10 +31,8 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
   const memo = useRecoilValue(memoState);
   const store = useRecoilValue(storeState);
-  const [memoIsOpen, setMemoIsOpen] = useState<boolean>(false);
   const printRef = useRef();
   const movePage = useNavigate();
-  const [bills, setBills] = useRecoilState(billListState)
 
   const handleClick = async () => {
     const orderProductInputs = orderProducts.map((orderProduct) => ({
@@ -67,6 +65,8 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     );
   };
 
+  console.log(business)
+
   const afterPrint = () => {
     setIsOpen(false);
     setOrderProducts([]);
@@ -84,11 +84,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
 
   return (
     <>
-      <MemoModal
-        isOpen={memoIsOpen}
-        setIsOpen={setMemoIsOpen}
-        key={business.id}
-      />
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <div style={{ height: '410px' }}>
           <div
@@ -125,7 +120,9 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                       (공급받는자용)
                     </span>
                   </td>
-                  <td className={styles.name}>{store.owner} 님</td>
+                  <td className={styles.name}>
+                    {store.owner.length > 0 ? store.owner : ''} 님
+                  </td>
                   <td className={styles.for}>&ensp;귀하</td>
                 </tr>
               </tbody>
@@ -169,11 +166,11 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 <tr>
                   <th>상호</th>
                   <td style={{ width: '25%', fontSize: '13px' }} align="center">
-                    {store.name}
+                    {business.name}
                   </td>
                   <th style={{ width: '14%' }}>성명</th>
                   <td style={{ width: '20%', fontSize: '13px' }} align="center">
-                    {store.owner}
+                    {business.businessOwnerName}
                   </td>
                 </tr>
                 <tr>
@@ -186,14 +183,14 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                     colSpan={3}
                     style={{ fontSize: '13px', textAlign: 'center' }}
                   >
-                    {store.address}
+                    {business.address}
                   </td>
                 </tr>
                 <tr>
                   <th>업태</th>
-                  <td align="center">{/* 업태 */}</td>
+                  <td align="center">{business.typeofBusiness}</td>
                   <th>종목</th>
-                  <td align="center">{/* 업종 */}</td>
+                  <td align="center">{business.sector}</td>
                 </tr>
               </tbody>
             </table>
@@ -236,29 +233,39 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   <th>공급가액</th>
                 </tr>
               </tbody>
-              {orderProducts.map((orderProduct) => {
-                return (
-                  <tbody key={orderProduct.id}>
-                    <tr>
-                      <td className={styles.item}>{`${month} / ${day}`}</td>
-                      <td className={styles.item}>
-                        {orderProduct.product.name}
-                      </td>
-                      <td className={styles.article}>{orderProduct.count}</td>
-                      <td className={styles.price}>
-                        {orderProduct.orderPrice
-                          .toString()
-                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                      </td>
-                      <td className={styles.sum}>
-                        {(orderProduct.orderPrice * orderProduct.count )
-                          .toString()
-                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                      </td>
-                    </tr>
-                  </tbody>
-                );
-              })}
+              <tbody>
+                {orderProducts.length > 0 ? (
+                  orderProducts.map((orderProduct) => {
+                    return (
+                      <tr key={orderProduct.id}>
+                        <td className={styles.item}>{`${month} / ${day}`}</td>
+                        <td className={styles.item}>
+                          {orderProduct.product.name}
+                        </td>
+                        <td className={styles.article}>{orderProduct.count}</td>
+                        <td className={styles.price}>
+                          {orderProduct.orderPrice
+                            .toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                        </td>
+                        <td className={styles.sum}>
+                          {(orderProduct.orderPrice * orderProduct.count)
+                            .toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td className={styles.item} style={{ height: '20px' }}></td>
+                    <td className={styles.item}></td>
+                    <td className={styles.article}></td>
+                    <td className={styles.price}></td>
+                    <td className={styles.sum}></td>
+                  </tr>
+                )}
+              </tbody>
             </table>
             <div className={styles.sumDiv}>
               <td className={styles.lastSum}>합&ensp;&ensp;계</td>
@@ -269,20 +276,26 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               </td>
             </div>
           </div>
-          <div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '7px',
+            }}
+          >
             <Button
               variant="outlined"
-              onClick={() => setMemoIsOpen(true)}
+              color="inherit"
               style={{
                 height: '30px',
-                width: '120px',
+                width: '60%',
                 float: 'left',
                 display: 'flex',
                 bottom: '-10px',
                 left: 0,
               }}
             >
-              메모 추가하기
+              닫기
             </Button>
             <ReactToPrint
               onBeforePrint={handleClick}
@@ -293,7 +306,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   onClick={handleClick}
                   style={{
                     height: '30px',
-                    width: '90px',
+                    width: '100%',
                     float: 'right',
                     display: 'flex',
                     bottom: '-10px',
