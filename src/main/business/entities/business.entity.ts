@@ -24,10 +24,10 @@ export class Business extends CoreEntity {
   ownerId: number;
 
   //업태
-  @Column()
+  @Column({ nullable: true })
   typeofBusiness?: string;
 
   //업종
-  @Column()
+  @Column({ nullable: true })
   sector?: string;
 }

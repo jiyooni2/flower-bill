@@ -1,24 +1,18 @@
-import { Business } from './../business/entities/business.entity';
-import { BillResult } from './../common/dtos/bill-result.dto';
+import { Business } from '../business/entities/business.entity';
+import { BillResult } from '../common/dtos/bill-result.dto';
 import { GetBillsInput, GetBillsOutput } from './dtos/get-bills.dto';
-import {
-  AppDataSource,
-  authService,
-  businessService,
-  ownerService,
-  storeService,
-} from '../main';
+import { AppDataSource, authService } from '../main';
 import { Bill } from './entities/bill.entity';
 import { Repository } from 'typeorm';
 import { CreateBillInput } from './dtos/create-bill.dto';
 import { GetBillInput, GetBillOutput } from './dtos/get-bill.dto';
 import { DeleteBillInput, DeleteBillOutput } from './dtos/delete-bill.dto';
 import { UpdateBillInput, UpdateBillOutput } from './dtos/update-bill.dto';
-import { OrderProduct } from './../orderProduct/entities/orderProduct.entity';
-import { Store } from './../store/entities/store.entity';
+import { OrderProduct } from '../orderProduct/entities/orderProduct.entity';
+import { Store } from '../store/entities/store.entity';
 import {
-  GetBillByStoreOutput,
   GetBillByStoreInput,
+  GetBillByStoreOutput,
 } from './dtos/get-bill-by-store.dto';
 
 export class BillService {

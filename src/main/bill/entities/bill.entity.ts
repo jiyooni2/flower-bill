@@ -10,10 +10,10 @@ export class Bill extends BusinessRelatedEntity {
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   transactionDate?: Date;
 
-  @ManyToOne((type) => Store)
+  @ManyToOne((type) => Store, { nullable: true })
   @JoinColumn({ name: 'storeId' })
   store?: Store;
 
-  @Column()
+  @Column({ nullable: true })
   storeId?: number;
 }
