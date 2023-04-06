@@ -123,40 +123,59 @@ const BillsPage = () => {
                 <TableRow>
                   <TableCell width={'10%'} />
                   <TableCell>발행 날짜</TableCell>
+                  <TableCell>수정 날짜</TableCell>
                   <TableCell>판매처</TableCell>
                   <TableCell>구매처</TableCell>
-                  <TableCell>구매한 상품 수</TableCell>
+                  <TableCell>구매상품 수</TableCell>
                   <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {bills != undefined && bills.slice(page * 10, page * 10 + 10).map((bill) => {
-                  return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={bill.id}>
-                      <TableCell>
-                        <Link
-                          to={'/detail-bills'}
-                          style={{
-                            marginBottom: '-20px',
-                            fontSize: '13px',
-                            color: '#0971f1',
-                            fontWeight: '500',
-                          }}
-                          onClick={() => detailHandler(bill.id)}
-                        >
-                          자세히 보기
-                        </Link>
-                      </TableCell>
-                      <TableCell>{convertTime(bill.createdAt)}</TableCell>
-                      <TableCell>{bill.business.name}</TableCell>
-                      <TableCell>{bill.store.name}</TableCell>
-                      <TableCell>
-                        {orderProducts != undefined && orderProducts.length} 개
-                      </TableCell>
-                      <TableCell><Delete sx={{ fontSizee: '16px', cursor: 'pointer', marginBottom: '-10px', color: 'crimson', }} onClick={() => deleteHandler(bill.id)} /></TableCell>
-                    </TableRow>
-                  );
-                })}
+                {bills != undefined &&
+                  bills.slice(page * 10, page * 10 + 10).map((bill) => {
+                    return (
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={bill.id}
+                      >
+                        <TableCell>
+                          <Link
+                            to={'/detail-bills'}
+                            style={{
+                              marginBottom: '-20px',
+                              fontSize: '13px',
+                              color: '#0971f1',
+                              fontWeight: '500',
+                            }}
+                            onClick={() => detailHandler(bill.id)}
+                          >
+                            자세히 보기
+                          </Link>
+                        </TableCell>
+                        <TableCell>{convertTime(bill.createdAt)}</TableCell>
+                        <TableCell>{convertTime(bill.updatedAt)}</TableCell>
+                        <TableCell>{bill.business.name}</TableCell>
+                        <TableCell>{bill.store.name}</TableCell>
+                        <TableCell>
+                          {orderProducts != undefined && orderProducts.length}{' '}
+                          개
+                        </TableCell>
+                        <TableCell>
+                          <Delete
+                            sx={{
+                              fontSizee: '16px',
+                              cursor: 'pointer',
+                              marginBottom: '-10px',
+                              color: 'crimson',
+                            }}
+                            onClick={() => deleteHandler(bill.id)}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>

@@ -31,7 +31,7 @@ const MemoModal = ({ isOpen, setIsOpen }: IProps) => {
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
       <div style={{ height: '90%'}}>
         <TextField
-          placeholder="메모를 입력하세요."
+          placeholder="작성된 메모가 없습니다."
           multiline
           minRows={8}
           className={styles.memo}

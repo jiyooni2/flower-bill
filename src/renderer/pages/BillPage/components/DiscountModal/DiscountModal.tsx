@@ -31,7 +31,7 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
         style={{
           width: '90%',
           margin: '0 auto',
-          height: '74%',
+          height: '70%',
           marginBottom: '13px',
         }}
       >

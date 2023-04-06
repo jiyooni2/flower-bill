@@ -185,7 +185,7 @@ const BillPage = () => {
             </div>
             <div
               style={{
-                marginTop: '15px',
+                marginTop: '25px',
                 display: 'flex',
                 justifyContent: 'center',
                 width: '100%',
@@ -247,7 +247,7 @@ const BillPage = () => {
                 메모 추가
               </Button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '-7px' }}>
               <Button
                 variant="contained"
                 onClick={billClickHandler}
