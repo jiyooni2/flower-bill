@@ -37,7 +37,8 @@ export type Channels =
   | 'get-business'
   | 'get-businesses'
   | 'check-password'
-  | 'login';
+  | 'login'
+  | 'change-password';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

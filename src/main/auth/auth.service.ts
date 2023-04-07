@@ -9,6 +9,10 @@ import { Owner } from '../owner/entities/owner.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Business } from '../business/entities/business.entity';
+import {
+  ChangePasswordInput,
+  ChangePasswordOutput,
+} from './dtos/change-password.dto';
 
 export class AuthService {
   private readonly ownerRepository: Repository<Owner>;
@@ -36,6 +40,28 @@ export class AuthService {
 
       console.log(token);
       return { ok: true, token };
+    } catch (error: any) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  async changePassword({
+    id,
+    findPasswordAnswer,
+    newPassword,
+  }: ChangePasswordInput): Promise<ChangePasswordOutput> {
+    try {
+      const owner = await this.ownerRepository.findOne({ where: { id } });
+      if (!owner) {
+        return { ok: false, error: '존재하지 않는 사용자입니다.' };
+      }
+
+      if (owner.findPasswordAnswer.trim() == findPasswordAnswer.trim()) {
+        await this.ownerRepository.update(
+          { id },
+          { password: await bcrypt.hash(newPassword, 10) }
+        );
+      }
     } catch (error: any) {
       return { ok: false, error: error.message };
     }

@@ -5,6 +5,7 @@ import { CreateOwnerInput } from './dtos/create-owner.dto';
 import { UpdateOwnerInput } from './dtos/update-owner.dto';
 import { authService } from './../main';
 import { LoginInput } from '../auth/dtos/login.dto';
+import { ChangePasswordInput } from '../auth/dtos/change-password.dto';
 
 ipcMain.on(
   'create-owner',
@@ -34,5 +35,14 @@ ipcMain.on(
     await authService.checkAuth(checkPasswordInput.token);
     const result = await authService.checkPassword(checkPasswordInput);
     event.reply('check-password', result);
+  }
+);
+
+ipcMain.on(
+  'change-password',
+  async (event, changePasswordInput: ChangePasswordInput) => {
+    await authService.changePassword(changePasswordInput);
+    const result = await authService.changePassword(changePasswordInput);
+    event.reply('change-password', result);
   }
 );

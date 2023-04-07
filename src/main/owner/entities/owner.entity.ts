@@ -11,4 +11,10 @@ export class Owner extends CoreEntity {
 
   @Column()
   password: string;
+
+  @Column({ nullable: true })
+  findPasswordQuestion: string;
+
+  @Column({ nullable: true })
+  findPasswordAnswer: string;
 }

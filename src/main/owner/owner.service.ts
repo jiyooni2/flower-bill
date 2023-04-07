@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { AppDataSource } from '../main';
-import { CreateOwnerOutput, CreateOwnerInput } from './dtos/create-owner.dto';
+import { CreateOwnerInput, CreateOwnerOutput } from './dtos/create-owner.dto';
 import { UpdateOwnerInput, UpdateOwnerOutput } from './dtos/update-owner.dto';
 import { Owner } from './entities/owner.entity';
 import * as bcrypt from 'bcrypt';
@@ -17,6 +17,8 @@ export class OwnerService {
     ownerId,
     password,
     nickname,
+    findPasswordQuestion,
+    findPasswordAnswer,
   }: CreateOwnerInput): Promise<CreateOwnerOutput> {
     try {
       const existingOwner = await this.ownerRepository.findOne({
@@ -35,6 +37,8 @@ export class OwnerService {
           ownerId,
           nickname,
           password: await bcrypt.hash(password, 10),
+          findPasswordAnswer,
+          findPasswordQuestion,
         })
         .execute();
 
