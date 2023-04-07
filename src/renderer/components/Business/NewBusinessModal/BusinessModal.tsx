@@ -73,6 +73,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
     } else if (dataName === 'address') {
       setAddress(value)
     } else if (dataName === 'sector') {
+      setSector(value);
       if (!engkor.test(value)) {
         setErrors({
           ...errors,
@@ -90,16 +91,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
         });
       } else if (value || value == '') {
         setErrors({ ...errors, type: '' });
-      }
-    } else if (dataName === 'sector') {
-      setSector(value)
-      if (!engkor.test(value)) {
-        setErrors({
-          ...errors,
-          sector: '한글, 영문 외의 문자는 작성하실 수 없습니다. ',
-        });
-      } else if (value || value == '') {
-        setErrors({ ...errors, sector: '' });
       }
     }
 
@@ -157,6 +148,8 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
         setName('');
         setAddress('');
         setOwner('');
+        setType('');
+        setSector('');
         setIsOpen(false);
     }
   };
@@ -241,7 +234,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
               sx={{ width: '90%' }}
               error={errors.sector.length > 0}
               label="업종 (선택)"
-              name="owner"
+              name="sector"
               variant="filled"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange(event, 'sector')
@@ -255,7 +248,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
               sx={{ width: '90%' }}
               error={errors.type.length > 0}
               label="업태 (선택)"
-              name="address"
+              name="type"
               variant="filled"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange(event, 'type')
