@@ -58,7 +58,7 @@ const BusinessBar = () => {
       <BusinessModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={styles.bar}>
         <div className={styles.container}>
-          <Link to={'/password-confirm'}>
+          <Link to={'/'}>
             <div className={styles.content}>
               {businesses.map((business) => (
                 <div key={business.id}>
