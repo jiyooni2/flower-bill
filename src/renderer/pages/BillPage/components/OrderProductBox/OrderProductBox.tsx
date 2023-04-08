@@ -27,6 +27,8 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
             ...item,
             count: Number(value),
           };
+        } else {
+          return {...item};
         }
 
         return item;
@@ -51,6 +53,10 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
                 ...orderProduct,
                 count: orderProduct.count - 1,
               };
+            }
+          } else {
+            return {
+              ...orderProduct
             }
           }
         }

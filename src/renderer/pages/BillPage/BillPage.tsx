@@ -118,7 +118,7 @@ const BillPage = () => {
                 .slice((page - 1) * 4, page * 4)
                 .map((orderProduct) => (
                   <OrderProductBox
-                    key={orderProduct.id}
+                    key={orderProduct.id ? orderProduct.id : Math.random()}
                     orderProduct={orderProduct}
                   />
                 ))}
@@ -194,9 +194,8 @@ const BillPage = () => {
             >
               <Button
                 variant="contained"
-                // color="secondary"
                 sx={{
-                  height: '33px',
+                  height: '38px',
                   width: '110%',
                   backgroundColor: 'ghostwhite',
                   opacity: '0.9',
@@ -216,7 +215,7 @@ const BillPage = () => {
                 variant="contained"
                 onClick={() => setIsDiscountOpen(true)}
                 sx={{
-                  height: '33px',
+                  height: '38px',
                   width: '110%',
                   backgroundColor: 'ghostwhite',
                   color: '#228af2',
@@ -233,7 +232,7 @@ const BillPage = () => {
                 variant="contained"
                 onClick={() => setIsMemoOpen(true)}
                 sx={{
-                  height: '33px',
+                  height: '38px',
                   width: '100%',
                   backgroundColor: 'ghostwhite',
                   color: '#228af2',
@@ -252,7 +251,7 @@ const BillPage = () => {
                 variant="contained"
                 onClick={billClickHandler}
                 sx={{
-                  height: '33px',
+                  height: '37px',
                   width: '100%',
                   marginTop: '10px',
                   backgroundColor: '#228bf2',
