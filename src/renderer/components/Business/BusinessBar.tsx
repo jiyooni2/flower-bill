@@ -8,6 +8,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
 import { Link } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 const BusinessBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -61,19 +62,24 @@ const BusinessBar = () => {
             <div className={styles.content}>
               {businesses.map((business) => (
                 <div key={business.id}>
-                  <div
-                    className={clicked && clickedData.name == business.name ? styles.clickedBox : styles.box}
-                    onClick={() => clickHandler(business)}
-                  >
-                    <span
+                  <div onClick={() => clickHandler(business)}>
+                    {/* <span
                       style={{
                         fontSize: '28px',
-                        color: 'black',
                         marginTop: '2px',
                       }}
                     >
                       {business.name.slice(0, 1)}
-                    </span>
+                    </span> */}
+                    <Button
+                      className={
+                        clicked && clickedData.name == business.name
+                          ? `${styles.commonBox} ${styles.clickedBox}`
+                          : `${styles.commonBox} ${styles.box}`
+                      }
+                    >
+                      {business.name.slice(0, 1)}
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -82,10 +88,10 @@ const BusinessBar = () => {
           <div className={styles.addBusiness}>
             <AddRoundedIcon
               sx={{
-                width: '120%',
+                width: '80%',
                 height: '70%',
                 color: '#73777B',
-                marginLeft: '-4px',
+                marginLeft: '5px',
                 cursor: 'pointer',
                 marginTop: '25px',
               }}
