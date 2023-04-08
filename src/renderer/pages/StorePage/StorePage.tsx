@@ -310,30 +310,30 @@ const StorePage = () => {
                         <TableCell
                           component="th"
                           align="left"
-                          sx={{ width: '25%' }}
+                          sx={{ width: '27%' }}
                         >
-                          사업자 번호
+                          사업자번호
                         </TableCell>
                         <TableCell
                           component="th"
                           align="left"
-                          sx={{ width: '30%' }}
+                          sx={{ width: '27%' }}
                         >
-                          가게명
+                          상호
                         </TableCell>
                         <TableCell
                           component="th"
                           align="left"
                           sx={{ width: '25%' }}
                         >
-                          사업자
+                          사업자명
                         </TableCell>
                         <TableCell
                           component="th"
                           align="left"
                           sx={{ width: '35%' }}
                         >
-                          가게 주소
+                          소재지
                         </TableCell>
                       </TableRow>
                     </TableHead>

@@ -178,19 +178,20 @@ const ProductsGrid = () => {
                 defaultValue={'none'}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories != undefined && categories.map((item) => {
-                  if (item.level === 1) {
-                    return (
-                      <MenuItem
-                        key={item.id}
-                        value={item.name == null ? '' : item?.name}
-                        onClick={() => categoryChangeHandler(item.id, 'main')}
-                      >
-                        {item.name == null ? '' : item?.name}
-                      </MenuItem>
-                    );
-                  }
-                })}
+                {categories != undefined &&
+                  categories.map((item) => {
+                    if (item.level === 1) {
+                      return (
+                        <MenuItem
+                          key={item.id}
+                          value={item.name == null ? '' : item?.name}
+                          onClick={() => categoryChangeHandler(item.id, 'main')}
+                        >
+                          {item.name == null ? '' : item?.name}
+                        </MenuItem>
+                      );
+                    }
+                  })}
               </Select>
             </FormControl>
           </Box>
@@ -209,19 +210,20 @@ const ProductsGrid = () => {
                 className={styles.selects}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories != undefined && categories.map((item) => {
-                  if (item.level === 2 && item.parentCategoryId === mainId) {
-                    return (
-                      <MenuItem
-                        key={item.id}
-                        value={item.name == null ? '' : item?.name}
-                        onClick={() => categoryChangeHandler(item.id, 'sub')}
-                      >
-                        {item.name == null ? '' : item?.name}
-                      </MenuItem>
-                    );
-                  }
-                })}
+                {categories != undefined &&
+                  categories.map((item) => {
+                    if (item.level === 2 && item.parentCategoryId === mainId) {
+                      return (
+                        <MenuItem
+                          key={item.id}
+                          value={item.name == null ? '' : item?.name}
+                          onClick={() => categoryChangeHandler(item.id, 'sub')}
+                        >
+                          {item.name == null ? '' : item?.name}
+                        </MenuItem>
+                      );
+                    }
+                  })}
               </Select>
             </FormControl>
           </Box>
@@ -240,19 +242,22 @@ const ProductsGrid = () => {
                 className={styles.selects}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories != undefined && categories?.map((item) => {
-                  if (item.level === 3 && item.parentCategoryId === subId) {
-                    return (
-                      <MenuItem
-                        key={item.id}
-                        value={item.name == null ? '' : item?.name}
-                        onClick={() => categoryChangeHandler(item.id, 'group')}
-                      >
-                        {item.name == null ? '' : item?.name}
-                      </MenuItem>
-                    );
-                  }
-                })}
+                {categories != undefined &&
+                  categories?.map((item) => {
+                    if (item.level === 3 && item.parentCategoryId === subId) {
+                      return (
+                        <MenuItem
+                          key={item.id}
+                          value={item.name == null ? '' : item?.name}
+                          onClick={() =>
+                            categoryChangeHandler(item.id, 'group')
+                          }
+                        >
+                          {item.name == null ? '' : item?.name}
+                        </MenuItem>
+                      );
+                    }
+                  })}
               </Select>
             </FormControl>
           </Box>
@@ -283,7 +288,7 @@ const ProductsGrid = () => {
                 ))}
             </Grid>
           )}
-          {products != undefined && products?.length == 0 && (
+          {(products != undefined && products?.length == 0 && (
             <div>
               <span
                 style={{
@@ -304,15 +309,17 @@ const ProductsGrid = () => {
                   marginTop: '5px',
                   fontSize: '13px',
                   color: 'darkslateblue',
-                  marginLeft: '2px'
+                  marginLeft: '2px',
                 }}
               >
-                <Button variant="text" color='success'>
-                  상품 추가하러 가기 <ArrowForwardIcon sx={{ fontSize: '15px'}} />
+                <Button variant="text" sx={{ color: '#2DCDDF' }}>
+                  상품 추가하러 가기{' '}
+                  <ArrowForwardIcon sx={{ fontSize: '15px' }} />
                 </Button>
               </Link>
             </div>
-          ) || ''}
+          )) ||
+            ''}
         </div>
         <div style={{ margin: '0 auto' }}>
           <Pagination
