@@ -1,23 +1,16 @@
 import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BillPartPage from '../BillPart/BillPartPage';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { billState, businessState, categoriesState, detailBillState, orderProductsState, storeState, tokenState } from 'renderer/recoil/states';
+import { billState, businessState, orderProductsState, tokenState } from 'renderer/recoil/states';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Link } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
-import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-import { Category } from 'main/category/entities/category.entity';
-import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
-import { BillResult } from 'main/common/dtos/bill-result.dto';
 import { CheckCircleOutline, LocalPrintshopSharp } from '@mui/icons-material';
 import { alertState } from 'renderer/recoil/bill-states';
-import ReactToPrint from 'react-to-print';
 import BillModal from './BillModal/BillModal';
+import { useRef, useState } from 'react';
 
 const DetailBillPage = () => {
-  const token = useRecoilValue(tokenState)
-  const business = useRecoilValue(businessState)
   const bill = useRecoilValue(billState)
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState)
   const [alert, setAlert] = useRecoilState(alertState);
@@ -70,10 +63,7 @@ const DetailBillPage = () => {
         </div>
         <div style={{ display: 'flex', flexDirection: 'row', gap: '0px' }}>
           <div style={{ width: '11cm', margin: '1%' }}>
-            <BillPartPage
-              bill={bill}
-              orderProducts={orderProducts}
-            />
+            <BillPartPage bill={bill} orderProducts={orderProducts} />
             {alert == false ? (
               <Button
                 variant="contained"
@@ -122,17 +112,22 @@ const DetailBillPage = () => {
                       <Typography
                         variant="body2"
                         color="text.secondary"
-                        sx={{ marginLeft: '3px' }}
+                        sx={{ marginLeft: '3px', fontSize: '15px' }}
                       >
+                        구매처 사업자명:
+                        <span style={{ color: 'black' }}>{bill.store ? ` ${bill.store.owner}` : ' 익명'}</span>
+                        <br />
                         구매처명:{' '}
                         <span style={{ color: 'black' }}>
-                          {bill.store.name}
+                          {bill.store ? bill.store.name : '익명'}
                         </span>
                         <br />
                         <span>
                           사업자 번호 :{' '}
                           <span style={{ color: 'black' }}>
-                            {bill.store.businessNumber}
+                            {bill.store
+                              ? bill.store.businessNumber
+                              : '익명'}
                           </span>
                         </span>
                       </Typography>
