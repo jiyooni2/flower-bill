@@ -114,11 +114,10 @@ const StorePage = () => {
 
   const changeStoreDataHandler = (
     event: React.ChangeEvent<HTMLInputElement>,
-    dataName: string
   ) => {
-    const { value } = event.target;
+    const { name, value } = event.target;
 
-    if (dataName === 'storeNumber') {
+    if (name === 'storeNumber') {
       const numPattern = /^[0-9]*$/;
       if (!numPattern.test(value)) {
         setErrors({
@@ -134,7 +133,7 @@ const StorePage = () => {
         setErrors({ ...errors, storeNumber: '' });
         setStoreNumber(value);
       }
-    } else if (dataName === 'storeName') {
+    } else if (name === 'storeName') {
       const namePattern = /^[ㄱ-ㅎ가-힣0-9a-zA-Z\s]*$/;
       if (!namePattern.test(value)) {
         setErrors({
@@ -155,7 +154,7 @@ const StorePage = () => {
         setErrors({ ...errors, storeName: '' });
         setStoreName(value);
       }
-    } else if (dataName === 'owner') {
+    } else if (name === 'owner') {
       const namePattern = /^[ㄱ-ㅎ가-힣a-zA-Z]*$/;
       if (!namePattern.test(value)) {
         setErrors({
@@ -166,17 +165,19 @@ const StorePage = () => {
         setErrors({ ...errors, owner: '' });
         setOwner(value);
       }
-    } else if (dataName === 'address') {
+    } else if (name === 'address') {
       const addressPattern = /^[ㄱ-ㅎ가-힣a-zA-Z_-]*$/;
       if (value) {
         if (!addressPattern.test(value)) {
-          setErrors({ ...errors, address: '특수문자는 -와 _만 입력 가능합니다' });
-        }
-        else {
+          setErrors({
+            ...errors,
+            address: '특수문자는 -와 _만 입력 가능합니다',
+          });
+        } else {
           setErrors({ ...errors, address: '' });
           setAddress(value);
         }
-      } else if (value == "") {
+      } else if (value == '') {
         setErrors({ ...errors, address: '' });
         setAddress('');
       }
@@ -221,7 +222,8 @@ const StorePage = () => {
       if (
         storeName != '' &&
         storeNumber != '' &&
-        owner != ''
+        owner != '' &&
+        address != ''
       ) {
         const newData: Store = {
           name: storeName,
@@ -431,9 +433,7 @@ const StorePage = () => {
                             ? styles.hasError
                             : styles.dataInput
                         }
-                        onChange={(event) =>
-                          changeStoreDataHandler(event, 'storeNumber')
-                        }
+                        onChange={changeStoreDataHandler}
                         maxLength={10}
                       />
                     </div>
@@ -458,9 +458,7 @@ const StorePage = () => {
                             ? styles.hasError
                             : styles.dataInput
                         }
-                        onChange={(event) =>
-                          changeStoreDataHandler(event, 'storeName')
-                        }
+                        onChange={changeStoreDataHandler}
                       />
                     </div>
                     {errors.storeName && (
@@ -482,9 +480,7 @@ const StorePage = () => {
                             ? styles.hasError
                             : styles.dataInput
                         }
-                        onChange={(event) =>
-                          changeStoreDataHandler(event, 'owner')
-                        }
+                        onChange={changeStoreDataHandler}
                         maxLength={25}
                       />
                     </div>
@@ -498,11 +494,7 @@ const StorePage = () => {
                           : styles.item
                       }
                     >
-                      <p className={styles.labels}>
-                        사업장 소재지
-                        <br />
-                        <span style={{ fontSize: '12px'}}>(선택)</span>
-                      </p>
+                      <p className={styles.labels}>사업장 소재지</p>
                       <input
                         name="address"
                         value={address}
@@ -511,9 +503,7 @@ const StorePage = () => {
                             ? styles.hasError
                             : styles.dataInput
                         }
-                        onChange={(event) =>
-                          changeStoreDataHandler(event, 'address')
-                        }
+                        onChange={changeStoreDataHandler}
                         maxLength={50}
                       />
                     </div>
