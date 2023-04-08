@@ -13,7 +13,7 @@ interface IProps {
 }
 
 const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
-  const business = useRecoilValue(businessState);
+  const [business, setBusiness] = useRecoilState(businessState);
   const token = useRecoilValue(tokenState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
   const [businessNumber, setBusinessNumber] = useState<string>('');
@@ -115,6 +115,8 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
           businessNumber: parseInt(businessNumber),
           businessOwnerName: owner,
           address,
+          typeofBusiness: type,
+          sector,
         };
         window.electron.ipcRenderer.sendMessage('create-business', newBusiness);
 
@@ -123,6 +125,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
           ({ ok, error }: CreateBusinessOutput) => {
             if (ok) {
               console.log('yes');
+              setBusiness(businesses[-1]);
               window.electron.ipcRenderer.sendMessage('get-businesses', {
                 token,
                 businessId: 1,
