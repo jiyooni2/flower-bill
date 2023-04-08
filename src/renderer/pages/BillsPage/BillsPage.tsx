@@ -126,7 +126,6 @@ const BillsPage = () => {
                   <TableCell>수정 날짜</TableCell>
                   <TableCell>판매처</TableCell>
                   <TableCell>구매처</TableCell>
-                  <TableCell>구매상품 수</TableCell>
                   <TableCell></TableCell>
                 </TableRow>
               </TableHead>
@@ -157,11 +156,7 @@ const BillsPage = () => {
                         <TableCell>{convertTime(bill.createdAt)}</TableCell>
                         <TableCell>{convertTime(bill.updatedAt)}</TableCell>
                         <TableCell>{bill.business.name}</TableCell>
-                        <TableCell>{bill.store.name}</TableCell>
-                        <TableCell>
-                          {orderProducts != undefined && orderProducts.length}{' '}
-                          개
-                        </TableCell>
+                        <TableCell>{bill.store ? bill.store.name : `(undefined)`}</TableCell>
                         <TableCell>
                           <Delete
                             sx={{
