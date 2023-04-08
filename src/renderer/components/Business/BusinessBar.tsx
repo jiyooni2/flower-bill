@@ -38,12 +38,19 @@ const BusinessBar = () => {
         if (ok) {
           setBusinesses(businesses);
           setBusiness(businesses[0])
+          setClicked(true);
+          setClickedData({
+            name: businesses[0].name,
+          });
         } else {
           console.error(error);
         }
       }
     );
   }, [])
+
+  console.log(business)
+
 
   const clickHandler = (item: Business) => {
     setBusiness(item)
