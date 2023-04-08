@@ -15,7 +15,6 @@ import {
 } from 'main/business/dtos/update-busiess.dto';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
-import PasswordConfirmModal from './components/ConfirmModal/PasswordConfirmModal';
 import { CheckPasswordOutput } from 'main/auth/dtos/check-password.dto';
 import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
 
