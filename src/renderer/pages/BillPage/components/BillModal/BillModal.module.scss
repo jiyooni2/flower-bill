@@ -11,11 +11,11 @@
 
     .for {
       width: 15%;
-      font-size: 14px;
+      font-size: 16px;
     }
   }
   .owner {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     color: black;
   }
@@ -23,12 +23,14 @@
 .sumDiv {
   border: 1px solid black;
   height: 30px;
+  width: 100%;
   padding: 7px 0;
   color: #5f6fc2;
+  display: flex;
 }
 
 .name {
-  font-size: 14px;
+  font-size: 16px;
   color: #353535;
   text-align: right;
 }
@@ -42,7 +44,7 @@
   }
 
   & th {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     color: black;
     border: 1px solid black;
@@ -51,38 +53,38 @@
 }
 
 .item {
-  font-size: 10px;
+  font-size: 12px;
   padding-left: 15px;
 }
 
 .article {
-  font-size: 10px;
+  font-size: 12px;
   text-align: center;
 }
 
 .price {
-  font-size: 10px;
+  font-size: 12px;
   color: #4b4b4b;
   text-align: right;
   padding-right: 7px;
 }
 
 .sum {
-  font-size: 10px;
+  font-size: 12px;
   color: #4b4b4b;
   text-align: right;
   padding-right: 7px;
 }
 
 .date {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   color: #4b4b4b;
   text-align: center;
 }
 
 .total {
-  font-size: 12px;
+  font-size: 14px;
   color: black;
   text-align: left;
   padding-right: 7px;
@@ -90,7 +92,7 @@
 }
 
 .businessNumber {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   text-align: center;
 }
@@ -99,6 +101,8 @@
   float: left;
   margin-left: 10px;
   color: black;
+  align-self: center;
+  height: 100%;
 }
 
 @page {
@@ -112,7 +116,6 @@
   padding-right: 0px;
   margin-top: -1px;
   padding-left: 0px;
-  // font-size: 2px;
 
   &:hover {
     background: rgb(250, 249, 255);

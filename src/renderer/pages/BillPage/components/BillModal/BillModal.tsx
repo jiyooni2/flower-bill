@@ -34,7 +34,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const printRef = useRef();
   const movePage = useNavigate();
 
-  const handleClick = async () => {
+  const handleClick = () => {
     const orderProductInputs = orderProducts.map((orderProduct) => ({
       businessId: business.id,
       count: orderProduct.count,
@@ -65,8 +65,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     );
   };
 
-  console.log(business)
-
   const afterPrint = () => {
     setIsOpen(false);
     setOrderProducts([]);
@@ -82,10 +80,15 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
+  const saveHandler = () => {
+    handleClick();
+    movePage('/bills')
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <div style={{ height: '410px' }}>
+        <div style={{ height: '90%' }}>
           <div
             ref={printRef}
             style={{ height: '97%', overflow: 'auto', marginBottom: '12px' }}
@@ -99,7 +102,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               <tbody>
                 <tr>
                   <td align="center">
-                    <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
+                    <span style={{ fontSize: '25px', fontWeight: 'bold' }}>
                       영&ensp;수&ensp;증
                     </span>
                   </td>
@@ -113,22 +116,19 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               className={styles.ownerData}
             >
               <tbody>
-                <tr>
-                  <td style={{ width: '45%' }}>
-                    <span style={{ fontSize: '10px', fontWeight: '400' }}>
-                      {' '}
-                      (공급받는자용)
-                    </span>
-                  </td>
-                  <td className={styles.name}>
-                    {store.owner.length > 0 ? store.owner : ''} 님
-                  </td>
-                  <td className={styles.for}>&ensp;귀하</td>
-                </tr>
+                <td style={{ width: '45%' }}>
+                  <span style={{ fontSize: '15px', fontWeight: '400' }}>
+                    No.
+                  </span>
+                </td>
+                <td className={styles.name}>
+                  {store.owner.length > 0 ? store.owner : ''} 님
+                </td>
+                <td className={styles.for}>&ensp;귀하</td>
               </tbody>
             </table>
             <table
-              style={{ width: '100%' }}
+              style={{ width: '100%', textAlign: 'center' }}
               cellPadding="0"
               cellSpacing="0"
               className={styles.body}
@@ -148,28 +148,19 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                     <br />
                     등록번호
                   </th>
-                  <td
-                    colSpan={3}
-                    style={{
-                      fontSize: '14px',
-                      height: '100%',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <span style={{ display: 'flex', justifyContent: 'center' }}>
-                      {business.businessNumber.toString().slice(0, 3)}-
-                      {business.businessNumber.toString().slice(3, 5)}-
-                      {business.businessNumber.toString().slice(5, 10)}
-                    </span>
+                  <td colSpan={3} align="center">
+                    {business.businessNumber.toString().slice(0, 3)}-
+                    {business.businessNumber.toString().slice(3, 5)}-
+                    {business.businessNumber.toString().slice(5, 10)}
                   </td>
                 </tr>
                 <tr>
                   <th>상호</th>
-                  <td style={{ width: '25%', fontSize: '13px' }} align="center">
+                  <td style={{ width: '25%', fontSize: '15px' }} align="center">
                     {business.name}
                   </td>
                   <th style={{ width: '14%' }}>성명</th>
-                  <td style={{ width: '20%', fontSize: '13px' }} align="center">
+                  <td style={{ width: '20%', fontSize: '15px' }} align="center">
                     {business.businessOwnerName}
                   </td>
                 </tr>
@@ -181,16 +172,20 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   </th>
                   <td
                     colSpan={3}
-                    style={{ fontSize: '13px', textAlign: 'center' }}
+                    style={{ fontSize: '15px', textAlign: 'center' }}
                   >
                     {business.address}
                   </td>
                 </tr>
                 <tr>
                   <th>업태</th>
-                  <td align="center">{business.typeofBusiness}</td>
-                  <th>종목</th>
-                  <td align="center">{business.sector}</td>
+                  <td align="center" style={{ fontSize: '15px' }}>
+                    {business.typeofBusiness}
+                  </td>
+                  <th>업종</th>
+                  <td align="center" style={{ fontSize: '16px' }}>
+                    {business.sector}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -219,6 +214,24 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               </tbody>
             </table>
             <table
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                paddingTop: '5px',
+                paddingBottom: '5px',
+                border: '1px solid black',
+              }}
+            >
+              <td
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 'bold',
+                }}
+              >
+                공&ensp;&ensp;급&ensp;&ensp;내&ensp;&ensp;역
+              </td>
+            </table>
+            <table
               width="100%"
               cellSpacing="0"
               cellPadding="0"
@@ -226,18 +239,20 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             >
               <tbody>
                 <tr>
-                  <th>월일</th>
-                  <th>품목</th>
-                  <th>수량</th>
+                  <th style={{ width: '17%' }}>월일</th>
+                  <th style={{ width: '30%' }}>품목</th>
+                  <th style={{ width: '13%' }}>수량</th>
                   <th>단가</th>
-                  <th>공급가액</th>
+                  <th>금액</th>
                 </tr>
               </tbody>
               <tbody>
                 {orderProducts.length > 0 ? (
                   orderProducts.map((orderProduct) => {
                     return (
-                      <tr key={orderProduct.id}>
+                      <tr
+                        key={orderProduct.id ? orderProduct.id : Math.random()}
+                      >
                         <td className={styles.item}>{`${month} / ${day}`}</td>
                         <td className={styles.item}>
                           {orderProduct.product.name}
@@ -267,14 +282,19 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 )}
               </tbody>
             </table>
-            <div className={styles.sumDiv}>
-              <td className={styles.lastSum}>합&ensp;&ensp;계</td>
-              <td
-                style={{ float: 'right', marginRight: '10px', color: 'black' }}
-              >
-                ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              </td>
-            </div>
+            <table className={styles.sumDiv}>
+              <tbody style={{ display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+                <td className={styles.lastSum}>합&ensp;&ensp;계</td>
+                <td
+                  style={{
+                    marginRight: '10px',
+                    color: 'black',
+                  }}
+                >
+                  ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                </td>
+              </tbody>
+            </table>
           </div>
           <div
             style={{
@@ -285,18 +305,17 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
           >
             <Button
               variant="outlined"
-              color="inherit"
               style={{
-                height: '30px',
-                width: '60%',
+                height: '37px',
+                width: '70%',
                 float: 'left',
                 display: 'flex',
                 bottom: '-10px',
                 left: 0,
               }}
-              onClick={() => setIsOpen(false)}
+              onClick={saveHandler}
             >
-              닫기
+              저장하기
             </Button>
             <ReactToPrint
               onBeforePrint={handleClick}
@@ -306,7 +325,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   variant="contained"
                   onClick={handleClick}
                   style={{
-                    height: '30px',
+                    height: '37px',
                     width: '100%',
                     float: 'right',
                     display: 'flex',
