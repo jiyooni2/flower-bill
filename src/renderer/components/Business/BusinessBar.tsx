@@ -58,25 +58,18 @@ const BusinessBar = () => {
       <BusinessModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={styles.bar}>
         <div className={styles.container}>
-          <Link to={'/seller'}>
+          <Link to={'/password-confirm'}>
             <div className={styles.content}>
               {businesses.map((business) => (
                 <div key={business.id}>
-                  <div onClick={() => clickHandler(business)}>
-                    {/* <span
-                      style={{
-                        fontSize: '28px',
-                        marginTop: '2px',
-                      }}
-                    >
-                      {business.name.slice(0, 1)}
-                    </span> */}
+                  <div>
                     <Button
                       className={
                         clicked && clickedData.name == business.name
                           ? `${styles.commonBox} ${styles.clickedBox}`
                           : `${styles.commonBox} ${styles.box}`
                       }
+                       onClick={() => clickHandler(business)}
                     >
                       {business.name.slice(0, 1)}
                     </Button>
