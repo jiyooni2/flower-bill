@@ -229,7 +229,7 @@ const ProductsPage = () => {
     const { value } = event.target;
 
     if (dataName === 'name') {
-      const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z\s]*$/;
+      const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z0-9\s]*$/;
       if (!pattern.test(value)) {
         setErrors({
           ...errors,
