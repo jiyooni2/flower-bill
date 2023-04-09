@@ -1,12 +1,9 @@
 import { ChangeEvent, useState } from 'react';
-import { Alert, AlertTitle, Button, TextField, Typography } from '@mui/material';
-import Modal from 'renderer/components/Modal/Modal';
+import { Button, TextField } from '@mui/material';
 import SignUpForm from './components/SignUpForm';
-import useInputs from 'renderer/hooks/useInputs';
-import { LoginInput } from 'renderer/types';
 import './components/AuthForm.scss';
 import { LoginOutput } from 'main/auth/dtos/login.dto';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { loginState, tokenState } from 'renderer/recoil/states';
 
 const LoginPage = () => {
@@ -114,6 +111,11 @@ const LoginPage = () => {
               >
                 로그인
               </Button>
+              <div style={{ marginBottom: '-15px'}}>
+                <span style={{ fontSize: '14px', color: 'gray', cursor: 'pointer' }}>아이디 찾기 </span>
+                <span style={{ fontSize: '14px', color: 'gray' }}> | </span>
+                <span style={{ fontSize: '14px', color: 'gray', cursor: 'pointer' }}>비밀번호 찾기</span>
+              </div>
               <div>
                 <span style={{ fontSize: '14px', color: 'gray' }}>
                   회원이 아니신가요?
