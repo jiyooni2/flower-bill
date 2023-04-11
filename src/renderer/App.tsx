@@ -14,6 +14,8 @@ import BillsPage from './pages/BillsPage/BillsPage';
 import DetailBillPage from './pages/BillsPage/DetailPage/DetailBillPage';
 import UpdateBillPage from './pages/BillsPage/UpdateBillPage/UpdateBIllPage';
 import ConfirmPage from './pages/BusinessPage/components/Confirmpage/Confirmpage';
+import ChangePasswordPage from './pages/BusinessPage/components/ChangePasswordPage/ChangePasswordPage';
+import BusinessInfoPage from './pages/BusinessPage/components/BusinessInfoPage/BusinessInfoPage';
 
 export default function App() {
   return (
@@ -31,6 +33,8 @@ export default function App() {
             <Route path={ROUTES.SELLER} element={<BusinessPage />} />
             <Route path={ROUTES.CATEGORY} element={<CategoryPage />} />
             <Route path={ROUTES.CONFIRM} element={<ConfirmPage />} />
+            <Route path={ROUTES.BUSINESS} element={<BusinessInfoPage />} />
+            <Route path={ROUTES.CHANGE_PASSWORD} element={<ChangePasswordPage />} />
           </Routes>
         </Layout>
       </Router>
