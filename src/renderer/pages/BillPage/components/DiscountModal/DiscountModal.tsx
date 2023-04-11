@@ -49,7 +49,6 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
             </TableHead>
             <TableBody>
               {orderProducts?.map((item) => {
-                console.log(item)
                 return (<TableRow key={item.id ? item.id : Math.random()}>
                   <DiscountTable orderProduct={item} />
                 </TableRow>)
