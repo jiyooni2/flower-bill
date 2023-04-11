@@ -62,7 +62,7 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
                     (공급받는자용)
                   </span>
                 </td>
-                <td className={styles.name}>{bill.store.owner} 님</td>
+                <td className={styles.name}>{bill.store ? bill.store.owner : '익명'} 님</td>
                 <td className={styles.for}>&ensp;귀하</td>
               </tr>
             </tbody>
@@ -175,12 +175,12 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
                       </td>
                       <td className={styles.article}>{orderProduct.count}</td>
                       <td className={styles.price}>
-                        {orderProduct.product.price
+                        {orderProduct.orderPrice
                           .toString()
                           .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       </td>
                       <td className={styles.sum}>
-                        {orderProduct.orderPrice
+                        {(orderProduct.orderPrice * orderProduct.count)
                           .toString()
                           .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       </td>
