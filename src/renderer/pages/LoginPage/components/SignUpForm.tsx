@@ -84,7 +84,17 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   return (
     <>
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <form onSubmit={handleSubmit} style={{ marginTop: '8%' }}>
+        <div
+          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+        >
+          <h1
+            className="title"
+            style={{ marginTop: '4%' }}
+          >
+            Flower Bill
+          </h1>
+        </div>
+        <form onSubmit={handleSubmit}>
           <div className="form-wrapper">
             <div className="text-wrapper">
               <TextField
@@ -120,12 +130,12 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                 value={password}
                 InputProps={{
                   endAdornment: (
-                      <IconButton
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
                   ),
                 }}
               />
