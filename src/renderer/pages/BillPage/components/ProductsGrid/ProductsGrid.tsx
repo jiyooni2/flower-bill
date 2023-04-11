@@ -1,7 +1,7 @@
 import styles from './ProductsGrid.module.scss';
 import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
 import ProductBox from '../ProductBox/ProductBox';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
@@ -42,8 +42,8 @@ const ProductsGrid = () => {
     );
   }, [])
 
-  const handlePage = (event: any) => {
-    const pageNow = parseInt(event.target.outerText);
+  const handlePage = (event: ChangeEvent<HTMLElement>, value: string) => {
+    const pageNow = parseInt(value);
     setPage(pageNow);
   };
 

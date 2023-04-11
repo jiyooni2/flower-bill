@@ -156,7 +156,9 @@ const BillsPage = () => {
                         <TableCell>{convertTime(bill.createdAt)}</TableCell>
                         <TableCell>{convertTime(bill.updatedAt)}</TableCell>
                         <TableCell>{bill.business.name}</TableCell>
-                        <TableCell>{bill.store ? bill.store.name : `(undefined)`}</TableCell>
+                        <TableCell>
+                          {bill.store ? bill.store.name : `(undefined)`}
+                        </TableCell>
                         <TableCell>
                           <Delete
                             sx={{
@@ -177,9 +179,10 @@ const BillsPage = () => {
           <TablePagination
             component="div"
             count={bills != undefined && bills.length}
-            rowsPerPage={10}
+            rowsPerPage={8}
             page={page}
             onPageChange={handleChangePage}
+            rowsPerPageOptions={[]}
           />
         </Paper>
       </div>

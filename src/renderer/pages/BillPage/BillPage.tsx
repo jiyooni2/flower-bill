@@ -1,12 +1,11 @@
 import Button from '@mui/material/Button';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import {
   productsState,
   orderProductsState,
   tokenState,
   businessState,
-  storeState,
 } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
@@ -44,11 +43,8 @@ const BillPage = () => {
     );
   }, []);
 
-  console.log('OrderProducts', orderProducts)
-
-  const handlePage = (event: any) => {
-    const pageNow = parseInt(event.target.outerText);
-    setPage(pageNow)
+  const handlePage = (event:ChangeEvent<unknown>, value: number) => {
+    setPage(value);
   };
 
   let sum = 0;
@@ -60,7 +56,7 @@ const BillPage = () => {
 
   let LAST_PAGE;
   if (orderProducts == null) {
-    LAST_PAGE = 0;
+    LAST_PAGE = 1;
   } else if (orderProducts != undefined || orderProducts) {
     LAST_PAGE =
       orderProducts?.length % 4 === 0
@@ -76,6 +72,7 @@ const BillPage = () => {
     setIsBillOpen(true);
   };
 
+  console.log(page)
 
   return (
     <>
@@ -135,8 +132,6 @@ const BillPage = () => {
               count={LAST_PAGE}
               size="small"
               color="standard"
-              defaultPage={1}
-              boundaryCount={1}
               onChange={handlePage}
             />
           </div>
@@ -202,14 +197,14 @@ const BillPage = () => {
                   marginleft: '20px',
                   color: '#228af2',
                   '&:hover': {
-                    background: '#6b5fb9',
+                    background: '#651fff',
                     opacity: '0.9',
-                    color: 'lightskyblue',
+                    color: 'white',
                   },
                 }}
                 onClick={() => setIsSearchStoreOpen(true)}
               >
-                판매처 선택
+                판매처
               </Button>
               <Button
                 variant="contained"
@@ -220,13 +215,13 @@ const BillPage = () => {
                   backgroundColor: 'ghostwhite',
                   color: '#228af2',
                   '&:hover': {
-                    background: '#6b5fb9',
+                    background: '#651fff',
                     opacity: '0.9',
-                    color: 'lightskyblue',
+                    color: 'white',
                   },
                 }}
               >
-                판매가 수정
+                판매가
               </Button>
               <Button
                 variant="contained"
@@ -237,16 +232,22 @@ const BillPage = () => {
                   backgroundColor: 'ghostwhite',
                   color: '#228af2',
                   '&:hover': {
-                    background: '#6b5fb9',
+                    background: '#651fff',
                     opacity: '0.9',
-                    color: 'lightskyblue',
+                    color: 'white',
                   },
                 }}
               >
-                메모 추가
+                메모
               </Button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '-7px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginBottom: '-7px',
+              }}
+            >
               <Button
                 variant="contained"
                 onClick={billClickHandler}

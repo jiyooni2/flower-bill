@@ -36,8 +36,6 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
     );
   };
 
-  console.log(orderProduct)
-
   const updateOrderProduct = (product: Product, name: string) => {
     setOrderProducts(
       orderProducts.map((orderProduct) => {
@@ -66,9 +64,11 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
   };
 
   const onDeleteClick = () => {
+    console.log(orderProducts)
+    console.log(orderProduct)
     setOrderProducts(
       orderProducts.filter(
-        (item) => item.id !== orderProduct.id
+        (item) => item.product.id !== orderProduct.product.id
       )
     );
   };

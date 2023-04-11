@@ -1,5 +1,5 @@
 import Button from '@mui/material/Button';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import {
   productsState,
@@ -23,8 +23,6 @@ import {
 import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
 import DiscountModal from 'renderer/pages/BillPage/components/DiscountModal/DiscountModal';
-import { Link } from 'react-router-dom';
-import { ArrowBackRounded } from '@mui/icons-material';
 import MemoModal from './components/MemoModal/MemoModal';
 
 const UpdateBillPage = () => {
@@ -52,9 +50,8 @@ const UpdateBillPage = () => {
     );
   }, []);
 
-  const handlePage = (event: any) => {
-    const pageNow = parseInt(event.target.outerText);
-    setPage(pageNow);
+  const handlePage = (event: ChangeEvent<unknown>, value: number) => {
+    setPage(value);
   };
 
   let sum = 0;

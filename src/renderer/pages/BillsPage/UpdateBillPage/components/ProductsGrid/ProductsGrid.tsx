@@ -1,7 +1,7 @@
 import styles from './ProductsGrid.module.scss';
 import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
 import ProductBox from '../ProductBox/ProductBox';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { billState, businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
@@ -48,9 +48,8 @@ const ProductsGrid = () => {
     setOrderProduct(currentBill);
   }, [])
 
-  const handlePage = (event: any) => {
-    const pageNow = parseInt(event.target.outerText);
-    setPage(pageNow);
+  const handlePage = (event: ChangeEvent<unknown>, value: number) => {
+    setPage(value);
   };
 
   let LAST_PAGE = 1;
@@ -320,9 +319,7 @@ const ProductsGrid = () => {
             count={LAST_PAGE}
             size="small"
             color="standard"
-            defaultPage={1}
-            boundaryCount={1}
-            onChange={(event) => handlePage(event)}
+            onChange={handlePage}
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import Button from '@mui/material/Button';
 import {
@@ -16,7 +16,6 @@ import {
   businessState,
   categoriesState,
   categoryIdState,
-  productsState,
   tokenState,
 } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
@@ -348,8 +347,8 @@ const ProductsPage = () => {
     LAST_PAGE = 1;
   }
 
-  const handlePage = (event: any) => {
-    setPage(parseInt(event.target.outerText));
+  const handlePage = (event: ChangeEvent<unknown>, value: number) => {
+    setPage(value);
   };
 
   return (
@@ -465,9 +464,7 @@ const ProductsPage = () => {
                 count={LAST_PAGE}
                 size="small"
                 color="standard"
-                defaultPage={1}
-                boundaryCount={1}
-                onChange={(event) => handlePage(event)}
+                onChange={handlePage}
               />
             </div>
           </div>
