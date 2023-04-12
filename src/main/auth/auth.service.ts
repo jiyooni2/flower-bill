@@ -46,19 +46,19 @@ export class AuthService {
   }
 
   async changePassword({
-    id,
+    ownerId,
     findPasswordAnswer,
     newPassword,
   }: ChangePasswordInput): Promise<ChangePasswordOutput> {
     try {
-      const owner = await this.ownerRepository.findOne({ where: { id } });
+      const owner = await this.ownerRepository.findOne({ where: { ownerId } });
       if (!owner) {
         return { ok: false, error: '존재하지 않는 사용자입니다.' };
       }
 
       if (owner.findPasswordAnswer.trim() == findPasswordAnswer.trim()) {
         await this.ownerRepository.update(
-          { id },
+          { ownerId },
           { password: await bcrypt.hash(newPassword, 10) }
         );
       }
