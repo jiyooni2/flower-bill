@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import SignUpForm from './components/SignUpForm';
 import './components/AuthForm.scss';
@@ -35,7 +35,8 @@ const LoginPage = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (ownerId !== '' && password != '') {
       window.electron.ipcRenderer.sendMessage('login', {
         ownerId,
@@ -79,78 +80,77 @@ const LoginPage = () => {
         >
           Flower Bill
         </h1>
-        {/* <form onSubmit={handleSubmit}> */}
-        <div className="form-wrapper">
-          <div className="text-wrapper">
-            <TextField
-              label="ID"
-              name="ownerId"
-              variant="filled"
-              onChange={handleChangeID}
-              value={ownerId}
-              error={errors.id.length > 0}
-              helperText={errors.id}
-            />
-          </div>
-          <div className="text-wrapper">
-            <TextField
-              label="비밀번호"
-              name="password"
-              variant="filled"
-              type="password"
-              onChange={handleChangePW}
-              value={password}
-              error={errors.password.length > 0}
-              helperText={errors.password}
-            />
-          </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-wrapper">
+            <div className="text-wrapper">
+              <TextField
+                label="ID"
+                name="ownerId"
+                variant="filled"
+                onChange={handleChangeID}
+                value={ownerId}
+                error={errors.id.length > 0}
+                helperText={errors.id}
+              />
+            </div>
+            <div className="text-wrapper">
+              <TextField
+                label="비밀번호"
+                name="password"
+                variant="filled"
+                type="password"
+                onChange={handleChangePW}
+                value={password}
+                error={errors.password.length > 0}
+                helperText={errors.password}
+              />
+            </div>
 
-          <div className="button-wrapper">
-            <Button
-              type="submit"
-              variant="contained"
-              style={{ width: '100%' }}
-              onClick={handleSubmit}
-            >
-              로그인
-            </Button>
-            <div style={{ color: 'gray' }}>
-              <span style={{ fontSize: '14px', cursor: 'pointer', }} onClick={() => setIsPasswordOpen(true)}>
-                비밀번호 찾기
-              </span>
-              <span
-                style={{
-                  color: 'lightgray',
-                  fontSize: '13px',
-                  fontWeight: '400',
-                }}
-              >
-                &ensp;|&ensp;
-              </span>
-              <span style={{ fontSize: '14px', color: 'gray' }}>
-                회원이 아니신가요?
-              </span>
+            <div className="button-wrapper">
               <Button
-                variant="text"
-                onClick={() => {
-                  setIsSignUpPageOpen(true);
-                  setOwnerId('');
-                  setPassword('');
-                }}
-                sx={{
-                  color: 'steelblue',
-                  '&:hover': {
-                    backgroundColor: 'transparent',
-                    color: 'skyblue',
-                  },
-                }}
+                type="submit"
+                variant="contained"
+                style={{ width: '100%' }}
               >
-                회원가입하기
+                로그인
               </Button>
+              <div style={{ color: 'gray' }}>
+                <span style={{ fontSize: '14px', cursor: 'pointer', }} onClick={() => setIsPasswordOpen(true)}>
+                  비밀번호 찾기
+                </span>
+                <span
+                  style={{
+                    color: 'lightgray',
+                    fontSize: '13px',
+                    fontWeight: '400',
+                  }}
+                >
+                  &ensp;|&ensp;
+                </span>
+                <span style={{ fontSize: '14px', color: 'gray' }}>
+                  회원이 아니신가요?
+                </span>
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    setIsSignUpPageOpen(true);
+                    setOwnerId('');
+                    setPassword('');
+                  }}
+                  sx={{
+                    color: 'steelblue',
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                      color: 'skyblue',
+                    },
+                  }}
+                >
+                  회원가입하기
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        {/* </form> */}
+        </form>
       </div>
     </div>
   );
