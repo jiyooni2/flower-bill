@@ -23,7 +23,7 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
     setErrors,
   ] = useInputsWithError(
     { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' },
-    { nickname: '', ownerId: '',mpassword: '',mconfirm: '', question: '', answer: '' }
+    { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' }
   );
 
 
