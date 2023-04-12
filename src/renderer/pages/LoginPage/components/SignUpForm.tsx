@@ -1,11 +1,10 @@
 import { IconButton, TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import './AuthForm.scss'
 import Modal from 'renderer/components/Modal/Modal';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import useInputsWithError from 'renderer/hooks/useInputsWithError';
-
 
 interface IProps {
   isOpen: boolean;
@@ -15,21 +14,13 @@ interface IProps {
 const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [
-    { nickname, ownerId, password, confirm, question, answer },
-    onChange,
-    setForm,
-    errors,
-    setErrors,
-  ] = useInputsWithError(
+  const [{ nickname, ownerId, password, confirm, question, answer }, onChange, setForm, errors, setErrors] = useInputsWithError(
     { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' },
     { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' }
   );
 
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirm = () => setShowConfirm((show) => !show);
-
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -113,7 +104,6 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                       : '2글자 이상 작성하실 수 있습니다.'
                   }
                   variant="filled"
-                  // onChange={handleChange}
                   onChange={onChange}
                   value={ownerId}
                 />
@@ -130,7 +120,6 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                       : '8~16자리 내의 문자만 작성하실 수 있습니다.'
                   }
                   variant="filled"
-                  // onChange={handleChange}
                   onChange={onChange}
                   type={showPassword ? 'text' : 'password'}
                   value={password}
@@ -155,7 +144,6 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                       : '8~16자리 내의 문자만 작성하실 수 있습니다.'
                   }
                   variant="filled"
-                  // onChange={handleChange}
                   onChange={onChange}
                   type={showConfirm ? 'text' : 'password'}
                   value={confirm}
@@ -181,7 +169,6 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                     errors.question.length > 0 ? errors.question : 'asdf'
                   }
                   variant="filled"
-                  // onChange={handleChange}
                   onChange={onChange}
                   value={question}
                 />
@@ -192,7 +179,6 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   error={errors.answer.length > 0}
                   helperText={errors.answer.length > 0 ? errors.answer : 'asdf'}
                   variant="filled"
-                  // onChange={handleChange}
                   onChange={onChange}
                   value={answer}
                 />
