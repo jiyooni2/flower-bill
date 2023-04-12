@@ -1,19 +1,11 @@
-import { IconButton, InputAdornment, TextField, Typography } from '@mui/material';
-import useInputs from 'renderer/hooks/useInputs';
-import { Owner } from 'renderer/types';
+import { IconButton, TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import './AuthForm.scss'
-import { Link, NavLink } from 'react-router-dom';
 import Modal from 'renderer/components/Modal/Modal';
-import InfoModal from 'renderer/components/InfoModal/InfoModal';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import useInputsWithError from 'renderer/hooks/useInputsWithError';
 
-interface Errors {
-  name: string;
-  id: string;
-  password: string;
-}
 
 interface IProps {
   isOpen: boolean;
@@ -22,63 +14,60 @@ interface IProps {
 
 const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<Errors>({ name: '', id: '', password: '' });
-  const [{ nickname, ownerId, password }, handleChange] = useInputs<Owner>({
-    nickname: '',
-    ownerId: '',
-    password: '',
-  });
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [
+    { nickname, ownerId, password, confirm, question, answer },
+    onChange,
+    setForm,
+    errors,
+    setErrors,
+  ] = useInputsWithError(
+    { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' },
+    { nickname: '', ownerId: '',mpassword: '',mconfirm: '', question: '', answer: '' }
+  );
+
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
+  const handleClickShowConfirm = () => setShowConfirm((show) => !show);
 
 
-  const validation = (nickname: string, ownerId: string, password: string) => {
-    if (!nickname && !ownerId && !password ){
-      setErrors({ name: '닉네임이 입력되지 않았습니다.', id: '아이디가 입력되지 않았습니다.', password: '비밀번호가 입력되지 않았습니다.' });
-    } else if (!nickname || !ownerId || !password) {
-      if (!nickname) {
-        setErrors({ ...errors, name: '닉네임이 입력되지 않았습니다.' });
-      } else if (nickname && nickname.length < 3) {
-        setErrors({ ...errors, name: '3글자 이상 입력해주십시오.' });
-      } else {
-        setErrors({ ...errors, name: '' });
-      }
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-      if (!ownerId) {
-        setErrors({ ...errors, id: '아이디가 입력되지 않았습니다.' });
-      } else if (ownerId && ownerId.length < 3) {
-        setErrors({ ...errors, id: '3글자 이상 입력해주십시오.' });
-      } else {
-        setErrors({ ...errors, id: '' });
-      }
+    if (password != confirm) {
+      setErrors({ ...errors, confirm: '비밀번호가 일치하지 않습니다.' });
+      return;
+    }
 
-      console.log(password)
-
-      if (password === '') {
-        setErrors({ ...errors, password: '비밀번호가 입력되지 않았습니다.' });
-      } else {
-        setErrors({ ...errors, password: '' });
-      }
-    } else {
+    if (!ownerId && !nickname && !password && !confirm && !question && !answer) {
+      setErrors({
+        ownerId: '아이디가 입력되지 않았습니다.',
+        nickname: '닉네임이 입력되지 않았습니다.',
+        password: '비밀번호가 입력되지 않았습니다.',
+        confirm: '비밀번호가 입력되지 않았습니다.',
+        question: '비밀번호 찾기 질문이 입력되지 않았습니다.',
+        answer: '비밀번호 찾기 답이 입력되지 않았습니다.',
+      });
+      return;
+    } else if (!ownerId || !nickname || !password || !confirm || !question || !answer) {
+      if (!ownerId) setErrors(({ ...errors, ownerId: '아이디가 입력되지 않았습니다.' }));
+      if (!nickname) setErrors({...errors, nickname: '닉네임이 입력되지 않았습니다.'});
+      if (!password) setErrors({...errors, password: '비밀번호가 입력되지 않았습니다.'});
+      if (!confirm) setErrors({...errors, confirm: '비밀번호가 입력되지 않았습니다.'});
+      if (!question) setErrors({...errors, question: '비밀번호 찾기 질문이 입력되지 않았습니다.'});
+      if (!answer) setErrors({...errors, answer: '비밀번호 찾기 답이 입력되지 않았습니다.'});
+      return;
+    } else if (ownerId && nickname && password && confirm && question && answer) {
       window.electron.ipcRenderer.sendMessage('create-owner', {
         nickname,
         ownerId,
         password,
+        findPasswordAnswer: answer,
+        findPasswordQuestion: question,
       });
+      setForm({nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: ''});
       setIsOpen(false);
     }
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    validation(nickname, ownerId, password);
   };
 
   return (
@@ -87,58 +76,127 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
         <div
           style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
         >
-          <h1
-            className="title"
-            style={{ marginTop: '4%' }}
-          >
+          <h1 className="title" style={{ marginTop: '3%', marginBottom: '4%' }}>
             Flower Bill
           </h1>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-wrapper">
-            <div className="text-wrapper">
-              <TextField
-                label="닉네임"
-                name="nickname"
-                error={errors.name.length > 0}
-                variant="filled"
-                helperText={errors.name.length > 0 && errors.name}
-                onChange={handleChange}
-                value={nickname}
-              />
-            </div>
-            <div className="text-wrapper">
-              <TextField
-                label="ID"
-                name="ownerId"
-                error={errors.id.length > 0}
-                helperText={errors.id.length > 0 && errors.id}
-                variant="filled"
-                onChange={handleChange}
-                value={ownerId}
-              />
-            </div>
-            <div className="text-wrapper">
-              <TextField
-                label="패스워드"
-                name="password"
-                error={errors.password.length > 0}
-                helperText={errors.password.length > 0 && errors.password}
-                variant="filled"
-                onChange={handleChange}
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                InputProps={{
-                  endAdornment: (
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  ),
-                }}
-              />
+            <div style={{ width: '100%', marginBottom: '-15px' }}>
+              <div
+                className="text-wrapper"
+                style={{ display: 'flex', gap: '15px' }}
+              >
+                <TextField
+                  size="small"
+                  label="닉네임"
+                  name="nickname"
+                  error={errors.nickname.length > 0}
+                  variant="filled"
+                  helperText={
+                    errors.nickname.length > 0
+                      ? errors.nickname
+                      : '2글자 이상 작성하실 수 있습니다.'
+                  }
+                  // onChange={handleChange}
+                  onChange={onChange}
+                  value={nickname}
+                />
+                <TextField
+                  size="small"
+                  label="ID"
+                  name="ownerId"
+                  error={errors.ownerId.length > 0}
+                  helperText={
+                    errors.ownerId.length > 0
+                      ? errors.ownerId
+                      : '2글자 이상 작성하실 수 있습니다.'
+                  }
+                  variant="filled"
+                  // onChange={handleChange}
+                  onChange={onChange}
+                  value={ownerId}
+                />
+              </div>
+              <div className="text-wrapper">
+                <TextField
+                  size="small"
+                  label="비밀번호"
+                  name="password"
+                  error={errors.password.length > 0}
+                  helperText={
+                    errors.password.length > 0
+                      ? errors.password
+                      : '8~16자리 내의 문자만 작성하실 수 있습니다.'
+                  }
+                  variant="filled"
+                  // onChange={handleChange}
+                  onChange={onChange}
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton onClick={handleClickShowPassword}>
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    ),
+                  }}
+                />
+              </div>
+              <div className="text-wrapper">
+                <TextField
+                  size="small"
+                  label="비밀번호 확인"
+                  name="confirm"
+                  error={errors.confirm.length > 0}
+                  helperText={
+                    errors.confirm.length > 0
+                      ? errors.confirm
+                      : '8~16자리 내의 문자만 작성하실 수 있습니다.'
+                  }
+                  variant="filled"
+                  // onChange={handleChange}
+                  onChange={onChange}
+                  type={showConfirm ? 'text' : 'password'}
+                  value={confirm}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton onClick={handleClickShowConfirm}>
+                        {showConfirm ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    ),
+                  }}
+                />
+              </div>
+              <div
+                className="text-wrapper"
+                style={{ display: 'flex', gap: '15px' }}
+              >
+                <TextField
+                  size="small"
+                  label="비밀번호 찾기 질문"
+                  name="question"
+                  error={errors.question.length > 0}
+                  helperText={
+                    errors.question.length > 0 ? errors.question : 'asdf'
+                  }
+                  variant="filled"
+                  // onChange={handleChange}
+                  onChange={onChange}
+                  value={question}
+                />
+                <TextField
+                  size="small"
+                  label="비밀번호 찾기 답"
+                  name="answer"
+                  error={errors.answer.length > 0}
+                  helperText={errors.answer.length > 0 ? errors.answer : 'asdf'}
+                  variant="filled"
+                  // onChange={handleChange}
+                  onChange={onChange}
+                  value={answer}
+                />
+              </div>
             </div>
             <div className="signin-button">
               <Button
