@@ -47,6 +47,7 @@ export class ProductService {
         .createQueryBuilder()
         .select()
         .where(`businessId=:businessId`, { businessId })
+        .addOrderBy(`${Product.name}.isFavorite`)
         .orderBy(`${Product.name}.id`)
         .offset(page)
         .limit(10)
@@ -104,6 +105,7 @@ export class ProductService {
     name,
     price,
     categoryId,
+    isFavorite,
     token,
     businessId,
   }: UpdateProductInput): Promise<UpdateProductOutput> {
@@ -122,7 +124,7 @@ export class ProductService {
 
       await this.productRepository.update(
         { id },
-        { name, price, categoryId, businessId }
+        { name, price, categoryId, businessId, isFavorite }
       );
 
       return { ok: true };
@@ -171,7 +173,8 @@ export class ProductService {
         .select()
         .where(`name LIKE "%${keyword}%"`)
         .andWhere(`businessId=:businessId`, { businessId })
-        .orderBy(`${Product.name}.id`)
+        .orderBy(`${Product.name}.isFavorite`)
+        .addOrderBy(`${Product.name}.id`)
         .offset(page)
         .limit(10)
         .getMany();
@@ -220,7 +223,8 @@ export class ProductService {
           .select()
           .where('categoryId=:categoryId', { categoryId })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy(`${Product.name}.id`)
+          .orderBy(`${Product.name}.isFavorite`)
+          .addOrderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
           .getMany();
@@ -238,7 +242,8 @@ export class ProductService {
             ),
           })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy(`${Product.name}.id`)
+          .orderBy(`${Product.name}.isFavorite`)
+          .addOrderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
           .getMany();
@@ -270,7 +275,8 @@ export class ProductService {
             ids: subCategoryIds,
           })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy(`${Product.name}.id`)
+          .orderBy(`${Product.name}.isFavorite`)
+          .addOrderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
           .getMany();

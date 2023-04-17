@@ -17,6 +17,9 @@ export class Product extends BusinessRelatedEntity {
   @Column()
   categoryId: number;
 
+  @Column({ default: false })
+  isFavorite: boolean;
+
   // @Column('string', { array: true })
   // color: string[];
 }

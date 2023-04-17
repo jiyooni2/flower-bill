@@ -3,7 +3,9 @@ import { Product } from './../entities/product.entity';
 import { AuthInput } from './../../common/dtos/auth.dto';
 
 export interface UpdateProductInput
-  extends Partial<Pick<Product, 'name' | 'price' | 'categoryId'>>,
+  extends Partial<
+      Pick<Product, 'name' | 'price' | 'categoryId' | 'isFavorite'>
+    >,
     AuthInput {
   id: number;
   businessId: number;
