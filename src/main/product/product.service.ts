@@ -47,7 +47,6 @@ export class ProductService {
         .createQueryBuilder()
         .select()
         .where(`businessId=:businessId`, { businessId })
-        .addOrderBy(`${Product.name}.isFavorite`)
         .orderBy(`${Product.name}.id`)
         .offset(page)
         .limit(10)
