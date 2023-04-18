@@ -36,14 +36,17 @@ import {
   SearchProductInput,
   SearchProductOutput,
 } from 'main/product/dtos/search-product.dto';
+import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
+import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded';
 
 const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [categories, setCategories] = useRecoilState(categoriesState);
-  const [products, setProducts] = useState<Product[]>();
+  const [products, setProducts] = useState<Product[]>(null);
   const [keyword, setKeyword] = useState<string>('');
   const [clicked, setClicked] = useState<boolean>(false);
+  const [favorite, setFavorite] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [id, setId] = useState<number>(0);
   const [name, setName] = useState<string>('');
@@ -149,7 +152,8 @@ const ProductsPage = () => {
         setName(item.name);
         setPrice(item.price.toString());
         setCategoryId(item.categoryId);
-        setCategoryName(item.category.name)
+        setCategoryName(item.category?.name)
+        setFavorite(item.isFavorite)
       }
     });
     }
@@ -195,6 +199,7 @@ const ProductsPage = () => {
       categoryId,
       token,
       businessId: business.id,
+      isFavorite: favorite,
     };
 
     window.electron.ipcRenderer.sendMessage('update-product', newData);
@@ -219,6 +224,7 @@ const ProductsPage = () => {
         }
       }
     );
+    setFavorite(false);
   };
 
   const changeStoreDataHandler = (
@@ -321,13 +327,6 @@ const ProductsPage = () => {
         }
         if (error) {
           console.log(error);
-          // if (error.startsWith('최하위')) {
-          //   setErrors({
-          //     ...errors,
-          //     category: '카테고리는 소분류만 선택 가능합니다.',
-          //   });
-          //   return;
-          // }
         }
       }
     );
@@ -350,6 +349,42 @@ const ProductsPage = () => {
   const handlePage = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
+
+  const starHandler = () => {
+    setFavorite(!favorite);
+    const newData: UpdateProductInput = {
+      id,
+      name,
+      price: Number(price),
+      categoryId: categoryId,
+      token,
+      businessId: business.id,
+      isFavorite: !favorite,
+    };
+
+    window.electron.ipcRenderer.sendMessage('update-product', newData);
+
+    window.electron.ipcRenderer.on(
+      'update-product',
+      ({ ok, error }: UpdateProductOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-products', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-products',
+            (args: GetProductsOutput) => {
+              setProducts(args.products as Product[]);
+            }
+          );
+        }
+        if (error) {
+          console.error(error);
+        }
+      }
+    );
+  }
 
   return (
     <>
@@ -391,6 +426,7 @@ const ProductsPage = () => {
                         <TableCell component="th" align="left">
                           카테고리
                         </TableCell>
+                        <TableCell component="th"></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -433,17 +469,31 @@ const ProductsPage = () => {
                               className={styles.cutText}
                               sx={{ width: '45%' }}
                             >
-                              {categories != undefined && categories.map((cat) => {
-                                if (cat.id === item.categoryId) {
-                                  if (cat.parentCategory.parentCategory) {
-                                    return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
-                                  } else if (cat.parentCategory) {
-                                    return `${cat.parentCategory.name}/${cat.name}`;
-                                  } else {
-                                    return cat.name;
+                              {categories != undefined &&
+                                categories.map((cat) => {
+                                  if (cat.id === item.categoryId) {
+                                    if (cat.parentCategory.parentCategory) {
+                                      return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
+                                    } else if (cat.parentCategory) {
+                                      return `${cat.parentCategory.name}/${cat.name}`;
+                                    } else {
+                                      return cat.name;
+                                    }
                                   }
-                                }
-                              })}
+                                })}
+                            </TableCell>
+                            <TableCell>
+                              {item.isFavorite ? (
+                                <StarRateRoundedIcon
+                                  className={styles.favorite}
+                                  sx={{ color: 'gold' }}
+                                />
+                              ) : (
+                                <StarOutlineRoundedIcon
+                                  className={styles.favorite}
+                                  color="action"
+                                />
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -482,9 +532,28 @@ const ProductsPage = () => {
               >
                 상품 정보
               </Typography>
-              <button className={styles.clearInput} onClick={clearInputs}>
-                비우기
-              </button>
+              <div>
+                {clicked ? (
+                  favorite ? (
+                    <StarRateRoundedIcon
+                      className={styles.favorite}
+                      sx={{ color: 'gold' }}
+                      onClick={() => starHandler()}
+                    />
+                  ) : (
+                    <StarOutlineRoundedIcon
+                      className={styles.favorite}
+                      color="action"
+                      onClick={() => starHandler()}
+                    />
+                  )
+                ) : (
+                  ''
+                )}
+                <button className={styles.clearInput} onClick={clearInputs}>
+                  비우기
+                </button>
+              </div>
               <div className={styles.list}>
                 <div>
                   <div>
