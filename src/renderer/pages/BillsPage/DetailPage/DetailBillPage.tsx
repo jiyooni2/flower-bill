@@ -1,26 +1,42 @@
 import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BillPartPage from '../BillPart/BillPartPage';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { billState, businessState, orderProductsState, tokenState } from 'renderer/recoil/states';
+import { billState, orderProductsState } from 'renderer/recoil/states';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Link } from 'react-router-dom';
 import { CheckCircleOutline, LocalPrintshopSharp } from '@mui/icons-material';
 import { alertState } from 'renderer/recoil/bill-states';
 import BillModal from './BillModal/BillModal';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const DetailBillPage = () => {
   const bill = useRecoilValue(billState)
-  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState)
+  const orderProducts = useRecoilValue(orderProductsState)
   const [alert, setAlert] = useRecoilState(alertState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const printRef = useRef<HTMLElement>();
+  const [updated, setUpdated] = useState<boolean>(false);
 
+  useEffect(() => {
+    bill.updatedAt.toISOString() !== bill.createdAt.toISOString()
+      ? setUpdated(true)
+      : setUpdated(false);
+  }, [bill]);
+
+  const date = new Date(bill.updatedAt);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
 
   if (alert == true) {
     setTimeout(() => setAlert(false), 1500);
     setAlert(true)
+  }
+
+  const convertNumber = (number : number) => {
+    const num = number.toString();
+    return `${num.slice(0, 3)} - ${num.slice(3, 5)} - ${num.slice(5, 10)}`;
   }
 
   return (
@@ -114,19 +130,21 @@ const DetailBillPage = () => {
                         color="text.secondary"
                         sx={{ marginLeft: '3px', fontSize: '15px' }}
                       >
-                        구매처 사업자명:
-                        <span style={{ color: 'black' }}>{bill.store ? ` ${bill.store.owner}` : ' 익명'}</span>
+                        사&nbsp;업&nbsp;자&nbsp;명&nbsp;:
+                        <span style={{ color: 'black' }}>
+                          {bill.store ? ` ${bill.store.owner}` : ' 익명'}
+                        </span>
                         <br />
-                        구매처명:{' '}
+                        구&nbsp;매&nbsp;처&nbsp;명&nbsp;:{' '}
                         <span style={{ color: 'black' }}>
                           {bill.store ? bill.store.name : '익명'}
                         </span>
                         <br />
                         <span>
-                          사업자 번호 :{' '}
+                          사업자번호 :{' '}
                           <span style={{ color: 'black' }}>
                             {bill.store
-                              ? bill.store.businessNumber
+                              ? convertNumber(bill.store.businessNumber)
                               : '익명'}
                           </span>
                         </span>
@@ -137,13 +155,11 @@ const DetailBillPage = () => {
                         color="text.secondary"
                         sx={{ marginLeft: '3px' }}
                       >
-                        판매일시 :{' '}
+                        판&nbsp;&nbsp; 매&nbsp;&nbsp;일&nbsp;&nbsp;시 :{' '}
                         <span style={{ color: 'black' }}>
-                          {bill.createdAt &&
-                            `${bill.createdAt.getFullYear()}년 ${bill.createdAt.getMonth()}월 ${bill.createdAt.getDate()}일 `}
-                          {bill.createdAt &&
-                            `${bill.createdAt.getHours()}시 ${bill.createdAt.getMinutes()}분 ${bill.createdAt.getSeconds()}초`}
+                          {`${year}년 ${month}월 ${day}일 `}
                         </span>
+                        <span style={{ fontSize: '10px'}}>{updated ? '(수정됨)' : ''}</span>
                       </Typography>
                       <Typography
                         variant="body2"

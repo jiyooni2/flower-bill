@@ -15,7 +15,7 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
     orderProducts.map((items) => {
       sum += items.orderPrice * items.count;
     });
-  const date = new Date();
+  const date = new Date(bill.updatedAt ? bill.updatedAt : bill.createdAt);
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
