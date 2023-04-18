@@ -103,22 +103,24 @@ const DetailBillPage = () => {
           <div style={{ width: '100%' }}>
             <div
               style={{
+                width: '100%',
                 height: '59.3%',
                 marginTop: '10px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '30px',
               }}
             >
-              <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    marginLeft: '20px',
-                    marginRight: '0px',
-                  }}
-                >
+              <div
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  display: 'flex',
+                }}
+              >
+                <div style={{ width: '80%', marginRight: '5px'}}>
                   <Card
                     sx={{
-                      width: '95%',
                       backgroundColor: 'floralwhite',
                       height: '100%',
                       marginBottom: '15px',
@@ -159,7 +161,9 @@ const DetailBillPage = () => {
                         <span style={{ color: 'black' }}>
                           {`${year}년 ${month}월 ${day}일 `}
                         </span>
-                        <span style={{ fontSize: '10px'}}>{updated ? '(수정됨)' : ''}</span>
+                        <span style={{ fontSize: '10px' }}>
+                          {updated ? '(수정됨)' : ''}
+                        </span>
                       </Typography>
                       <Typography
                         variant="body2"
@@ -178,7 +182,6 @@ const DetailBillPage = () => {
               <div
                 style={{
                   height: '333px',
-                  width: '100%',
                   overflow: 'auto',
                 }}
               >
