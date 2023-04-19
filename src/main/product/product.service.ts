@@ -47,7 +47,8 @@ export class ProductService {
         .createQueryBuilder()
         .select()
         .where(`businessId=:businessId`, { businessId })
-        .orderBy(`${Product.name}.id`)
+        .orderBy(`${Product.name}.isFavorite`, 'DESC')
+        .addOrderBy(`${Product.name}.id`)
         .offset(page)
         .limit(10)
         .getMany();
@@ -79,7 +80,7 @@ export class ProductService {
       }
 
       if (category.businessId !== businessId) {
-        return { ok: false, error: '해당 스토어에 대한 권한이 없습니다.' };
+        return { ok: false, error: '해당 스토어에 대한 권3한이 없습니다.' };
       }
 
       if (category.level !== 3) {
@@ -172,7 +173,7 @@ export class ProductService {
         .select()
         .where(`name LIKE "%${keyword}%"`)
         .andWhere(`businessId=:businessId`, { businessId })
-        .orderBy(`${Product.name}.isFavorite`)
+        .orderBy(`${Product.name}.isFavorite`, 'DESC')
         .addOrderBy(`${Product.name}.id`)
         .offset(page)
         .limit(10)
@@ -222,7 +223,7 @@ export class ProductService {
           .select()
           .where('categoryId=:categoryId', { categoryId })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy(`${Product.name}.isFavorite`)
+          .orderBy(`${Product.name}.isFavorite`, 'DESC')
           .addOrderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
@@ -241,7 +242,7 @@ export class ProductService {
             ),
           })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy(`${Product.name}.isFavorite`)
+          .orderBy(`${Product.name}.isFavorite`, 'DESC')
           .addOrderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
@@ -274,7 +275,7 @@ export class ProductService {
             ids: subCategoryIds,
           })
           .andWhere('businessId=:businessId', { businessId })
-          .orderBy(`${Product.name}.isFavorite`)
+          .orderBy(`${Product.name}.isFavorite`, 'DESC')
           .addOrderBy(`${Product.name}.id`)
           .offset(page)
           .limit(10)
