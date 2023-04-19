@@ -11,7 +11,6 @@ const ROUTES = {
   LOGIN: '/login',
   CONFIRM: '/password-confirm',
   BUSINESS: '/business',
-  CHANGE_PASSWORD: '/password-change'
 };
 
 export default ROUTES;

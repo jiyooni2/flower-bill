@@ -1,16 +1,72 @@
 .container {
   width: 100%;
-  height: 100%;
 
   .content {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
-    text-align: center;
-    gap: 10px;
+
+    &>div {
+      flex-basis: 50%;
+      height: 100vh;
+      padding-top: 10px;
+    }
   }
+}
+
+
+.infoContent {
+  margin: 0 auto;
+  position: relative;
+  height: 96vh;
+
+  .list {
+    margin-top: 60px;
+
+    .item {
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+
+      .dataInput {
+        width: 50%;
+        height: 33px;
+        border-radius: 5px;
+        border: 1px solid darkgray;
+        opacity: 0.9;
+        padding-left: 8px;
+        font-size: 14px;
+      }
+    }
+
+    .labels {
+      width: 30%;
+      font-size: 15px;
+      margin-top: 2px;
+    }
+  }
+}
+
+.buttonList {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-top: 60px;
+  margin-bottom: 50px;
+}
+
+.dataRow {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(215, 215, 215)
+  }
+}
+
+.noResult {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20%
 }
 
 .cutText {
