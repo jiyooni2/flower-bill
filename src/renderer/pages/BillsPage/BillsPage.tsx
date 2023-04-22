@@ -1,18 +1,12 @@
 import { GetBillsOutput } from "main/bill/dtos/get-bills.dto";
 import { Bill } from "main/bill/entities/bill.entity";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { billListState, billState, businessState, businessesState, detailBillState, orderProductsState, storesState, tokenState } from "renderer/recoil/states";
+import { billListState, billState, businessState, orderProductsState, tokenState } from "renderer/recoil/states";
 import styles from './BillsPage.module.scss'
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
 import { GetBillOutput } from "main/bill/dtos/get-bill.dto";
 import { Link } from "react-router-dom";
-import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
-import ReactToPrint from "react-to-print";
-import { BillResult } from "main/common/dtos/bill-result.dto";
-import BillModal from "./UpdateBillPage/components/BillModal/BillModal";
-import { alertState } from "renderer/recoil/bill-states";
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Delete } from "@mui/icons-material";
 import { DeleteBillOutput } from "main/bill/dtos/delete-bill.dto";
 
@@ -46,7 +40,7 @@ const BillsPage = () => {
       <p>
         <span>{`일시: ${date}`}</span>
         <br />
-        <span>{`시간: ${created.getHours()}:${created.getMinutes()}:${created.getSeconds()}`}</span>
+        <span>{`시간: ${created.getHours()}:${created.getMinutes() < 10 ? `0${created.getMinutes()}` : created.getMinutes()}:${created.getSeconds() < 10 ? `0${created.getSeconds()}` : created.getSeconds()}`}</span>
       </p>
     );
   }

@@ -19,10 +19,12 @@ const DetailBillPage = () => {
   const [updated, setUpdated] = useState<boolean>(false);
 
   useEffect(() => {
-    bill.updatedAt.toISOString() !== bill.createdAt.toISOString()
+    new Date(bill.updatedAt) !== new Date(bill.createdAt)
       ? setUpdated(true)
       : setUpdated(false);
   }, [bill]);
+
+  console.log('Date check', new Date(bill.updatedAt) !== new Date(bill.createdAt))
 
   const date = new Date(bill.updatedAt);
   const year = date.getFullYear();
