@@ -176,14 +176,6 @@ const BusinessPage = () => {
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={() => navigate('/seller')}
-                  sx={{ background: 'darkgray', '&:hover': { background: 'gray' } }}
-                >
-                  뒤로가기
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
                   onClick={updateDataHandler}
                 >
                   수정
