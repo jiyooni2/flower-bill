@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import Button from '@mui/material/Button';
 import {
+  Checkbox,
   Pagination,
   Table,
   TableBody,
@@ -38,6 +39,8 @@ import {
 } from 'main/product/dtos/search-product.dto';
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded';
+import { Grade } from '@mui/icons-material';
+import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 
 const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
@@ -147,15 +150,15 @@ const ProductsPage = () => {
 
     if (products != undefined) {
       products.forEach((item) => {
-      if (item.name === data.name) {
-        setId(item.id);
-        setName(item.name);
-        setPrice(item.price.toString());
-        setCategoryId(item.categoryId);
-        setCategoryName(item.category?.name)
-        setFavorite(item.isFavorite)
-      }
-    });
+        if (item.name === data.name) {
+          setId(item.id);
+          setName(item.name);
+          setPrice(item.price.toString());
+          setCategoryId(item.categoryId);
+          setCategoryName(item.category?.name)
+          setFavorite(item.isFavorite)
+        }
+      });
     }
   };
 
@@ -352,15 +355,15 @@ const ProductsPage = () => {
 
   const starHandler = () => {
     setFavorite(!favorite);
-    const newData: UpdateProductInput = {
-      id,
-      name,
-      price: Number(price),
-      categoryId: categoryId,
-      token,
-      businessId: business.id,
-      isFavorite: !favorite,
-    };
+     const newData: UpdateProductInput = {
+       id,
+       name,
+       price: Number(price),
+       categoryId: categoryId,
+       token,
+       businessId: business.id,
+       isFavorite: !favorite,
+     };
 
     window.electron.ipcRenderer.sendMessage('update-product', newData);
 
@@ -533,23 +536,6 @@ const ProductsPage = () => {
                 상품 정보
               </Typography>
               <div>
-                {clicked ? (
-                  favorite ? (
-                    <StarRateRoundedIcon
-                      className={styles.favorite}
-                      sx={{ color: 'gold' }}
-                      onClick={() => starHandler()}
-                    />
-                  ) : (
-                    <StarOutlineRoundedIcon
-                      className={styles.favorite}
-                      color="action"
-                      onClick={() => starHandler()}
-                    />
-                  )
-                ) : (
-                  ''
-                )}
                 <button className={styles.clearInput} onClick={clearInputs}>
                   비우기
                 </button>
@@ -557,6 +543,22 @@ const ProductsPage = () => {
               <div className={styles.list}>
                 <div>
                   <div>
+                    <div className={styles.item}>
+                      <p className={styles.labels}>즐겨찾기</p>
+                      {favorite ? (
+                          <StarRateRoundedIcon
+                            className={styles.favorite}
+                            sx={{ color: 'gold' }}
+                            onClick={() => starHandler()}
+                          />
+                        ) : (
+                          <StarOutlineRoundedIcon
+                            className={styles.favorite}
+                            color="action"
+                            onClick={() => starHandler()}
+                          />
+                      )}
+                    </div>
                     <div
                       className={
                         errors.name.length > 0

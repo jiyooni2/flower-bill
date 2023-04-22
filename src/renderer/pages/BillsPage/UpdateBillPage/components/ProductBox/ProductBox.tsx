@@ -3,6 +3,7 @@ import styles from './ProductBox.module.scss';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, orderProductsState } from 'renderer/recoil/states';
 import { Typography } from '@mui/material';
+import { StarOutlineRounded, StarRateRounded } from '@mui/icons-material';
 
 interface IProps {
   product: Product;
@@ -49,13 +50,24 @@ const ProductBox = ({ product }: IProps) => {
   };
 
   return (
-    <div className={styles.product_box} onClick={onProductClick} onDoubleClick={() => console.error('hey!')}>
-      <Typography
-        sx={{ fontSize: '17px', marginBottom: '15px', fontWeight: '400', width: '80px' }}
-      >
-        {product.name}
-      </Typography>
-      <Typography sx={{ fontSize: '15px', fontWeight: '500', width: '70px' }} align="right">
+    <div className={styles.product_box} onClick={onProductClick}>
+      <div style={{ display: 'flex', justifyContent: 'space-between'}}>
+        <Typography
+          sx={{ fontSize: '17px', marginBottom: '15px', fontWeight: '400', width: '80px' }}
+          className={styles.cutText}
+        >
+          {(product != undefined && product?.name) || ''}
+        </Typography>
+        {product.isFavorite ? (
+          <StarRateRounded
+            className={styles.favorite}
+            sx={{ color: 'gold' }}
+          />
+        ) : (
+          <StarOutlineRounded className={styles.favorite} color="action" />
+        )}
+      </div>
+      <Typography sx={{ fontSize: '15px', fontWeight: '500' }} align="right">
         {product.price.toLocaleString('ko-KR')}원
       </Typography>
     </div>
