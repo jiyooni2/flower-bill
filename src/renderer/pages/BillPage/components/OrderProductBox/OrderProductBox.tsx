@@ -30,8 +30,6 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
         } else {
           return {...item};
         }
-
-        return item;
       })
     );
   };

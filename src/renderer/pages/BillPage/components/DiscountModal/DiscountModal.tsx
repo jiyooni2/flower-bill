@@ -16,22 +16,20 @@ interface IProps {
 const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
 
-  console.log('order!!', orderProducts)
-
   const handleChange = (e: ChangeEvent<HTMLInputElement>, product: OrderProduct) => {
     const {value} = e.target;
     setOrderProducts(
       orderProducts.map((item) => {
-        if (item.id === product.id) {
+        console.log('orderProduct Check', item.id, product.id)
+        if (item.product.id === product.product.id) {
           return {
             ...item,
-            id: item.id,
-            orderPrice: Number(value),
+            orderPrice: parseInt(value),
           };
         }
+        return item;
       })
     );
-    console.log('Updating...', orderProducts)
   };
 
   return (
@@ -72,6 +70,7 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
                     <TableCell size="small" align="center">
                       <input
                         className={styles.dataInput}
+                        value={item.orderPrice}
                         onChange={(event) => handleChange(event, item)}
                       />
                       <span style={{ marginTop: '4px', marginLeft: '5px', fontSize: '14px' }}>

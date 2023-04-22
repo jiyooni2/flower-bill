@@ -1,14 +1,10 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import styles from './DiscountModal.module.scss';
-import Button from '@mui/material/Button';
-// import { useRecoilState } from 'recoil';
-// import { memoState } from 'renderer/recoil/states';
-import { useState } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import MiniModal from './MiniModal';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { orderProductsState } from 'renderer/recoil/states';
-import TrendingFlatOutlinedIcon from '@mui/icons-material/TrendingFlatOutlined';
-import DiscountTable from './DiscountTable';
+import styles from './DiscountModal.module.scss';
+import { ChangeEvent } from 'react';
+import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 
 interface IProps {
   isOpen: boolean;
@@ -16,10 +12,22 @@ interface IProps {
 }
 
 const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
-  const orderProducts = useRecoilValue(orderProductsState);
+  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
 
-  const handleClick = () => {
-    setIsOpen(false);
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, product: OrderProduct) => {
+    const {value} = e.target;
+    setOrderProducts(
+      orderProducts.map((item) => {
+        if (item.id === product.id) {
+          return {
+            ...item,
+            id: item.id,
+            orderPrice: Number(value),
+          };
+        }
+        return item;
+      })
+    );
   };
 
   return (
@@ -49,8 +57,22 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
             </TableHead>
             <TableBody>
               {orderProducts?.map((item) => (
-                <TableRow key={item.product.id}>
-                  <DiscountTable orderProduct={item} />
+                <TableRow key={item ? item?.id : Math.random()}>
+                  <TableCell size="small" style={{ width: '18%' }}>
+                    {item?.product?.name || ''}
+                  </TableCell>
+                  <TableCell size="small" style={{ width: '26%' }}>
+                    {item.product.price} 원
+                  </TableCell>
+                  <TableCell size="small" align="center">
+                    <input
+                      className={styles.dataInput}
+                      onChange={(event) => handleChange(event, item)}
+                    />
+                    <span style={{ marginTop: '4px', marginLeft: '5px', fontSize: '14px' }}>
+                      원
+                    </span>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -69,16 +91,6 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
             주문 상품이 없습니다.
           </span>
         )}
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Button
-          variant="contained"
-          onClick={handleClick}
-          size="small"
-          sx={{ width: '50%', backgroundColor: 'lightgray' }}
-        >
-          닫기
-        </Button>
       </div>
     </MiniModal>
   );
