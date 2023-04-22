@@ -39,8 +39,6 @@ import {
 } from 'main/product/dtos/search-product.dto';
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded';
-import { Grade } from '@mui/icons-material';
-import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 
 const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
