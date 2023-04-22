@@ -136,7 +136,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                     </span>
                   </td>
                   <td className={styles.name}>
-                    {store.owner ? store.owner : bill.store.owner} 님
+                    {bill.store ? bill.store.business.businessOwnerName : '(undefined)'} 님
                   </td>
                   <td className={styles.for}>&ensp;귀하</td>
                 </tr>
