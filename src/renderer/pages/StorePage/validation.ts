@@ -17,7 +17,7 @@ export const numberValidation = (value:string) => {
       success: success,
       error: error
     }
-}
+};
 
 
 export const nameValidation = (value:string) => {
@@ -113,4 +113,13 @@ export const submitValidation = ( storeNumber: string, storeName: string, owner:
   }
 
   return error
+}
+
+
+
+export const switched = (name: string, value: string) => {
+  if (name === 'storeNumber') return numberValidation(value);
+  else if (name === 'storeName') return nameValidation(value);
+  else if (name === 'owner') return ownerValidation(value);
+  else if (name === 'address') return addressValidation(value);
 }

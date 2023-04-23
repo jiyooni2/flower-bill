@@ -1,6 +1,5 @@
-import { nameValidation } from "renderer/pages/ProductsPage/validation";
 import { Inputs, StoreData } from "../types";
-import { addressValidation, numberValidation, ownerValidation } from "../validation";
+import { switched } from "../validation";
 import styles from '../StorePage.module.scss';
 
 type IProps = {
@@ -15,22 +14,13 @@ const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { name, value } = event.target;
-
-    let validation;
-    switch (name) {
-      case 'storeNumber': validation = numberValidation(value)
-      case 'storeName': validation = nameValidation(value);
-      case 'owner': validation = ownerValidation(value);
-      case 'address': validation = addressValidation(value);
-    }
-
+    const validation = switched(name, value);
     if (validation.success) {
       setErrors({...errors, [name]: ''})
       setInputs({...inputs, [name]: value})
     } else {
       setErrors({...errors, [name]: validation.error})
     }
-
   };
 
   return (
