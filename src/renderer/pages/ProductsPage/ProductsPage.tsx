@@ -59,7 +59,6 @@ const ProductsPage = () => {
       'get-products',
       ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
-          console.log(products);
           setProducts(products);
         }
         if (error) {

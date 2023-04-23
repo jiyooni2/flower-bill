@@ -49,8 +49,6 @@ const BusinessBar = () => {
     );
   }, [])
 
-  console.log(business)
-
 
   const clickHandler = (item: Business) => {
     setBusiness(item)

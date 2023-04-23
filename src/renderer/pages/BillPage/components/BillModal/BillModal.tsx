@@ -1,7 +1,6 @@
 import styles from './BillModal.module.scss';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
-  billListState,
   businessState,
   memoState,
   orderProductsState,
@@ -9,14 +8,10 @@ import {
   tokenState,
 } from 'renderer/recoil/states';
 import Modal from './Modal';
-import { useRef, useState } from 'react';
-import {
-  CreateBillInput,
-  // CreateBillOutput,
-} from 'main/bill/dtos/create-bill.dto';
+import { useRef } from 'react';
+import { CreateBillInput } from 'main/bill/dtos/create-bill.dto';
 import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import { Button } from '@mui/material';
-import MemoModal from '../MemoModal/MemoModal';
 import { useNavigate } from 'react-router-dom';
 import ReactToPrint from 'react-to-print';
 
