@@ -69,3 +69,9 @@ export const createValidation = (inputs: Input) => {
     success: true,
   }
 }
+
+
+export const switched = (name: string, value: string) => {
+  if (name === 'name') return nameValidation(value);
+  else if (name === 'price') return priceValidation(value);
+};

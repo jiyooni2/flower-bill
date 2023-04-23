@@ -10,7 +10,7 @@ import { SetterOrUpdater, useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
 import styles from '.././ProductsPage.module.scss';
 import { Error, Input } from '../types';
-import { createValidation, nameValidation, priceValidation } from '../validation';
+import { createValidation, switched } from '../validation';
 import CategoryModal from './CategoryModal/CategoryModal';
 
 
@@ -40,12 +40,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = event.target;
-    let validation;
-    switch (name) {
-      case "name": validation = nameValidation(value)
-      case "price": validation = priceValidation(value)
-    }
-
+    const validation = switched(name, value)
     if (validation.success) {
       setErrors({ ...errors, [name]: '' });
       setInputs({...inputs, [name]: value})
@@ -237,19 +232,27 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
             <div>
               <div className={styles.item}>
                 <p className={styles.labels}>즐겨찾기</p>
-                {inputs.favorite ? (
-                    <StarRateRounded
-                      className={styles.favorite}
-                      sx={{ color: 'gold' }}
-                      onClick={() => starHandler()}
-                    />
+                <div style={{ width: '50%', height: '33px'}}>
+                  {inputs.clicked ? inputs.favorite ? (
+                      <StarRateRounded
+                        className={styles.favorite}
+                        sx={{ color: 'gold', cursor: 'pointer' }}
+                        onClick={() => starHandler()}
+                      />
+                    ) : (
+                      <StarOutlineRounded
+                        className={styles.favorite}
+                        sx={{ cursor: 'pointer' }}
+                        color="action"
+                        onClick={() => starHandler()}
+                      />
                   ) : (
                     <StarOutlineRounded
-                      className={styles.favorite}
-                      color="action"
-                      onClick={() => starHandler()}
-                    />
-                )}
+                        className={styles.favorite}
+                        color="action"
+                      />
+                  )}
+                </div>
               </div>
               <div
                 className={
@@ -266,7 +269,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
                       : styles.dataInput
                   }
                   value={inputs.name}
-                  name='name'
+                  name="name"
                   onChange={changeStoreDataHandler}
                   maxLength={20}
                 />
