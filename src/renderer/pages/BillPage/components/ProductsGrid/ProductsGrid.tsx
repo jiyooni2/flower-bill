@@ -1,15 +1,13 @@
 import styles from './ProductsGrid.module.scss';
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
-import ProductBox from '../ProductBox/ProductBox';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
-import { GetProductByCategoryInput, GetProductByCategoryOutput } from 'main/product/dtos/get-product-by-category.dto';
-import { Link } from 'react-router-dom';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ProductCategory from './ProductCategory';
+import ProductBoxes from './ProductBoxes';
+import { Pagination } from '@mui/material';
 
 const ProductsGrid = () => {
   const [categories, setCategories] = useRecoilState(categoriesState)
@@ -18,11 +16,6 @@ const ProductsGrid = () => {
   const business = useRecoilValue(businessState)
   const [searchWord, setSearchWord] = useState('');
   const [page, setPage] = useState<number>(1);
-  const [mainId, setMainId] = useState<number>(0);
-  const [mainName, setMainName] = useState<string>('');
-  const [subId, setSubId] = useState<number>(0);
-  const [subName, setSubName] = useState<string>('');
-  const [groupName, setGroupName] = useState<string>('');
 
 
   useEffect(() => {
@@ -42,7 +35,7 @@ const ProductsGrid = () => {
     );
   }, [])
 
-  const handlePage = (event: ChangeEvent<HTMLElement>, value: string) => {
+  const handlePage = (event: ChangeEvent<unknown>, value: string) => {
     const pageNow = parseInt(value);
     setPage(pageNow);
   };
@@ -98,40 +91,6 @@ const ProductsGrid = () => {
     }
   };
 
-  const changeHandler = (e: SelectChangeEvent<unknown>, dataName: string) => {
-    if (dataName === 'main') setMainName(e.target.value as string);
-    else if (dataName === 'sub') setSubName(e.target.value as string);
-    else if (dataName === 'group') setGroupName(e.target.value as string);
-  };
-
-
-  const categoryChangeHandler = (id: number, dataName: string) => {
-    if (dataName === 'main') {
-      setMainId(id);
-      setGroupName('none');
-    } else if (dataName === 'sub'){
-      setSubId(id);
-    }
-
-    const data: GetProductByCategoryInput = {
-      token,
-      businessId: business.id,
-      categoryId: id,
-      page: page - 1,
-    };
-
-    window.electron.ipcRenderer.sendMessage('get-product-by-category', data);
-    window.electron.ipcRenderer.on(
-      'get-product-by-category',
-      ({ ok, error, products }: GetProductByCategoryOutput) => {
-        if (ok) {
-          setProducts(products);
-        } else if (error) {
-          console.error(error);
-        }
-      }
-    );
-  };
 
   return (
     <>
@@ -156,170 +115,9 @@ const ProductsGrid = () => {
             onKeyDown={searchHandler}
           />
         </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            width: '100%',
-            gap: '5%',
-          }}
-        >
-          <Box sx={{ width: '27%' }}>
-            <FormControl fullWidth>
-              <InputLabel id="main" style={{ marginTop: '-7px' }}>
-                대분류
-              </InputLabel>
-              <Select
-                labelId="main"
-                value={mainName}
-                label="대분류"
-                size="small"
-                onChange={(event) => changeHandler(event, 'main')}
-                defaultValue={'none'}
-              >
-                <MenuItem value={'none'}>---------------</MenuItem>
-                {categories != undefined &&
-                  categories.map((item) => {
-                    if (item.level === 1) {
-                      return (
-                        <MenuItem
-                          key={item.id}
-                          value={item.name == null ? '' : item?.name}
-                          onClick={() => categoryChangeHandler(item.id, 'main')}
-                        >
-                          {item.name == null ? '' : item?.name}
-                        </MenuItem>
-                      );
-                    }
-                  })}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ width: '27%' }}>
-            <FormControl fullWidth>
-              <InputLabel id="sub" style={{ marginTop: '-7px' }}>
-                중분류
-              </InputLabel>
-              <Select
-                labelId="sub"
-                value={subName}
-                size="small"
-                label="중분류"
-                onChange={(event) => changeHandler(event, 'sub')}
-                defaultValue={'none'}
-                className={styles.selects}
-              >
-                <MenuItem value={'none'}>---------------</MenuItem>
-                {categories != undefined &&
-                  categories.map((item) => {
-                    if (item.level === 2 && item.parentCategoryId === mainId) {
-                      return (
-                        <MenuItem
-                          key={item.id}
-                          value={item.name == null ? '' : item?.name}
-                          onClick={() => categoryChangeHandler(item.id, 'sub')}
-                        >
-                          {item.name == null ? '' : item?.name}
-                        </MenuItem>
-                      );
-                    }
-                  })}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ width: '27%' }}>
-            <FormControl fullWidth>
-              <InputLabel id="sub" style={{ marginTop: '-7px' }}>
-                소분류
-              </InputLabel>
-              <Select
-                labelId="group"
-                value={groupName}
-                size="small"
-                label="소분류"
-                onChange={(event) => changeHandler(event, 'group')}
-                defaultValue={'none'}
-                className={styles.selects}
-              >
-                <MenuItem value={'none'}>---------------</MenuItem>
-                {categories != undefined &&
-                  categories?.map((item) => {
-                    if (item.level === 3 && item.parentCategoryId === subId) {
-                      return (
-                        <MenuItem
-                          key={item.id}
-                          value={item.name == null ? '' : item?.name}
-                          onClick={() =>
-                            categoryChangeHandler(item.id, 'group')
-                          }
-                        >
-                          {item.name == null ? '' : item?.name}
-                        </MenuItem>
-                      );
-                    }
-                  })}
-              </Select>
-            </FormControl>
-          </Box>
-        </div>
-
+        <ProductCategory categories={categories} page={page} token={token} business={business} />
         <div style={{ margin: '20px', height: '300px' }}>
-          {products && (
-            <Grid
-              container
-              spacing={{ xs: 1, md: 2 }}
-              columns={{ xs: 4, sm: 8, md: 12 }}
-              sx={{ marginLeft: '5px', height: '200px', marginBottom: '30px' }}
-            >
-              {Array.from(products)
-                .slice((page - 1) * 9, page * 9)
-                .map((product) => (
-                  <Grid
-                    item
-                    key={product.id}
-                    xs={12}
-                    sm={6}
-                    md={4}
-                    lg={3}
-                    xl={2}
-                  >
-                    <ProductBox product={product} />
-                  </Grid>
-                ))}
-            </Grid>
-          )}
-          {(products != undefined && products?.length == 0 && (
-            <div>
-              <span
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  marginTop: '-38%',
-                  fontSize: '14px',
-                  color: 'dimgray',
-                }}
-              >
-                상품이 없습니다.
-              </span>
-              <Link
-                to={'/products'}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  marginTop: '5px',
-                  fontSize: '13px',
-                  color: 'darkslateblue',
-                  marginLeft: '2px',
-                }}
-              >
-                <Button variant="text" sx={{ color: '#2DCDDF' }}>
-                  상품 추가하러 가기{' '}
-                  <ArrowForwardIcon sx={{ fontSize: '15px' }} />
-                </Button>
-              </Link>
-            </div>
-          )) ||
-            ''}
+          <ProductBoxes products={products} page={page} />
         </div>
         <div style={{ margin: '0 auto' }}>
           <Pagination
@@ -328,7 +126,7 @@ const ProductsGrid = () => {
             color="standard"
             defaultPage={1}
             boundaryCount={1}
-            onChange={(event) => handlePage(event)}
+            onChange={(event) => handlePage(event, page + '1')}
           />
         </div>
       </div>
