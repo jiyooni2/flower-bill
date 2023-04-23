@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from
 import { Category } from "main/category/entities/category.entity";
 import { Product } from "main/product/entities/product.entity";
 import { SetterOrUpdater } from "recoil";
-import styles from '../../ProductsPage.modules.scss';
+import styles from '../ProductsPage.module.scss';
 import { Input } from "../types";
 
 
