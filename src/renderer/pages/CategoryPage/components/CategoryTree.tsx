@@ -22,7 +22,7 @@ const CategoryTree = ({ setInputs, inputs, setFocused  } : IProps) => {
     return (
       <TreeItem
         label={<Typography sx={{ fontSize: '14px' }}>{text}</Typography>}
-        key={item.name}
+        key={item.id}
         nodeId={`add${item.name}${Math.random() * 10}`}
         icon={<AddRounded />}
         sx={{ marginTop: '15px' }}
@@ -92,7 +92,7 @@ const CategoryTree = ({ setInputs, inputs, setFocused  } : IProps) => {
 
   const renderTree = (nodes: CategoryResult) => (
     <TreeItem
-      key={nodes.name}
+      key={nodes.id}
       nodeId={nodes.name}
       label={
         <div
