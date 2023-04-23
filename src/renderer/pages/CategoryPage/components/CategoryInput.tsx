@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import styles from '../CategoryPage.module.scss'
 import { Inputs } from '../types';
 import { changeValidation } from '../validation';
@@ -7,10 +8,19 @@ type IProps = {
   inputs: Inputs;
   errors: { name: string };
   setErrors: React.Dispatch<React.SetStateAction<{name: string}>>;
-  nameInputRef: React.MutableRefObject<HTMLInputElement>;
+  focused: boolean;
 }
 
-const CategoryInput = ({ setInputs, inputs, setErrors, errors, nameInputRef } : IProps) => {
+const CategoryInput = ({ setInputs, inputs, setErrors, errors, focused } : IProps) => {
+  const nameRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    if (focused) {
+      nameRef.current && nameRef.current.focus();
+    }
+  }, [nameRef, focused])
+
+
   const idChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputs({...inputs, categoryId: e.target.value})
   };
@@ -47,11 +57,11 @@ const CategoryInput = ({ setInputs, inputs, setErrors, errors, nameInputRef } : 
                           ? styles.hasError
                           : styles.dataInput
                       }
-                      ref={nameInputRef}
                       value={inputs.categoryName}
                       onChange={changeHandler}
                       maxLength={20}
-                      readOnly={!inputs.addNew}
+                      readOnly={inputs.addNew}
+                      ref={nameRef}
                       required
                     />
                   </div>

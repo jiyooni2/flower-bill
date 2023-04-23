@@ -2,7 +2,7 @@ import { Delete } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { CreateCategoryInput, CreateCategoryOutput } from 'main/category/dtos/create-category.dto';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import DevelopModal from 'renderer/components/DevelopModal/DevelopModal';
 import { businessState, categoriesState, tokenState } from 'renderer/recoil/states';
@@ -21,6 +21,11 @@ const Buttons = ({ inputs, setErrors, setInputs  } : IProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [clicked, setClicked] = useState<boolean>(false);
+
+  useEffect(() => {
+    setClicked(inputs.clicked);
+  }, [])
 
   const newCategoryHandler = () => {
     if (inputs.categoryName === '') {

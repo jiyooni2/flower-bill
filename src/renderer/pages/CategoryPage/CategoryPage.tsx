@@ -19,6 +19,7 @@ const CategoryPage = () => {
   const [categories, setCategories] = useRecoilState(categoriesState);
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
+  const [focused, setFocused] = useState<boolean>(false);
   const [inputs, setInputs] = useState<Inputs>({
     clicked: false,
     addNew: false,
@@ -28,9 +29,7 @@ const CategoryPage = () => {
     parentCategoryName: '',
     parentCategoryId: 0,
   })
-  const nameInputRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState({ name: '' });
-
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -55,7 +54,7 @@ const CategoryPage = () => {
       <div className={styles.container}>
         <div className={styles.search}></div>
         <div className={styles.treeContainer}>
-          <CategoryTree setInputs={setInputs} inputs={inputs} nameInputRef={nameInputRef} />
+          <CategoryTree setInputs={setInputs} inputs={inputs} setFocused={setFocused} />
         </div>
       </div>
       <div style={{ width: '55%' }}>
@@ -79,7 +78,7 @@ const CategoryPage = () => {
                 inputs={inputs}
                 setErrors={setErrors}
                 errors={errors}
-                nameInputRef={nameInputRef}
+                focused={focused}
               />
               <Buttons setErrors={setErrors} setInputs={setInputs} inputs={inputs} />
             </div>

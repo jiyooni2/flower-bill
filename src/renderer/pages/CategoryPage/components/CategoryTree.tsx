@@ -6,19 +6,17 @@ import { CategoryResult } from "main/common/dtos/category-result.dto";
 import { useRecoilValue } from "recoil";
 import { categoriesState } from "renderer/recoil/states";
 import { Inputs } from "../types";
-import { addLogic } from "../validation";
 
 
 type IProps = {
   setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
   inputs: Inputs;
-  nameInputRef: React.MutableRefObject<HTMLInputElement>;
+  setFocused: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 
-const CategoryTree = ({ setInputs, inputs, nameInputRef  } : IProps) => {
+const CategoryTree = ({ setInputs, inputs, setFocused  } : IProps) => {
   const categories = useRecoilValue(categoriesState);
-
 
   const addTreeItem = (item: Category, text: string) => {
     return (
@@ -34,9 +32,52 @@ const CategoryTree = ({ setInputs, inputs, nameInputRef  } : IProps) => {
   };
 
   const clickAddHandler = (item: Category, name: string) => {
-    const addFunction = addLogic(item, name, setInputs, inputs, nameInputRef, categories);
-    console.log('AddFunction!', addFunction)
-    setInputs({...inputs, ...addFunction})
+    setInputs({...inputs, categoryId: '', categoryName: '', levelName: '', parentCategoryName: ''})
+
+    if (name === 'add') {
+      setInputs({...inputs, clicked: false, addNew: true})
+      if (item == null) {
+        setInputs({...inputs, levelName: '대분류'})
+      } else if (item.level === 1) {
+        setInputs({...inputs, levelName: '중분류'})
+      } else if (item.level === 2) {
+        setInputs({...inputs, levelName: '소분류'})
+      }
+      setFocused(true)
+
+      if (item) {
+        setInputs({ ...inputs, parentCategoryName: item.name, parentCategoryId: item.id })
+      } else {
+        setInputs({ ...inputs, parentCategoryName: '', parentCategoryId: null})
+      }
+
+      setInputs({...inputs, categoryId: (categories.length + 1).toString(), categoryName: ''})
+      return inputs;
+    } else if (name === 'item') {
+      setInputs({...inputs, clicked: false, addNew: false})
+      if (item.level === 1) {
+        setInputs({...inputs, levelName: '대분류'})
+      } else if (item.level === 2) {
+        setInputs({...inputs, levelName: '중분류'})
+      } else if (item.level === 3) {
+        setInputs({...inputs, levelName: '소분류'})
+      }
+      setFocused(false)
+
+      if (item) {
+        setInputs({...inputs, categoryId: item.id.toString(), parentCategoryId: item.parentCategoryId})
+        categories.map((cat) => {
+          if (cat.id == item.parentCategoryId) {
+            setInputs({...inputs, parentCategoryName: cat.name})
+          }
+        });
+      } else {
+        setInputs({...inputs, parentCategoryId: null, parentCategoryName: ''})
+      }
+
+      setInputs({...inputs, categoryName: item.name})
+      return inputs;
+    }
   };
 
   const addTree = (item: Category, childrenDiff: boolean) => {
