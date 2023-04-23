@@ -1,14 +1,10 @@
 import Button from '@mui/material/Button';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { ChangeEvent, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import {
-  productsState,
   orderProductsState,
-  tokenState,
   businessState,
 } from 'renderer/recoil/states';
-import { Product } from 'main/product/entities/product.entity';
-import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import styles from './BillPage.module.scss';
 import StoreSearchModal from './components/StoreSearchModal/StoreSearchModal';
 import OrderProductBox from './components/OrderProductBox/OrderProductBox';
@@ -17,10 +13,10 @@ import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
 import DiscountModal from './components/DiscountModal/DiscountModal';
 import MemoModal from './components/MemoModal/MemoModal';
+import BillSum from './layout/BillSum';
+import Buttons from './layout/Buttons';
 
 const BillPage = () => {
-  const [products, setProducts] = useRecoilState(productsState);
-  const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState)
   const orderProducts = useRecoilValue(orderProductsState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
@@ -30,29 +26,9 @@ const BillPage = () => {
   const [page, setPage] = useState<number>(1);
 
 
-  useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-products', {
-      token,
-      businessId: business.id,
-    });
-     window.electron.ipcRenderer.on(
-      'get-products',
-      (args: GetProductsOutput) => {
-        setProducts(args.products as Product[]);
-      }
-    );
-  }, []);
-
   const handlePage = (event:ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
-
-  let sum = 0;
-  orderProducts.map((items) => {
-    sum += items.orderPrice * items.count;
-  });
-
-  const discount = 0;
 
   let LAST_PAGE;
   if (orderProducts == null) {
@@ -63,16 +39,6 @@ const BillPage = () => {
         ? Math.round(orderProducts?.length / 4)
         : Math.floor(orderProducts?.length / 4) + 1;
   }
-
-  const addComma = (data: number) => {
-    return `${data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
-  };
-
-  const billClickHandler = () => {
-    setIsBillOpen(true);
-  };
-
-  console.log(page)
 
   return (
     <>
@@ -142,126 +108,8 @@ const BillPage = () => {
               marginBottom: '15px',
             }}
           >
-            <div style={{ width: '100%' }}>
-              <div className={styles.total}>
-                <p className={styles.totalName}>과세&nbsp;물품</p>
-                <h6 className={styles.totalNum}>
-                  {addComma(Math.round(sum / 1.1))} 원
-                </h6>
-              </div>
-              <hr />
-              <div className={styles.total}>
-                <p className={styles.totalName}>
-                  부&nbsp;&nbsp;가&nbsp;&nbsp;세
-                </p>
-                <h6 className={styles.totalNum}>
-                  {addComma(Math.round(Math.round(sum / 1.1) * 0.1))} 원
-                </h6>
-              </div>
-              <hr />
-              <div className={styles.total}>
-                <p className={styles.totalName}>
-                  할&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;인
-                </p>
-                <p className={styles.totalNum}>
-                  {discount ? addComma(discount) : 0} 원
-                </p>
-              </div>
-              <hr />
-              <div className={styles.total}>
-                <p className={styles.totalName}>
-                  합&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;계
-                </p>
-                <p className={styles.totalNum}>
-                  {addComma(sum - (sum * discount) / 100)} 원
-                </p>
-              </div>
-              <hr />
-            </div>
-            <div
-              style={{
-                marginTop: '25px',
-                display: 'flex',
-                justifyContent: 'center',
-                width: '100%',
-                gap: '10px',
-              }}
-            >
-              <Button
-                variant="contained"
-                sx={{
-                  height: '38px',
-                  width: '110%',
-                  backgroundColor: 'ghostwhite',
-                  opacity: '0.9',
-                  marginleft: '20px',
-                  color: '#228af2',
-                  '&:hover': {
-                    background: '#651fff',
-                    opacity: '0.9',
-                    color: 'white',
-                  },
-                }}
-                onClick={() => setIsSearchStoreOpen(true)}
-              >
-                판매처
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => setIsDiscountOpen(true)}
-                sx={{
-                  height: '38px',
-                  width: '110%',
-                  backgroundColor: 'ghostwhite',
-                  color: '#228af2',
-                  '&:hover': {
-                    background: '#651fff',
-                    opacity: '0.9',
-                    color: 'white',
-                  },
-                }}
-              >
-                판매가
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => setIsMemoOpen(true)}
-                sx={{
-                  height: '38px',
-                  width: '100%',
-                  backgroundColor: 'ghostwhite',
-                  color: '#228af2',
-                  '&:hover': {
-                    background: '#651fff',
-                    opacity: '0.9',
-                    color: 'white',
-                  },
-                }}
-              >
-                메모
-              </Button>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginBottom: '-7px',
-              }}
-            >
-              <Button
-                variant="contained"
-                onClick={billClickHandler}
-                sx={{
-                  height: '37px',
-                  width: '100%',
-                  marginTop: '10px',
-                  backgroundColor: '#228bf2',
-                  color: '#e8f8e2',
-                }}
-              >
-                계산서 생성
-              </Button>
-            </div>
+            <BillSum orderProducts={orderProducts} />
+            <Buttons setIsDiscountOpen={setIsDiscountOpen} setIsMemoOpen={setIsMemoOpen} setIsSearchStoreOpen={setIsSearchStoreOpen} setIsBillOpen={setIsBillOpen} />
           </div>
         </div>
         <ProductsGrid />
