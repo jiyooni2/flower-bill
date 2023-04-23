@@ -1,10 +1,10 @@
 import { IconButton, TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import { FormEvent, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import './AuthForm.scss'
 import Modal from 'renderer/components/Modal/Modal';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import useInputsWithError from 'renderer/hooks/useInputsWithError';
+import { switched } from './validation';
 
 interface IProps {
   isOpen: boolean;
@@ -14,50 +14,69 @@ interface IProps {
 const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [{ nickname, ownerId, password, confirm, question, answer }, onChange, setForm, errors, setErrors] = useInputsWithError(
-    { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' },
-    { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' }
-  );
+  const [inputs, setInputs] = useState({
+    nickname: '',
+    ownerId: '',
+    password: '',
+    confirm: '',
+    question: '',
+    answer: ''
+  })
+  const [errors, setErrors] = useState({
+    nickname: '',
+    ownerId: '',
+    password: '',
+    confirm: '',
+    question: '',
+    answer: ''
+  })
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirm = () => setShowConfirm((show) => !show);
 
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const validation = switched(name, value)
+    console.log(validation)
+      if (validation.success) {
+        setInputs({...inputs, [name]: value})
+        setErrors({...errors, [name]: ''})
+      } else {
+        setErrors({...errors, [name]: validation.error})
+      }
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (password != confirm) {
-      setErrors({ ...errors, confirm: '비밀번호가 일치하지 않습니다.' });
-      return;
-    }
-
-    if (!ownerId && !nickname && !password && !confirm && !question && !answer) {
-      setErrors({
-        ownerId: '아이디가 입력되지 않았습니다.',
-        nickname: '닉네임이 입력되지 않았습니다.',
-        password: '비밀번호가 입력되지 않았습니다.',
-        confirm: '비밀번호가 입력되지 않았습니다.',
-        question: '비밀번호 찾기 질문이 입력되지 않았습니다.',
-        answer: '비밀번호 찾기 답이 입력되지 않았습니다.',
-      });
-      return;
-    } else if (!ownerId || !nickname || !password || !confirm || !question || !answer) {
-      if (!ownerId) setErrors(({ ...errors, ownerId: '아이디가 입력되지 않았습니다.' }));
-      if (!nickname) setErrors({...errors, nickname: '닉네임이 입력되지 않았습니다.'});
-      if (!password) setErrors({...errors, password: '비밀번호가 입력되지 않았습니다.'});
-      if (!confirm) setErrors({...errors, confirm: '비밀번호가 입력되지 않았습니다.'});
-      if (!question) setErrors({...errors, question: '비밀번호 찾기 질문이 입력되지 않았습니다.'});
-      if (!answer) setErrors({...errors, answer: '비밀번호 찾기 답이 입력되지 않았습니다.'});
-      return;
-    } else if (ownerId && nickname && password && confirm && question && answer) {
+    if (Object.values(errors).join('') === '' && Object.values(inputs).join('') !== '') {
       window.electron.ipcRenderer.sendMessage('create-owner', {
-        nickname,
-        ownerId,
-        password,
-        findPasswordAnswer: answer,
-        findPasswordQuestion: question,
+        nickname: inputs.nickname,
+        ownerId: inputs.ownerId,
+        password: inputs.password,
+        findPasswordAnswer: inputs.answer,
+        findPasswordQuestion: inputs.question,
       });
-      setForm({nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: ''});
+      setInputs({nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: ''});
       setIsOpen(false);
+    } else if (Object.values(inputs).join('') !== '') {
+      if (inputs.password != inputs.confirm) {
+        setErrors({...errors, confirm: '비밀번호가 일치하지 않습니다.'})
+      }
+
+      if (!inputs.ownerId) setErrors({...errors, ownerId: '아이디가 입력되지 않았습니다.'})
+      if (!inputs.nickname) setErrors({...errors, nickname: '닉네임이 입력되지 않았습니다.'})
+      if (!inputs.password || !confirm) setErrors({...errors, password: '비밀번호가 입력되지 않았습니다.'})
+      if (!inputs.question) setErrors({...errors, question: '질문이 입력되지 않았습니다.'})
+      if (!inputs.answer) setErrors({...errors, answer: '답안이 입력되지 않았습니다.'})
+
+      if (inputs.password.length < 8) {
+        setErrors({...errors, password: '8자 이상 작성해야합니다.'})
+      } else if (inputs.password.length > 16) {
+        setErrors({...errors, password: '16장 이상 작성 불가합니다.'})
+      }
+    } else {
+      setErrors({nickname: '닉네임이 입력되지 않았습니다.', ownerId: '아이디가 입력되지 않았습니다.', password: '비밀번호가 입력되지 않았습니다.', confirm: '비밀번호가 입력되지 않았습니다.', question: '질문이 입력되지 않았습니다.', answer: '답안이 입력되지 않았습니다.'});
     }
   };
 
@@ -87,11 +106,11 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   helperText={
                     errors.nickname.length > 0
                       ? errors.nickname
-                      : '2글자 이상 작성하실 수 있습니다.'
+                      : ' '
                   }
                   // onChange={handleChange}
-                  onChange={onChange}
-                  value={nickname}
+                  onChange={changeHandler}
+                  value={inputs.nickname}
                 />
                 <TextField
                   size="small"
@@ -101,11 +120,11 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   helperText={
                     errors.ownerId.length > 0
                       ? errors.ownerId
-                      : '2글자 이상 작성하실 수 있습니다.'
+                      : ' '
                   }
                   variant="filled"
-                  onChange={onChange}
-                  value={ownerId}
+                  onChange={changeHandler}
+                  value={inputs.ownerId}
                 />
               </div>
               <div className="text-wrapper">
@@ -120,9 +139,9 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                       : '8~16자리 내의 문자만 작성하실 수 있습니다.'
                   }
                   variant="filled"
-                  onChange={onChange}
+                  onChange={changeHandler}
                   type={showPassword ? 'text' : 'password'}
-                  value={password}
+                  value={inputs.password}
                   InputProps={{
                     endAdornment: (
                       <IconButton onClick={handleClickShowPassword}>
@@ -144,9 +163,9 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                       : '8~16자리 내의 문자만 작성하실 수 있습니다.'
                   }
                   variant="filled"
-                  onChange={onChange}
+                  onChange={changeHandler}
                   type={showConfirm ? 'text' : 'password'}
-                  value={confirm}
+                  value={inputs.confirm}
                   InputProps={{
                     endAdornment: (
                       <IconButton onClick={handleClickShowConfirm}>
@@ -166,21 +185,21 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   name="question"
                   error={errors.question.length > 0}
                   helperText={
-                    errors.question.length > 0 ? errors.question : 'asdf'
+                    errors.question.length > 0 ? errors.question : ' '
                   }
                   variant="filled"
-                  onChange={onChange}
-                  value={question}
+                  onChange={changeHandler}
+                  value={inputs.question}
                 />
                 <TextField
                   size="small"
                   label="비밀번호 찾기 답"
                   name="answer"
                   error={errors.answer.length > 0}
-                  helperText={errors.answer.length > 0 ? errors.answer : 'asdf'}
+                  helperText={errors.answer.length > 0 ? errors.answer : ' '}
                   variant="filled"
-                  onChange={onChange}
-                  value={answer}
+                  onChange={changeHandler}
+                  value={inputs.answer}
                 />
               </div>
             </div>
