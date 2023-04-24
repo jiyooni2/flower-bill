@@ -44,6 +44,9 @@ export const passwordValidation = (value: string) => {
   if (value.length > 16) {
     success = false;
     error = '* 16글자 이상 작성하실 수 없습니다.'
+  } else if (value.startsWith(' ')) {
+    success = false,
+    error = '* 공백으로 시작할 수 없습니다.'
   } else {
     success = true;
     error = '';
@@ -56,14 +59,30 @@ export const passwordValidation = (value: string) => {
 };
 
 
+export const codeValidation = (value: string) => {
+  let success = false;
+  let error = '';
+
+  if (value.length > 8) {
+    success = false;
+    error = '* 8글자 이상 작성하실 수 없습니다.'
+  } else if (value.startsWith(' ')) {
+    success = false,
+    error = '* 공백으로 시작할 수 없습니다.'
+  } else {
+    success = true;
+    error = '';
+  }
+
+  return {
+    success: success,
+    error: error
+  }
+};
+
 export const switched = (name: string, value: string) => {
   if (name === 'nickname') return nameValidation(value);
   else if (name === 'ownerId') return idValidation(value);
   else if (name === 'password') return passwordValidation(value);
-  else {
-    return {
-      success: true,
-      error: ''
-    }
-  }
+  else if (name === 'code') return codeValidation(value);
 };
