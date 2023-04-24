@@ -1,3 +1,5 @@
+import { Inputs } from "../types";
+
 export const nameValidation = (value: string) => {
   let success;
   let error;
@@ -77,6 +79,27 @@ export const codeValidation = (value: string) => {
   return {
     success: success,
     error: error
+  }
+};
+
+export const signUpSubmitValidation = (inputs: Inputs) => {
+  let ownerId, nickname, password, code = '';
+  if (!inputs.ownerId) ownerId = '* 아이디가 입력되지 않았습니다.'
+  if (!inputs.nickname) nickname = '* 닉네임이 입력되지 않았습니다.'
+  if (!inputs.password) password = '* 비밀번호가 입력되지 않았습니다.'
+  if (!inputs.code) code = '* 비밀번호 변경 코드가 입력되지 않았습니다.'
+
+  if (inputs.password.length < 8) {
+    password = '8자 이상 작성해야합니다.'
+  } else if (inputs.password.length > 16) {
+    password = '16장 이상 작성 불가합니다.'
+  }
+
+  return {
+    ownerId: ownerId,
+    nickname: nickname,
+    password: password,
+    code: code,
   }
 };
 
