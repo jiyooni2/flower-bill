@@ -25,8 +25,8 @@ const ProductTable = ({ products, categories, inputs, setInputs, setId }: IProps
 
     if (products != undefined) {
       products.forEach((item) => {
-        if (item.name === data.name) {
-          setInputs({...inputs, id: item.id, name: item.name, price: item.price.toString(), favorite: item.isFavorite, categoryName: item.category?.name})
+        if (item?.name === data.name) {
+          setInputs({...inputs, id: item.id, name: item?.name, price: item.price.toString(), favorite: item.isFavorite, categoryName: item.category?.name})
           setId(item.categoryId);
         }
       });
@@ -66,9 +66,9 @@ const ProductTable = ({ products, categories, inputs, setInputs, setId }: IProps
             </TableHead>
             <TableBody>
               {products != undefined &&
-                products.slice((inputs.page - 1) * 9, inputs.page * 9).map((item) => (
+                products.slice((inputs.page - 1) * 9, inputs.page * 9)?.map((item) => (
                   <TableRow
-                    key={item.name}
+                    key={item?.name}
                     className={styles.dataRow}
                     onClick={(event) => changeDataHandler(event, item)}
                     sx={{
@@ -105,14 +105,14 @@ const ProductTable = ({ products, categories, inputs, setInputs, setId }: IProps
                       sx={{ width: '45%' }}
                     >
                       {categories != undefined &&
-                        categories.map((cat) => {
+                        categories?.map((cat) => {
                           if (cat.id === item.categoryId) {
                             if (cat.parentCategory.parentCategory) {
-                              return `${cat.parentCategory.parentCategory.name} / ${cat.parentCategory.name} / ${cat.name}`;
+                              return `${cat.parentCategory.parentCategory?.name} / ${cat.parentCategory?.name} / ${cat?.name}`;
                             } else if (cat.parentCategory) {
-                              return `${cat.parentCategory.name}/${cat.name}`;
+                              return `${cat.parentCategory?.name}/${cat?.name}`;
                             } else {
-                              return cat.name;
+                              return cat?.name;
                             }
                           }
                         })}

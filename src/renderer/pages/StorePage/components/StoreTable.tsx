@@ -15,7 +15,7 @@ type IProps = {
 const StoreTable = ({ stores, inputs, setInputs, setClickedStore } : IProps) => {
 
   const changeDataHandler = (event: React.MouseEvent<unknown>, data: Store) => {
-    stores.forEach((item) => {
+    stores?.forEach((item) => {
       if (item.name === data.name) {
         setInputs({...inputs, storeNumber: item.businessNumber.toString(), storeName: item.name, owner: item.owner, address: item.address, clicked: true});
         setClickedStore({
@@ -78,7 +78,7 @@ const StoreTable = ({ stores, inputs, setInputs, setClickedStore } : IProps) => 
                     <TableBody>
                       {stores != undefined &&
                         stores.length > 0 &&
-                        stores.map((store) => (
+                        stores?.map((store) => (
                           <TableRow
                             key={store.businessNumber}
                             className={styles.dataRow}

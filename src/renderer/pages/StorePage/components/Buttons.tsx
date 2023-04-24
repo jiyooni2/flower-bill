@@ -111,7 +111,7 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
   };
 
   const deleteDataHandler = () => {
-    setStores(stores.filter((store) => store.name !== clickedStore.name));
+    setStores(stores.filter((store) => store?.name !== clickedStore.name));
   };
 
   return (

@@ -41,7 +41,7 @@ const ProductsPage = () => {
 
 
   useEffect(() => {
-    categories.map((cat) => {
+    categories?.map((cat) => {
       if (cat.id == categoryId) {
         return setInputs({...inputs, categoryName: cat?.name})
       }
