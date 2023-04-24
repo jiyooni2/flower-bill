@@ -17,8 +17,7 @@ export class OwnerService {
     ownerId,
     password,
     nickname,
-    findPasswordQuestion,
-    findPasswordAnswer,
+    findPasswordCode,
   }: CreateOwnerInput): Promise<CreateOwnerOutput> {
     try {
       const existingOwner = await this.ownerRepository.findOne({
@@ -37,8 +36,7 @@ export class OwnerService {
           ownerId,
           nickname,
           password: await bcrypt.hash(password, 10),
-          findPasswordAnswer,
-          findPasswordQuestion,
+          findPasswordCode,
         })
         .execute();
 

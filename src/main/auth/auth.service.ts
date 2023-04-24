@@ -47,7 +47,7 @@ export class AuthService {
 
   async changePassword({
     ownerId,
-    findPasswordAnswer,
+    findPasswordCode,
     newPassword,
   }: ChangePasswordInput): Promise<ChangePasswordOutput> {
     try {
@@ -56,11 +56,13 @@ export class AuthService {
         return { ok: false, error: '존재하지 않는 사용자입니다.' };
       }
 
-      if (owner.findPasswordAnswer.trim() == findPasswordAnswer.trim()) {
+      if (owner.findPasswordCode.trim() == findPasswordCode.trim()) {
         await this.ownerRepository.update(
           { ownerId },
           { password: await bcrypt.hash(newPassword, 10) }
         );
+      } else {
+        return { ok: false, error: '패스워드 변경 코드가 일치하지 않습니다.' };
       }
     } catch (error: any) {
       return { ok: false, error: error.message };
