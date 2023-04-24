@@ -86,8 +86,8 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {storeList.map((row) => (
-                <TableRow key={row.name} sx={{}}>
+              {storeList?.map((row) => (
+                <TableRow key={row?.name} sx={{}}>
                   <TableCell component="th" scope="row">
                     <Button
                       sx={{ marginTop: '9px', marginBottom: '-13px' }}
@@ -96,7 +96,7 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
                       선택
                     </Button>
                   </TableCell>
-                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row?.name}</TableCell>
                   <TableCell>{row.owner}</TableCell>
                   <TableCell>{row.businessNumber}</TableCell>
                   <TableCell>{row.address}</TableCell>

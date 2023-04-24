@@ -140,7 +140,7 @@ const DetailBillPage = () => {
                         <br />
                         구&nbsp;매&nbsp;처&nbsp;명&nbsp;:{' '}
                         <span style={{ color: 'black' }}>
-                          {bill.store ? bill.store.name : '익명'}
+                          {bill.store ? bill.store?.name : '익명'}
                         </span>
                         <br />
                         <span>
@@ -208,7 +208,7 @@ const DetailBillPage = () => {
                     </TableHead>
                     <TableBody>
                       {orderProducts != undefined &&
-                        orderProducts.map((item) => (
+                        orderProducts?.map((item) => (
                           <TableRow
                             key={item.id}
                             sx={{
@@ -216,7 +216,7 @@ const DetailBillPage = () => {
                             }}
                           >
                             <TableCell component="th">
-                              {item.product.name}
+                              {item.product?.name}
                             </TableCell>
                             <TableCell>{item.product.price} 원</TableCell>
                             <TableCell>{item.product.categoryId}</TableCell>

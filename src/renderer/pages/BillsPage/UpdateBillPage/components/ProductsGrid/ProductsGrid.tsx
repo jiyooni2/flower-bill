@@ -182,15 +182,15 @@ const ProductsGrid = () => {
                 className={styles.selects}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories.map((item) => {
+                {categories?.map((item) => {
                   if (item.level === 1) {
                     return (
                       <MenuItem
                         key={item.id}
-                        value={item.name}
+                        value={item?.name}
                         onClick={() => categoryChangeHandler(item.id, 'main')}
                       >
-                        {item.name}
+                        {item?.name}
                       </MenuItem>
                     );
                   }
@@ -210,15 +210,15 @@ const ProductsGrid = () => {
                 className={styles.selects}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories.map((item) => {
+                {categories?.map((item) => {
                   if (item.level === 2 && item.parentCategoryId === mainId) {
                     return (
                       <MenuItem
                         key={item.id}
-                        value={item.name}
+                        value={item?.name}
                         onClick={() => categoryChangeHandler(item.id, 'sub')}
                       >
-                        {item.name}
+                        {item?.name}
                       </MenuItem>
                     );
                   }
@@ -238,15 +238,15 @@ const ProductsGrid = () => {
                 className={styles.selects}
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
-                {categories.map((item) => {
+                {categories?.map((item) => {
                   if (item.level === 3 && item.parentCategoryId === subId) {
                     return (
                       <MenuItem
                         key={item.id}
-                        value={item.name}
+                        value={item?.name}
                         onClick={() => categoryChangeHandler(item.id, 'group')}
                       >
-                        {item.name}
+                        {item?.name}
                       </MenuItem>
                     );
                   }

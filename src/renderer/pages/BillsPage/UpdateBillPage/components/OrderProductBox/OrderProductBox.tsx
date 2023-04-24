@@ -21,7 +21,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
 
     setCount(Number(value));
     setOrderProducts(
-      orderProducts.map((item) => {
+      orderProducts?.map((item) => {
         if (item.product.id === orderProduct.product.id) {
           return {
             ...item,
@@ -37,7 +37,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
 
   const updateOrderProduct = (product: Product, name: string) => {
     setOrderProducts(
-      orderProducts.map((orderProduct) => {
+      orderProducts?.map((orderProduct) => {
         if (orderProduct.product.id === product.id) {
           if (name === 'INCREASE') {
             return {
@@ -81,7 +81,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
           </button>
         </div>
         <div style={{ width: '40%', marginTop: '3px' }}>
-          {orderProduct.product.name}
+          {orderProduct.product?.name}
         </div>
         <div style={{ marginTop: '3px', width: '30%' }}>
           <span className={styles.cutText}>

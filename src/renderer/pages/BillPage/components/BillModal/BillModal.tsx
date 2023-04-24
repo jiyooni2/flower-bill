@@ -30,7 +30,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const movePage = useNavigate();
 
   const handleClick = () => {
-    const orderProductInputs = orderProducts.map((orderProduct) => ({
+    const orderProductInputs = orderProducts?.map((orderProduct) => ({
       businessId: business.id,
       count: orderProduct.count,
       productId: orderProduct.product.id,
@@ -67,7 +67,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   }
 
   let sum = 0;
-  orderProducts.map((items) => {
+  orderProducts?.map((items) => {
     sum += items.orderPrice * items.count;
   });
   const date = new Date();
@@ -152,7 +152,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 <tr>
                   <th>상호</th>
                   <td style={{ width: '25%', fontSize: '15px' }} align="center">
-                    {business.name}
+                    {business?.name}
                   </td>
                   <th style={{ width: '14%' }}>성명</th>
                   <td style={{ width: '20%', fontSize: '15px' }} align="center">
@@ -243,14 +243,14 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               </tbody>
               <tbody>
                 {orderProducts.length > 0 ? (
-                  orderProducts.map((orderProduct) => {
+                  orderProducts?.map((orderProduct) => {
                     return (
                       <tr
                         key={orderProduct.id ? orderProduct.id : Math.random()}
                       >
                         <td className={styles.item}>{`${month} / ${day}`}</td>
                         <td className={styles.item}>
-                          {orderProduct.product.name}
+                          {orderProduct.product?.name}
                         </td>
                         <td className={styles.article}>{orderProduct.count}</td>
                         <td className={styles.price}>

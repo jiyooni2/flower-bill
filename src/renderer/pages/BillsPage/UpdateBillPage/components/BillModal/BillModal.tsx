@@ -36,7 +36,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const updateBillhandler = () => {
     const orderProductInputs: CreateOrderProductInput[] = [];
 
-    orderProducts.map((item) => {
+    orderProducts?.map((item) => {
       console.log(item);
       orderProductInputs.push({
         count: item.count,
@@ -85,7 +85,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   };
 
   let sum = 0;
-  orderProducts.map((items) => {
+  orderProducts?.map((items) => {
       sum += items.orderPrice * items.count;
     });
   const date = new Date();
@@ -177,7 +177,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 <tr>
                   <th>상호</th>
                   <td style={{ width: '25%', fontSize: '13px' }} align="center">
-                    {bill.business.name}
+                    {bill.business?.name}
                   </td>
                   <th style={{ width: '14%' }}>성명</th>
                   <td style={{ width: '20%', fontSize: '13px' }} align="center">
@@ -244,13 +244,13 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   <th>공급가액</th>
                 </tr>
               </tbody>
-              {orderProducts.map((orderProduct) => {
+              {orderProducts?.map((orderProduct) => {
                 return (
                   <tbody key={orderProduct.product.id}>
                     <tr>
                       <td className={styles.item}>{`${month} / ${day}`}</td>
                       <td className={styles.item}>
-                        {orderProduct.product.name}
+                        {orderProduct.product?.name}
                       </td>
                       <td className={styles.article}>{orderProduct.count}</td>
                       <td className={styles.price}>

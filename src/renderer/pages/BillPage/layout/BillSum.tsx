@@ -12,7 +12,7 @@ const BillSum = ({ orderProducts } : IProps) => {
   };
 
   let sum = 0;
-  orderProducts.map((items) => {
+  orderProducts?.map((items) => {
     sum += items.orderPrice * items.count;
   });
 

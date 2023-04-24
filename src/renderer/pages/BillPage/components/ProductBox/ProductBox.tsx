@@ -36,7 +36,8 @@ const ProductBox = ({ product }: IProps) => {
 
   const updateOrderProduct = (product: Product) => {
     setOrderProducts(
-      orderProducts.map((orderProduct) => {
+      orderProducts
+      .map((orderProduct) => {
         if (orderProduct.product.id === product.id) {
           return {
             ...orderProduct,

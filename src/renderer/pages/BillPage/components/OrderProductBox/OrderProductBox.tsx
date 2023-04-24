@@ -21,7 +21,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
 
     setCount(Number(value));
     setOrderProducts(
-      orderProducts.map((item) => {
+      orderProducts?.map((item) => {
         if (item.product.id === orderProduct.product.id) {
           return {
             ...item,
@@ -36,7 +36,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
 
   const updateOrderProduct = (product: Product, name: string) => {
     setOrderProducts(
-      orderProducts.map((orderProduct) => {
+      orderProducts?.map((orderProduct) => {
         if (orderProduct?.product?.id === product.id) {
           if (name === 'INCREASE') {
             return {

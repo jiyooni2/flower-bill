@@ -22,7 +22,7 @@ const Buttons = () => {
   })
 
   useEffect(() => {
-    setInputs({ businessNumber: business.businessNumber.toString(), name: business.name, businessOwnerName: business.businessOwnerName, address: business.address })
+    setInputs({ businessNumber: business.businessNumber.toString(), name: business?.name, businessOwnerName: business.businessOwnerName, address: business.address })
   }, [business]);
 
   const deleteDataHandler = () => {

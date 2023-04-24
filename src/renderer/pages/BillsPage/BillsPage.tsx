@@ -149,7 +149,7 @@ const BillsPage = () => {
                         </TableCell>
                         <TableCell>{convertTime(bill.createdAt)}</TableCell>
                         <TableCell>{convertTime(bill.updatedAt)}</TableCell>
-                        <TableCell>{bill.business.name}</TableCell>
+                        <TableCell>{bill.business?.name}</TableCell>
                         <TableCell>
                           {bill.store ? bill.store.name : `(undefined)`}
                         </TableCell>

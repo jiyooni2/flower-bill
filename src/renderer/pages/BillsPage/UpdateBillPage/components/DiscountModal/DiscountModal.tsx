@@ -17,7 +17,7 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>, product: OrderProduct) => {
     const {value} = e.target;
     setOrderProducts(
-      orderProducts.map((item) => {
+      orderProducts?.map((item) => {
         if (item.id === product.id) {
           return {
             ...item,

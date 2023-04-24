@@ -40,7 +40,7 @@ const BusinessBar = () => {
           setBusiness(businesses[0])
           setClicked(true);
           setClickedData({
-            name: businesses[0].name,
+            name: businesses[0]?.name,
           });
         } else {
           console.error(error);
@@ -76,7 +76,7 @@ const BusinessBar = () => {
                       }
                        onClick={() => clickHandler(business)}
                     >
-                      {business.name.slice(0, 1)}
+                      {business?.name.slice(0, 1)}
                     </Button>
                   </div>
                 </div>

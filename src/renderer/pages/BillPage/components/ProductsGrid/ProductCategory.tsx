@@ -83,15 +83,15 @@ const ProductCategory = ({ categories, page, token, business } : IProps) => {
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
                 {categories != undefined &&
-                  categories.map((item) => {
+                  categories?.map((item) => {
                     if (item.level === 1) {
                       return (
                         <MenuItem
                           key={item.id}
-                          value={item.name == null ? '' : item?.name}
+                          value={item?.name == null ? '' : item?.name}
                           onClick={() => categoryChangeHandler(item.id, 'main')}
                         >
-                          {item.name == null ? '' : item?.name}
+                          {item?.name == null ? '' : item?.name}
                         </MenuItem>
                       );
                     }
@@ -115,15 +115,15 @@ const ProductCategory = ({ categories, page, token, business } : IProps) => {
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
                 {categories != undefined &&
-                  categories.map((item) => {
+                  categories?.map((item) => {
                     if (item.level === 2 && item.parentCategoryId === mainId) {
                       return (
                         <MenuItem
                           key={item.id}
-                          value={item.name == null ? '' : item?.name}
+                          value={item?.name == null ? '' : item?.name}
                           onClick={() => categoryChangeHandler(item.id, 'sub')}
                         >
-                          {item.name == null ? '' : item?.name}
+                          {item?.name == null ? '' : item?.name}
                         </MenuItem>
                       );
                     }
@@ -152,12 +152,12 @@ const ProductCategory = ({ categories, page, token, business } : IProps) => {
                       return (
                         <MenuItem
                           key={item.id}
-                          value={item.name == null ? '' : item?.name}
+                          value={item?.name == null ? '' : item?.name}
                           onClick={() =>
                             categoryChangeHandler(item.id, 'group')
                           }
                         >
-                          {item.name == null ? '' : item?.name}
+                          {item?.name == null ? '' : item?.name}
                         </MenuItem>
                       );
                     }

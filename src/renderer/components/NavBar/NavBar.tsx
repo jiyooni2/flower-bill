@@ -3,10 +3,9 @@ import styles from './NavBar.module.scss';
 import ROUTES from '../../constants/routes';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, businessesState, passwordCheckState, tokenState } from 'renderer/recoil/states';
+import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import InfoModal from './InfoModal/InfoModal';
-import PasswordConfirmModal from 'renderer/pages/BusinessPage/components/ConfirmModal/PasswordConfirmModal';
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -14,7 +13,6 @@ const NavBar = () => {
   const business = useRecoilValue(businessState)
   const [businesses, setBusinesses] = useRecoilState(businessesState)
   const [hasBusinesses, setHasBusinesses] = useState<boolean>(false);
-  const [checked, setChecked] = useRecoilState(passwordCheckState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
 
@@ -47,7 +45,6 @@ const NavBar = () => {
   }, []);
 
   const businessClickHandler = () => {
-    setChecked(false);
     hasBusinesses ? navigate(ROUTES.CONFIRM) : setIsOpen(true);
   }
 
