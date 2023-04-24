@@ -208,7 +208,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
 
   return (
     <>
-      <CategoryModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <CategoryModal isOpen={isOpen} setIsOpen={setIsOpen} setCategoryId={setCategoryId} categoryId={id} />
       <div className={styles.infoContent}>
         <Typography
           variant="h6"

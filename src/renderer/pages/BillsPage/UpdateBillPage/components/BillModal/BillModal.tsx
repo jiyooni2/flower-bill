@@ -12,8 +12,6 @@ import {
 import Modal from './Modal';
 import { useRef, useState } from 'react';
 import { Button } from '@mui/material';
-import MemoModal from '../MemoModal/MemoModal';
-import ReactToPrint from 'react-to-print';
 import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
 import { UpdateBillInput, UpdateBillOutput } from 'main/bill/dtos/update-bill.dto';
 import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
@@ -25,13 +23,11 @@ interface IProps {
 }
 
 const BillModal = ({ isOpen, setIsOpen }: IProps) => {
-  const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const memo = useRecoilValue(memoState)
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
-  const [memoIsOpen, setMemoIsOpen] = useState<boolean>(false);
   const [bills, setBills] = useRecoilState(billListState)
-  const [bill, setBill] = useRecoilState(billState)
+  const bill = useRecoilValue(billState)
   const store = useRecoilValue(storeState);
   const printRef = useRef();
   const navigate = useNavigate();

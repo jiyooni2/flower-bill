@@ -1,19 +1,18 @@
 import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import BillPartPage from '../BillPart/BillPartPage';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { billState, orderProductsState } from 'renderer/recoil/states';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Link } from 'react-router-dom';
 import { CheckCircleOutline, LocalPrintshopSharp } from '@mui/icons-material';
-import { alertState } from 'renderer/recoil/bill-states';
 import BillModal from './BillModal/BillModal';
 import { useEffect, useRef, useState } from 'react';
 
 const DetailBillPage = () => {
   const bill = useRecoilValue(billState)
   const orderProducts = useRecoilValue(orderProductsState)
-  const [alert, setAlert] = useRecoilState(alertState);
+  const [alert, setAlert] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const printRef = useRef<HTMLElement>();
   const [updated, setUpdated] = useState<boolean>(false);

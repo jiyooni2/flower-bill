@@ -4,17 +4,14 @@ import SignUpForm from './components/SignUpForm';
 import './components/AuthForm.scss';
 import { LoginOutput } from 'main/auth/dtos/login.dto';
 import { useRecoilState } from 'recoil';
-import { loginState, tokenState } from 'renderer/recoil/states';
-import { Link, useNavigate } from 'react-router-dom';
+import { tokenState } from 'renderer/recoil/states';
 import FindPasswordModal from './components/FindPasswordModal/FindPasswordModal'
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const [isSignUpPageOpen, setIsSignUpPageOpen] = useState<boolean>(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false);
   const [ownerId, setOwnerId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
   const [token, setToken] = useRecoilState(tokenState);
   const [errors, setErrors] = useState({
     id: '',
@@ -47,7 +44,6 @@ const LoginPage = () => {
         'login',
         ({ ok, token, error }: LoginOutput) => {
           if (ok) {
-            setIsLoggedIn(true);
             setToken(token);
           } else {
             console.error(error);

@@ -41,18 +41,9 @@ const memoState = atom<string>({
   default: '',
 });
 
-const categoryState = atom<Category>({
-  key: 'categoryState',
-});
-
 const categoriesState = atom<Category[]>({
   key: 'categoriesState',
   default: [],
-});
-
-const loginState = atom<boolean>({
-  key: 'loginState',
-  default: false,
 });
 
 const tokenState = atom<string>({
@@ -108,60 +99,16 @@ const billListState = atom<Bill[]>({
   default: [],
 });
 
-const categoryIdState = atom<number>({
-  key: 'categoryIdState',
-  default: 0
-})
-
-const passwordCheckState = atom<boolean>({
-  key: 'passwordCheckState',
-  default: false,
-})
-
-const detailBillState = atom<Bill>({
-  key: 'detailBillState',
-  default: {
-    memo: '',
-    store: {
-      businessNumber: 0,
-      name: '',
-      owner: '',
-      business: null,
-      businessId: 0,
-    },
-    business: {
-      name: '',
-      businessNumber: 0,
-      businessOwnerName: '',
-      address: '',
-      owner: null,
-      ownerId: 0,
-    },
-    businessId: 0,
-  },
-});
-
-const blurState = atom<boolean>({
-  key: 'blurState',
-  default: false,
-});
-
 export {
-  loginState,
   tokenState,
   memoState,
   storeState,
   storesState,
   productsState,
   orderProductsState,
-  categoryState,
   categoriesState,
   businessState,
   businessesState,
   billState,
   billListState,
-  categoryIdState,
-  passwordCheckState,
-  detailBillState,
-  blurState,
 };

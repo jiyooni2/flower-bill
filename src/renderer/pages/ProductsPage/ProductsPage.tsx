@@ -5,7 +5,6 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   businessState,
   categoriesState,
-  categoryIdState,
   tokenState,
 } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
@@ -22,7 +21,7 @@ const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [categories, setCategories] = useRecoilState(categoriesState);
-  const [categoryId, setCategoryId] = useRecoilState(categoryIdState);
+  const [categoryId, setCategoryId] = useState<number>(0);
   const [products, setProducts] = useState<Product[]>(null);
   const [inputs, setInputs] = useState<Input>({
     id: 0,
