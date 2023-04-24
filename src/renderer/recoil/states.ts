@@ -41,9 +41,18 @@ const memoState = atom<string>({
   default: '',
 });
 
+const categoryState = atom<Category>({
+  key: 'categoryState',
+});
+
 const categoriesState = atom<Category[]>({
   key: 'categoriesState',
   default: [],
+});
+
+const loginState = atom<boolean>({
+  key: 'loginState',
+  default: false,
 });
 
 const tokenState = atom<string>({
@@ -99,16 +108,24 @@ const billListState = atom<Bill[]>({
   default: [],
 });
 
+const passwordCheckState = atom<boolean>({
+  key: 'passwordCheckState',
+  default: false,
+})
+
 export {
+  loginState,
   tokenState,
   memoState,
   storeState,
   storesState,
   productsState,
   orderProductsState,
+  categoryState,
   categoriesState,
   businessState,
   businessesState,
   billState,
   billListState,
+  passwordCheckState,
 };
