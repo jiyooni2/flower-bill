@@ -7,11 +7,11 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import DevelopModal from 'renderer/components/DevelopModal/DevelopModal';
 import { businessState, categoriesState, tokenState } from 'renderer/recoil/states';
 import styles from '../CategoryPage.module.scss'
-import { Inputs } from '../types';
+import { Errors, Inputs } from '../types';
 
 
 type IProps = {
-  setErrors: React.Dispatch<React.SetStateAction<{name: string}>>;
+  setErrors: React.Dispatch<React.SetStateAction<Errors>>;
   setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
   inputs: Inputs;
 }
