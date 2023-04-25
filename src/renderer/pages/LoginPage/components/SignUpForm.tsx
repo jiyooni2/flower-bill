@@ -1,10 +1,11 @@
 import { IconButton, TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import React, { FormEvent, useState } from 'react';
+import React, { useState } from 'react';
 import './AuthForm.scss'
 import Modal from 'renderer/components/Modal/Modal';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { signUpSubmitValidation, switched } from './validation';
+import { CreateOwnerInput } from 'main/owner/dtos/create-owner.dto';
 
 interface IProps {
   isOpen: boolean;
@@ -31,7 +32,6 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const validation = switched(name, value)
-    console.log(validation)
       if (validation.success) {
         setInputs({...inputs, [name]: value})
         setErrors({...errors, [name]: ''})
@@ -41,18 +41,22 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   };
 
   const handleSubmit = () => {
-    if (Object.values(inputs).length > 0 && Object.values(errors).length === 0) {
-      window.electron.ipcRenderer.sendMessage('create-owner', {
+    const validation = signUpSubmitValidation(inputs);
+    if (Object.values(validation).join('').length > 0) {
+      setErrors(validation);
+      return;
+    } else {
+      const data : CreateOwnerInput = {
         nickname: inputs.nickname,
         ownerId: inputs.ownerId,
         password: inputs.password,
-        code: inputs.code
-      });
+        findPasswordCode: inputs.code
+      }
+      window.electron.ipcRenderer.sendMessage('create-owner', data);
+      console.log('yup')
+
       setInputs({nickname: '', ownerId: '', password: '', code: ''});
       setIsOpen(false);
-    } else {
-      setErrors(signUpSubmitValidation(inputs))
-      return;
     }
   };
 
@@ -76,14 +80,13 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="닉네임"
                   name="nickname"
-                  error={errors.nickname.length > 0}
+                  error={errors.nickname !== ''}
                   variant="filled"
                   helperText={
-                    errors.nickname.length > 0
+                    errors.nickname !== ''
                       ? errors.nickname
                       : ' '
                   }
-                  // onChange={handleChange}
                   onChange={changeHandler}
                   value={inputs.nickname}
                 />
@@ -93,9 +96,9 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="아이디"
                   name="ownerId"
-                  error={errors.ownerId.length > 0}
+                  error={errors.ownerId !== ''}
                   helperText={
-                    errors.ownerId.length > 0
+                    errors.ownerId !== ''
                       ? errors.ownerId
                       : ' '
                   }
@@ -109,9 +112,9 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="비밀번호"
                   name="password"
-                  error={errors.password.length > 0}
+                  error={errors.password !== ''}
                   helperText={
-                    errors.password.length > 0
+                    errors.password !== ''
                       ? errors.password
                       : '8~16자리 내의 문자만 작성하실 수 있습니다.'
                   }
