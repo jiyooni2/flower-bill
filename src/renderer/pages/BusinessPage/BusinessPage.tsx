@@ -1,6 +1,6 @@
 import styles from './BusinessPage.module.scss';
 import { Typography } from '@mui/material';
-import Buttons from './components/Buttons';
+import BusinessInputs from './components/BusinessInputs';
 
 
 const BusinessPage = () => {
@@ -20,7 +20,7 @@ const BusinessPage = () => {
             >
               사업자 정보
             </Typography>
-            <Buttons />
+            <BusinessInputs />
           </div>
         </div>
       </div>

@@ -1,0 +1,71 @@
+.list {
+  margin-top: 60px;
+
+  .errorMessage {
+    margin-right: 10%;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: right;
+    font-size: 11.5px;
+    color: crimson;
+  }
+
+  .infoMessage {
+    margin-right: 10%;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: right;
+    font-size: 11.5px;
+    color: dimgray;
+  }
+
+  .error {
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .itemWithError {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .item {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    margin-bottom: 31.5px;
+  }
+
+  .labels {
+    width: 30%;
+    font-size: 15px;
+    margin-top: 2px;
+  }
+}
+
+.dataInput {
+  width: 50%;
+  height: 33px;
+  border-radius: 5px;
+  border: 1px solid darkgray;
+  opacity: 0.9;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-size: 14px;
+}
+
+.hasError {
+  width: 50%;
+  height: 33px;
+  border-radius: 5px;
+  border: 1.5px solid darkgray;
+  opacity: 0.9;
+  padding-left: 8px;
+  font-size: 14px;
+  border-color: crimson;
+  background-color: rgb(245, 211, 211);
+}
