@@ -16,7 +16,6 @@ import { ArrowForward } from '@mui/icons-material';
 const ProductsGrid = () => {
   const [categories, setCategories] = useRecoilState(categoriesState)
   const [products, setProducts] = useRecoilState(productsState);
-  // const [orderProduct, setOrderProduct] = useState<
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState)
   const [searchWord, setSearchWord] = useState('');

@@ -77,6 +77,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
 
   const saveHandler = () => {
     handleClick();
+    setOrderProducts([]);
     movePage('/bills')
   };
 
@@ -117,7 +118,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   </span>
                 </td>
                 <td className={styles.name}>
-                  {store.owner.length > 0 ? store.owner : ''} 님
+                {store.owner ? store.owner : '(익명)'} 님
                 </td>
                 <td className={styles.for}>&ensp;귀하</td>
               </tbody>
