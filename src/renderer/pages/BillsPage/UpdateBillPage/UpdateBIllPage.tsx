@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import {
@@ -9,7 +8,6 @@ import {
 } from 'renderer/recoil/states';
 import { Product } from 'main/product/entities/product.entity';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
-import styles from './UpdateBillPage.module.scss';
 import StoreSearchModal from './components/StoreSearchModal/StoreSearchModal';
 import OrderProductBox from './components/OrderProductBox/OrderProductBox';
 import {
@@ -24,6 +22,9 @@ import ProductsGrid from './components/ProductsGrid/ProductsGrid';
 import BillModal from './components/BillModal/BillModal';
 import DiscountModal from 'renderer/pages/BillPage/components/DiscountModal/DiscountModal';
 import MemoModal from './components/MemoModal/MemoModal';
+import Buttons from './Buttons';
+import UpdateBillSum from './UpdateBillSum';
+import styles from './UpdateBillPage.module.scss'
 
 const UpdateBillPage = () => {
   const [products, setProducts] = useRecoilState(productsState);
@@ -54,13 +55,6 @@ const UpdateBillPage = () => {
     setPage(value);
   };
 
-  let sum = 0;
-  orderProducts?.map((items) => {
-    sum += items.orderPrice * items.count;
-  });
-
-  const discount = 0;
-
   let LAST_PAGE = 1;
   if (orderProducts != undefined) {
     LAST_PAGE = orderProducts.length % 4 === 0
@@ -69,14 +63,6 @@ const UpdateBillPage = () => {
   } else if (orderProducts == null) {
     LAST_PAGE = 1;
   }
-
-  const addComma = (data: number) => {
-    return `${data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
-  };
-
-  const billClickHandler = () => {
-    setIsBillOpen(true);
-  };
 
   return (
     <>
@@ -152,110 +138,13 @@ const UpdateBillPage = () => {
             width: '30%',
           }}
         >
-          <div>
-            <div className={styles.total}>
-              <p className={styles.totalName}>과세&nbsp;물품</p>
-              <h6 className={styles.totalNum}>
-                {addComma(Math.round(sum / 1.1))} 원
-              </h6>
-            </div>
-            <hr />
-            <div className={styles.total}>
-              <p className={styles.totalName}>부&nbsp;&nbsp;가&nbsp;&nbsp;세</p>
-              <h6 className={styles.totalNum}>
-                {addComma(Math.round(Math.round(sum / 1.1) * 0.1))} 원
-              </h6>
-            </div>
-            <hr />
-            <div className={styles.total}>
-              <p className={styles.totalName}>
-                합&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;계
-              </p>
-              <p className={styles.totalNum}>
-                {addComma(sum - (sum * discount) / 100)} 원
-              </p>
-            </div>
-            <hr />
-          </div>
-          <div
-            style={{
-              marginTop: '15px',
-              display: 'flex',
-              justifyContent: 'center',
-              width: '100%',
-              gap: '10px',
-            }}
-          >
-            <Button
-              variant="contained"
-              // color="secondary"
-              sx={{
-                width: '40%',
-                height: '33px',
-                backgroundColor: 'ghostwhite',
-                opacity: '0.9',
-                marginleft: '20px',
-                color: '#228af2',
-                '&:hover': {
-                  background: '#6b5fb9',
-                  opacity: '0.9',
-                  color: 'lightskyblue',
-                },
-              }}
-              onClick={() => setIsSearchStoreOpen(true)}
-            >
-              판매처
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => setIsDiscountOpen(true)}
-              sx={{
-                width: '40%',
-                height: '33px',
-                backgroundColor: 'ghostwhite',
-                color: '#228af2',
-                '&:hover': {
-                  background: '#6b5fb9',
-                  opacity: '0.9',
-                  color: 'lightskyblue',
-                },
-              }}
-            >
-              판매가
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => setIsMemoOpen(true)}
-              sx={{
-                width: '40%',
-                height: '33px',
-                backgroundColor: 'ghostwhite',
-                color: '#228af2',
-                '&:hover': {
-                  background: '#6b5fb9',
-                  opacity: '0.9',
-                  color: 'lightskyblue',
-                },
-              }}
-            >
-              메모
-            </Button>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button
-              variant="contained"
-              onClick={billClickHandler}
-              sx={{
-                height: '33px',
-                width: '100%',
-                marginTop: '10px',
-                backgroundColor: '#228bf2',
-                color: '#e8f8e2',
-              }}
-            >
-              계산서 수정하기
-            </Button>
-          </div>
+          <UpdateBillSum orderProducts={orderProducts} />
+          <Buttons
+            setIsDiscountOpen={setIsDiscountOpen}
+            setIsMemoOpen={setIsMemoOpen}
+            setIsSearchStoreOpen={setIsSearchStoreOpen}
+            setIsBillOpen={setIsBillOpen}
+          />
         </div>
         <ProductsGrid />
       </div>
