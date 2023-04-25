@@ -57,7 +57,7 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
           } else if (args.error) {
             console.log(args.error)
             if (args.error.startsWith('패스워드'))  {
-              setErrors({...errors, password: '* 비밀번호 변경 코드가 일치하지 않습니다.'})
+              setErrors({...errors, code: '* 비밀번호 변경 코드가 일치하지 않습니다.'})
             }
             if (args.error.startsWith('존재')) {
               setErrors({...errors, ownerId: '* 존재하지 않는 사용자입니다.'})
