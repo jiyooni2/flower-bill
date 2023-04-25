@@ -20,16 +20,17 @@ import { Error, Input } from './types';
 const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
+  const [clicked, setClicked] = useState<boolean>(false);
   const [categories, setCategories] = useRecoilState(categoriesState);
   const [categoryId, setCategoryId] = useState<number>(0);
   const [products, setProducts] = useState<Product[]>(null);
   const [inputs, setInputs] = useState<Input>({
+    clicked: false,
     id: 0,
     name: '',
     price: '',
     keyword: '',
     categoryName: '',
-    clicked: false,
     favorite: false,
     page: 1,
   })
@@ -39,8 +40,18 @@ const ProductsPage = () => {
     category: '',
   });
 
-
   useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-categories', {
+      token,
+      businessId: business.id,
+    });
+    window.electron.ipcRenderer.on(
+      'get-categories',
+      (args: GetCategoriesOutput) => {
+        setCategories(args.categories as Category[]);
+      }
+    );
+
     categories?.map((cat) => {
       if (cat.id == categoryId) {
         return setInputs({...inputs, categoryName: cat?.name})
@@ -63,17 +74,6 @@ const ProductsPage = () => {
         if (error) {
           console.error(error);
         }
-      }
-    );
-
-    window.electron.ipcRenderer.sendMessage('get-categories', {
-      token,
-      businessId: business.id,
-    });
-    window.electron.ipcRenderer.on(
-      'get-categories',
-      (args: GetCategoriesOutput) => {
-        setCategories(args.categories as Category[]);
       }
     );
   }, []);
@@ -122,7 +122,7 @@ const ProductsPage = () => {
 
 
   const clearInputs = () => {
-    setInputs({...inputs, clicked: false, name: '', price: ''})
+    setInputs({...inputs, name: '', price: '', clicked: false})
     setCategoryId(0);
     setErrors({ name: '', price: '', category: '' });
   };
@@ -160,6 +160,7 @@ const ProductsPage = () => {
               inputs={inputs}
               setInputs={setInputs}
               setId={setCategoryId}
+              setClicked={setClicked}
             />
           </div>
           <div className={styles.pagination}>
@@ -180,6 +181,7 @@ const ProductsPage = () => {
             id={categoryId}
             setCategoryId={setCategoryId}
             setProducts={setProducts}
+            clicked={clicked}
           />
         </div>
       </div>

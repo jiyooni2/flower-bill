@@ -13,21 +13,21 @@ type IProps = {
   inputs: Input;
   setInputs: React.Dispatch<React.SetStateAction<Input>>;
   setId: SetterOrUpdater<number>;
+  setClicked: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ProductTable = ({ products, categories, inputs, setInputs, setId }: IProps) => {
+const ProductTable = ({ products, categories, inputs, setInputs, setId, setClicked }: IProps) => {
 
   const changeDataHandler = (
     event: React.MouseEvent<unknown>,
     data: Product
   ) => {
-    setInputs({...inputs, clicked: true})
-
     if (products != undefined) {
       products.forEach((item) => {
         if (item?.name === data.name) {
-          setInputs({...inputs, id: item.id, name: item?.name, price: item.price.toString(), favorite: item.isFavorite, categoryName: item.category?.name})
+          setInputs({...inputs, id: item.id, name: item?.name, price: item.price.toString(), favorite: item.isFavorite, categoryName: item.category?.name, clicked: true})
           setId(item.categoryId);
+          setClicked(true);
         }
       });
     }

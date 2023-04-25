@@ -4,9 +4,9 @@ export type Input = {
   price: string;
   keyword: string;
   categoryName: string;
-  clicked: boolean;
   favorite: boolean;
   page: number;
+  clicked: boolean;
 }
 
 

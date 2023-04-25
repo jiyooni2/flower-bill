@@ -22,16 +22,17 @@ export const nameValidation = (value: string) => {
 
 
 export const priceValidation = (value: string) => {
-  const pattern = /^[0-9]*$/;
-  if (!pattern.test(value)) {
-    return {
-      success: false,
-      error: '숫자 외의 문자는 작성하실 수 없습니다.'
-    }
-  } else if (value.startsWith('0')) {
+  const pattern = /[0-9,]*$/g;
+
+  if (value.startsWith('0')) {
     return {
       success: false,
       error: '0으로 시작할 수 없습니다.'
+    }
+  } else if (!pattern.test(value)) {
+    return {
+      success: false,
+      error: '숫자 외의 문자는 작성하실 수 없습니다.'
     }
   } else {
     return {

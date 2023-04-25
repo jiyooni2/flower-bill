@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, categoryIdState, tokenState } from 'renderer/recoil/states';
+import { businessState, categoriesState, tokenState } from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { Category } from 'main/category/entities/category.entity';
 import styles from './CategoryModal.module.scss'
@@ -12,10 +12,12 @@ import { Link } from 'react-router-dom';
 interface IProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setCategoryId: React.Dispatch<React.SetStateAction<number>>;
+  categoryId: number;
 }
 
 
-const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
+const CategoryModal = ({ isOpen, setIsOpen, setCategoryId, categoryId }: IProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [categories, setCategories] = useRecoilState(categoriesState)
@@ -25,7 +27,6 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
   const [subName, setSubName] = useState<string>('');
   const [groupId, setGroupId] = useState<number>(0);
   const [groupName, setGroupName] = useState<string>('');
-  const [categoryId, setCategoryId] = useRecoilState(categoryIdState)
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -55,8 +56,6 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
     } else {
       setCategoryId(mainId)
     }
-
-    console.log(categoryId)
     setIsOpen(false)
   }
 
@@ -92,18 +91,18 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
               defaultValue={'none'}
               className={styles.selects}
             >
-              {categories.map((item) => {
+              {categories?.map((item) => {
                 if (item.level === 1) {
                   return (
                     <MenuItem
                       key={item.id}
-                      value={item.name}
+                      value={item?.name}
                       onClick={() => {
                         setMainId(item.id);
                         // setGroupName('none');
                       }}
                     >
-                      {item.name}
+                      {item?.name}
                     </MenuItem>
                   );
                 }
@@ -121,15 +120,15 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
               onChange={subChangeHandler}
               className={styles.selects}
             >
-              {categories.map((item) => {
+              {categories?.map((item) => {
                 if (item.level === 2 && item.parentCategoryId === mainId) {
                   return (
                     <MenuItem
                       key={item.id}
-                      value={item.name}
+                      value={item?.name}
                       onClick={() => setSubId(item.id)}
                     >
-                      {item.name}
+                      {item?.name}
                     </MenuItem>
                   );
                 }
@@ -147,7 +146,7 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
               onChange={groupChangeHandler}
               className={styles.selects}
             >
-              {categories.map((item) => {
+              {categories?.map((item) => {
                 if (
                   item.level === 3 &&
                   item.parentCategoryId === subId &&
@@ -156,7 +155,7 @@ const CategoryModal = ({ isOpen, setIsOpen }: IProps) => {
                   return (
                     <MenuItem
                       key={item.id}
-                      value={item.name}
+                      value={item?.name}
                       onClick={() => setGroupId(item.id)}
                     >
                       {item.name}

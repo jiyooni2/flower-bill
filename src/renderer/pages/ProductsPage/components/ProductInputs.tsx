@@ -7,6 +7,7 @@ import { UpdateProductInput, UpdateProductOutput } from 'main/product/dtos/updat
 import { Product } from 'main/product/entities/product.entity';
 import { useState } from 'react';
 import { SetterOrUpdater, useRecoilValue } from 'recoil';
+import useAddComma from 'renderer/hooks/useAddComma';
 import { businessState, tokenState } from 'renderer/recoil/states';
 import styles from '.././ProductsPage.module.scss';
 import { Error, Input } from '../types';
@@ -22,16 +23,18 @@ type IProps = {
   setErrors: React.Dispatch<React.SetStateAction<Error>>;
   setCategoryId: SetterOrUpdater<number>;
   id: number;
+  clicked: boolean;
 }
 
-const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts, setCategoryId } : IProps ) => {
+const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts, setCategoryId, clicked } : IProps ) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const addComma = useAddComma();
 
 
   const clearInputs = () => {
-    setInputs({...inputs, clicked: false, name: '', price: ''})
+    setInputs({...inputs, name: '', price: '', clicked: false})
     setCategoryId(0);
     setErrors({ name: '', price: '', category: '' });
   };
@@ -111,6 +114,9 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
           }
           if (error) {
             console.error(error);
+            if (error.startsWith('존재')) {
+              setErrors({...errors, name: '존재하지 않는 상품입니다.'})
+            }
           }
         }
       );
@@ -195,6 +201,11 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
           }
           if (error) {
             console.log(error);
+            if (error.startsWith('최하위')) {
+              setErrors({...errors, category: '* 최하위 카테고리를 입력해야 합니다.'})
+            } else if (error.startsWith('없는')) {
+              setErrors({...errors, category: '* 없는 카테고리입니다.'})
+            }
           }
         }
       );
@@ -233,7 +244,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
               <div className={styles.item}>
                 <p className={styles.labels}>즐겨찾기</p>
                 <div style={{ width: '50%', height: '33px'}}>
-                  {inputs.clicked ? inputs.favorite ? (
+                  {inputs.name !== '' || inputs.price !== '' ? inputs.favorite ? (
                       <StarRateRounded
                         className={styles.favorite}
                         sx={{ color: 'gold', cursor: 'pointer' }}
@@ -291,7 +302,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
                       ? styles.hasError
                       : styles.dataInput
                     }
-                  value={inputs.price}
+                  value={addComma(inputs.price)}
                   name="price"
                   onChange={changeStoreDataHandler}
                 />
@@ -303,7 +314,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
               )}
               <div className={styles.lastItem}>
                 <p className={styles.categoryLabel}>카테고리</p>
-                {id ? (
+                {!clicked && id ? (
                   <input
                     name="category"
                     value={inputs.categoryName}
@@ -323,7 +334,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
                       style={{ float: 'right' }}
                       onClick={categoryClickHandler}
                     >
-                      카테고리 선택하기
+                      {id ? '카테고리 수정하기' : '카테고리 선택하기'}
                     </button>
                   </>
                 )}
