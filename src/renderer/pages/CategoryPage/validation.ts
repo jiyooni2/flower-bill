@@ -1,3 +1,5 @@
+import { Category } from "main/category/entities/category.entity";
+
 export const changeValidation = (value: string) => {
   const pattern = /^[ㄱ-ㅎ가-힣a-zA-Z0-9-\s]*$/;
   if (!pattern.test(value)) {

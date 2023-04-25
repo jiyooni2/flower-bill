@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import Button from '@mui/material/Button';
 import styles from './CategoryPage.module.scss';
 import { TreeItem, TreeView } from '@mui/lab';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -14,11 +13,13 @@ import {
 } from 'main/category/dtos/create-category.dto';
 import { Category } from 'main/category/entities/category.entity';
 import { ChevronRight, ExpandMore, AddRounded } from '@mui/icons-material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { Typography } from '@mui/material';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { CategoryResult } from 'main/common/dtos/category-result.dto';
 import { changeValidation } from './validation';
+import InfoModal from 'renderer/components/InfoModal/InfoModal';
+import Buttons from './components/Buttons';
+
 
 const CategoryPage = () => {
   const [categories, setCategories] = useRecoilState(categoriesState);
@@ -33,6 +34,7 @@ const CategoryPage = () => {
   const [parentCategoryId, setParentCategoryId] = useState<number>(0);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState({ name: '' });
+  const [developOpen, setDevelopOpen] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -102,59 +104,11 @@ const CategoryPage = () => {
     }
   };
 
-  const newCategoryHandler = () => {
-    if (categoryName === '') {
-      setErrors({ name: '카테고리명이 입력되지 않았습니다.' });
-        return;
-    } else {
-      if (categories.findIndex((item) => item.name == categoryName && item.parentCategoryId === parentCategoryId) > -1){
-        setErrors({ name: '동일한 카테고리명이 같은 부모 카테고리 내에 있습니다.'})
-        return;
-      } else {
-        const newData: CreateCategoryInput = {
-          token: token,
-          businessId: business.id,
-          name: categoryName,
-          parentCategoryId: parentCategoryId,
-        };
-        window.electron.ipcRenderer.sendMessage('create-category', newData);
-        window.electron.ipcRenderer.on(
-          'create-category',
-          ({ ok, error }: CreateCategoryOutput) => {
-            if (ok) {
-              window.electron.ipcRenderer.sendMessage('get-categories', {
-                token,
-                businessId: business.id,
-              });
-              window.electron.ipcRenderer.on(
-                'get-categories',
-                ({ ok, error, categories }: GetCategoriesOutput) => {
-                  if (ok) {
-                    setCategories(categories);
-                  } else {
-                    console.error(error);
-                  }
-                }
-              );
-              console.log('done!');
-            } else if (error) {
-              console.log(error);
-            }
-          }
-        );
-      }
-      setCategoryId('');
-      setCategoryName('');
-      setLevelName('');
-      setParentCategoryName('');
-    }
- };
-
   const addTreeItem = (item: Category, text: string) => {
     return (
       <TreeItem
         label={<Typography sx={{ fontSize: '14px' }}>{text}</Typography>}
-        key={item.name}
+        key={`add${item.name}${Math.random() * 10}`}
         nodeId={`add${item.name}${Math.random() * 10}`}
         icon={<AddRounded />}
         sx={{ marginTop: '15px' }}
@@ -174,8 +128,8 @@ const CategoryPage = () => {
 
   const renderTree = (nodes: CategoryResult) => (
     <TreeItem
-      key={nodes.name}
-      nodeId={`${nodes.name}${nodes.parentCategoryId}`}
+      key={`${nodes.name}${nodes.parentCategoryId}${nodes.id}`}
+      nodeId={`${nodes.name}${nodes.parentCategoryId}${nodes.id}`}
       label={
         <div
           style={{
@@ -220,156 +174,138 @@ const CategoryPage = () => {
     setCategoryId(e.target.value);
   };
 
-
   return (
-    <div className={styles.category}>
-      <div className={styles.container}>
-        <div className={styles.search}></div>
-        <div className={styles.treeContainer}>
-          <TreeView
-            defaultCollapseIcon={<ExpandMore />}
-            defaultExpandIcon={<ChevronRight />}
-            sx={{
-              height: '530px',
-              flexGrow: 1,
-              maxWidth: 400,
-              overflow: 'auto',
-              padding: '20px',
-            }}
-          >
-            {categories?.map((item) => {
-              if (item.level == 1) {
-                return renderTree(item);
-              }
-            })}
-            <TreeItem
-              label={
-                <Typography sx={{ fontSize: '14px' }}>
-                  대분류 추가하기
-                </Typography>
-              }
-              nodeId={'addMain'}
-              icon={<AddRounded />}
-              sx={{ marginTop: '15px' }}
-              onClick={() => clickAddHandler(null, 'add')}
-            />
-          </TreeView>
-        </div>
-      </div>
-      <div style={{ width: '55%' }}>
-        <div style={{ height: '100%' }}>
-          <div className={styles.infoContent}>
-            <Typography
-              variant="h6"
-              fontWeight={600}
+    <>
+      <InfoModal isOpen={developOpen} setIsOpen={setDevelopOpen} text="이 기능은 현재 개발중입니다."/>
+      <div className={styles.category}>
+        <div className={styles.container}>
+          <div className={styles.search}></div>
+          <div className={styles.treeContainer}>
+            <TreeView
+              defaultCollapseIcon={<ExpandMore />}
+              defaultExpandIcon={<ChevronRight />}
               sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                fontSize: '24px',
-                marginTop: '-10px',
+                height: '530px',
+                flexGrow: 1,
+                maxWidth: 400,
+                overflow: 'auto',
+                padding: '20px',
               }}
             >
-               카테고리 생성
-             </Typography>
-            <div className={styles.list}>
-            <div>
-                <div>
-                  <div className={styles.item}>
-                    <p className={styles.labels}>카테고리 번호</p>
-                    <input
-                      className={`${styles.dataInput} ${styles.disabled}`}
-                      value={categoryId}
-                      onChange={idChangeHandler}
-                      readOnly
-                    />
-                  </div>
-                  <div className={styles.itemWithError}>
-                    <p className={styles.labels}>카테고리명</p>
-                    <input
-                      className={
-                        errors.name.length > 0
-                          ? styles.hasError
-                          : styles.dataInput
-                      }
-                      ref={nameInputRef}
-                      value={categoryName}
-                      onChange={changeHandler}
-                      maxLength={20}
-                      readOnly={!addNew}
-                      required
-                    />
-                  </div>
-                  {errors.name.length > 0 ? (
-                    <span className={styles.errorMessage}>{errors.name}</span>
-                  ) : !clicked ? (
-                    <span className={styles.infoMessage}>
-                       &apos;분류 추가하기&apos;를 눌러 카테고리를 추가하세요.
-                     </span>
-                   ) : (
-                     <span
-                       className={styles.infoMessage}
-                       style={{ marginTop: '16.5px' }}
-                     ></span>
-                   )}
-                   <div className={styles.item}>
-                     <p className={styles.labels}>분류명</p>
-                    <input
-                      className={`${styles.dataInput} ${styles.disabled}`}
-                      value={levelName}
-                      readOnly
-                    />
-                  </div>
-                  <div className={styles.item} hidden>
-                    <p className={styles.labels} hidden>
-                      부모 카테고리
-                    </p>
-                    <input
-                      hidden
-                      className={styles.dataInput}
-                      defaultValue={parentCategoryName}
-                      readOnly
-                    />
+              {categories?.map((item) => {
+                if (item.level == 1) {
+                  return renderTree(item);
+                }
+              })}
+              <TreeItem
+                label={
+                  <Typography sx={{ fontSize: '14px' }}>
+                    대분류 추가하기
+                  </Typography>
+                }
+                nodeId={'addMain'}
+                icon={<AddRounded />}
+                sx={{ marginTop: '15px' }}
+                onClick={() => clickAddHandler(null, 'add')}
+              />
+            </TreeView>
+          </div>
+        </div>
+        <div style={{ width: '55%' }}>
+          <div style={{ height: '100%' }}>
+            <div className={styles.infoContent}>
+              <Typography
+                variant="h6"
+                fontWeight={600}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontSize: '24px',
+                  marginTop: '-10px',
+                }}
+              >
+                카테고리 생성
+              </Typography>
+              <div className={styles.list}>
+              <div>
+                  <div>
+                    <div className={styles.item}>
+                      <p className={styles.labels}>카테고리 번호</p>
+                      <input
+                        className={`${styles.dataInput} ${styles.disabled}`}
+                        value={categoryId}
+                        onChange={idChangeHandler}
+                        readOnly
+                      />
+                    </div>
+                    <div className={styles.itemWithError}>
+                      <p className={styles.labels}>카테고리명</p>
+                      <input
+                        className={
+                          errors.name !== ''
+                            ? styles.hasError
+                            : styles.dataInput
+                        }
+                        ref={nameInputRef}
+                        value={categoryName}
+                        onChange={changeHandler}
+                        maxLength={20}
+                        readOnly={!addNew}
+                        required
+                      />
+                    </div>
+                    {errors.name !== '' ? (
+                      <span className={styles.errorMessage}>{errors.name}</span>
+                    ) : !clicked ? (
+                      <span className={styles.infoMessage}>
+                        &apos;분류 추가하기&apos;를 눌러 카테고리를 추가하세요.
+                      </span>
+                    ) : (
+                      <span
+                        className={styles.infoMessage}
+                        style={{ marginTop: '16.5px' }}
+                      ></span>
+                    )}
+                    <div className={styles.item}>
+                      <p className={styles.labels}>분류명</p>
+                      <input
+                        className={`${styles.dataInput} ${styles.disabled}`}
+                        value={levelName}
+                        readOnly
+                      />
+                    </div>
+                    <div className={styles.item} hidden>
+                      <p className={styles.labels} hidden>
+                        부모 카테고리
+                      </p>
+                      <input
+                        hidden
+                        className={styles.dataInput}
+                        defaultValue={parentCategoryName}
+                        readOnly
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className={styles.buttonList}>
-                {clicked ? (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ marginLeft: '30px' }}
-                    color="error"
-                  >
-                    <DeleteIcon sx={{ fontSize: '23px' }} />
-                  </Button>
-                ) : (
-                  <div></div>
-                )}
-                {!clicked ? (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ marginRight: '10px', marginTop: '-30px' }}
-                    onClick={newCategoryHandler}
-                  >
-                    생성
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ marginRight: '10px', backgroundColor: 'coral' }}
-                    // onClick={updateDataHandler}
-                  >
-                    수정
-                  </Button>
-                )}
+                <div className={styles.buttonList}>
+                  <Buttons
+                    setErrors={setErrors}
+                    categoryName={categoryName} setCategoryName={setCategoryName}
+                    setCategoryId={setCategoryId}
+                    setLevelName={setLevelName}
+                    setParentCategoryName={setParentCategoryName}
+                    parentCategoryId={parentCategoryId}
+                    clicked={clicked}
+                    errors={errors}
+                    parentCategoryName={parentCategoryName}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 export default CategoryPage;
