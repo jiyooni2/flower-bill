@@ -40,7 +40,7 @@ const BusinessBar = () => {
           setBusiness(businesses[0])
           setClicked(true);
           setClickedData({
-            name: businesses[0]?.name,
+            name: businesses[0].name,
           });
         } else {
           console.error(error);
