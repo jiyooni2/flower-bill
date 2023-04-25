@@ -64,6 +64,8 @@ export class AuthService {
       } else {
         return { ok: false, error: '패스워드 변경 코드가 일치하지 않습니다.' };
       }
+
+      return { ok: true };
     } catch (error: any) {
       return { ok: false, error: error.message };
     }
