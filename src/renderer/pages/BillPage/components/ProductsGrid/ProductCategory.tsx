@@ -1,22 +1,20 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import { Box } from "@mui/system";
-import { Business } from "main/business/entities/business.entity";
-import { Category } from "main/category/entities/category.entity";
+import { GetCategoriesOutput } from "main/category/dtos/get-categories.dto";
 import { GetProductByCategoryInput, GetProductByCategoryOutput } from "main/product/dtos/get-product-by-category.dto";
-import { useState } from "react";
-import { useRecoilState } from "recoil";
-import { productsState } from "renderer/recoil/states";
-import styles from './ProductsGrid.module.scss';
-
+import { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { businessState, categoriesState, productsState, tokenState } from "renderer/recoil/states";
+import styles from './ProductsGrid.module.scss'
 
 type IProps = {
-  categories: Category[];
   page: number;
-  token: string;
-  business: Business;
 }
 
-const ProductCategory = ({ categories, page, token, business } : IProps) => {
+const ProductCategory = ({ page }: IProps) => {
+  const token = useRecoilValue(tokenState);
+  const business = useRecoilValue(businessState)
+  const [categories, setCategories] = useRecoilState(categoriesState)
   const [products, setProducts] = useRecoilState(productsState);
   const [mainId, setMainId] = useState<number>(0);
   const [mainName, setMainName] = useState<string>('');
@@ -24,12 +22,28 @@ const ProductCategory = ({ categories, page, token, business } : IProps) => {
   const [subName, setSubName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
 
-  const changeHandler = (e: SelectChangeEvent<unknown>, dataName: string) => {
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-categories', {
+      token,
+      business: business.id,
+    });
+    window.electron.ipcRenderer.on(
+      'get-categories',
+      ({ ok, error, categories }: GetCategoriesOutput) => {
+        if (ok) {
+          setCategories(categories);
+        } else if (error) {
+          console.error(error);
+        }
+      }
+     );
+   }, [])
+
+   const changeHandler = (e: SelectChangeEvent<string>, dataName: string) => {
     if (dataName === 'main') setMainName(e.target.value as string);
     else if (dataName === 'sub') setSubName(e.target.value as string);
     else if (dataName === 'group') setGroupName(e.target.value as string);
   };
-
 
   const categoryChangeHandler = (id: number, dataName: string) => {
     if (dataName === 'main') {
@@ -83,15 +97,15 @@ const ProductCategory = ({ categories, page, token, business } : IProps) => {
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
                 {categories != undefined &&
-                  categories?.map((item) => {
+                  categories.map((item) => {
                     if (item.level === 1) {
                       return (
                         <MenuItem
                           key={item.id}
-                          value={item?.name == null ? '' : item?.name}
+                          value={item.name == null ? '' : item?.name}
                           onClick={() => categoryChangeHandler(item.id, 'main')}
                         >
-                          {item?.name == null ? '' : item?.name}
+                          {item.name == null ? '' : item?.name}
                         </MenuItem>
                       );
                     }
@@ -115,15 +129,15 @@ const ProductCategory = ({ categories, page, token, business } : IProps) => {
               >
                 <MenuItem value={'none'}>---------------</MenuItem>
                 {categories != undefined &&
-                  categories?.map((item) => {
+                  categories.map((item) => {
                     if (item.level === 2 && item.parentCategoryId === mainId) {
                       return (
                         <MenuItem
                           key={item.id}
-                          value={item?.name == null ? '' : item?.name}
+                          value={item.name == null ? '' : item?.name}
                           onClick={() => categoryChangeHandler(item.id, 'sub')}
                         >
-                          {item?.name == null ? '' : item?.name}
+                          {item.name == null ? '' : item?.name}
                         </MenuItem>
                       );
                     }
@@ -152,12 +166,12 @@ const ProductCategory = ({ categories, page, token, business } : IProps) => {
                       return (
                         <MenuItem
                           key={item.id}
-                          value={item?.name == null ? '' : item?.name}
+                          value={item.name == null ? '' : item?.name}
                           onClick={() =>
                             categoryChangeHandler(item.id, 'group')
                           }
                         >
-                          {item?.name == null ? '' : item?.name}
+                          {item.name == null ? '' : item?.name}
                         </MenuItem>
                       );
                     }

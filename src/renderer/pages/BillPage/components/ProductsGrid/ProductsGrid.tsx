@@ -1,16 +1,15 @@
 import styles from './ProductsGrid.module.scss';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
-import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
+ import { Button, Grid, Pagination } from '@mui/material';
+ import ProductBox from '../ProductBox/ProductBox';
+ import { ChangeEvent, useEffect, useState } from 'react';
+ import { useRecoilState, useRecoilValue } from 'recoil';
+ import { businessState, productsState, tokenState } from 'renderer/recoil/states';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
+import { Link } from 'react-router-dom';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ProductCategory from './ProductCategory';
-import ProductBoxes from './ProductBoxes';
-import { Pagination } from '@mui/material';
-
 const ProductsGrid = () => {
-  const [categories, setCategories] = useRecoilState(categoriesState)
   const [products, setProducts] = useRecoilState(productsState);
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState)
@@ -18,27 +17,28 @@ const ProductsGrid = () => {
   const [page, setPage] = useState<number>(1);
 
 
-  useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-categories', {
+   useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-products', {
       token,
-      business: business.id,
+      businessId: business.id,
     });
     window.electron.ipcRenderer.on(
-      'get-categories',
-      ({ ok, error, categories }: GetCategoriesOutput) => {
+      'get-products',
+      ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
-          setCategories(categories);
-        } else if (error) {
+          setProducts(products);
+        }
+        if (error) {
           console.error(error);
         }
       }
     );
-  }, [])
+  }, []);
 
-  const handlePage = (event: ChangeEvent<unknown>, value: string) => {
-    const pageNow = parseInt(value);
-    setPage(pageNow);
-  };
+   const handlePage = (event: ChangeEvent<unknown>, value: string) => {
+     const pageNow = parseInt(value);
+     setPage(pageNow);
+   };
 
   let LAST_PAGE = 0;
   if (products != undefined || products) {
@@ -48,11 +48,9 @@ const ProductsGrid = () => {
   } else if (products == null) {
     LAST_PAGE = 0;
   }
-
   const filterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
   };
-
   const searchHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && e.nativeEvent.isComposing === false) {
       if (searchWord == '') {
@@ -91,7 +89,6 @@ const ProductsGrid = () => {
     }
   };
 
-
   return (
     <>
       <div
@@ -115,9 +112,64 @@ const ProductsGrid = () => {
             onKeyDown={searchHandler}
           />
         </div>
-        <ProductCategory categories={categories} page={page} token={token} business={business} />
+          <ProductCategory page={page} />
         <div style={{ margin: '20px', height: '300px' }}>
-          <ProductBoxes products={products} page={page} />
+          {products && (
+            <Grid
+              container
+              spacing={{ xs: 1, md: 2 }}
+              columns={{ xs: 4, sm: 8, md: 12 }}
+              sx={{ marginLeft: '5px', height: '200px', marginBottom: '30px' }}
+            >
+              {Array.from(products)
+                .slice((page - 1) * 9, page * 9)
+                .map((product) => (
+                  <Grid
+                    item
+                    key={product.id}
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                    xl={2}
+                  >
+                    <ProductBox product={product} />
+                  </Grid>
+                ))}
+            </Grid>
+          )}
+          {(products != undefined && products?.length == 0 && (
+            <div>
+              <span
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '-38%',
+                  fontSize: '14px',
+                  color: 'dimgray',
+                }}
+              >
+                상품이 없습니다.
+              </span>
+              <Link
+                to={'/products'}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  marginTop: '5px',
+                  fontSize: '13px',
+                  color: 'darkslateblue',
+                  marginLeft: '2px',
+                }}
+              >
+                <Button variant="text" sx={{ color: '#2DCDDF' }}>
+                  상품 추가하러 가기{' '}
+                  <ArrowForwardIcon sx={{ fontSize: '15px' }} />
+                </Button>
+              </Link>
+            </div>
+          )) ||
+            ''}
         </div>
         <div style={{ margin: '0 auto' }}>
           <Pagination
@@ -126,12 +178,11 @@ const ProductsGrid = () => {
             color="standard"
             defaultPage={1}
             boundaryCount={1}
-            onChange={(event) => handlePage(event, page + '1')}
+            onChange={(event) => handlePage(event, (page + 1).toString())}
           />
         </div>
       </div>
     </>
   );
 };
-
 export default ProductsGrid;
