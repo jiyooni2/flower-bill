@@ -53,7 +53,9 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
         'change-password',
         (args: ChangePasswordOutput) => {
           if (args.ok) {
-            console.log('ok')
+            setSuccessed(true);
+            setInputs({ownerId: '', code: '', password: ''})
+            setIsOpen(false);
           } else if (args.error) {
             console.log(args.error)
             if (args.error.startsWith('패스워드'))  {
@@ -65,8 +67,6 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
           }
         }
       );
-      // setSuccessed(true);
-      // setInputs({ownerId: '', code: '', password: ''})
     }
   };
 
@@ -89,7 +89,7 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
                         variant="filled"
                         onChange={changeHandler}
                         helperText={errors.ownerId ? errors.ownerId : " "}
-                        error={errors.ownerId !== ''}
+                        error={errors.ownerId !== '' && errors.ownerId !== undefined}
                         value={inputs.ownerId}
                       />
                       <TextField
@@ -99,7 +99,7 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
                         variant="filled"
                         onChange={changeHandler}
                         helperText={errors.code ? errors.code : " "}
-                        error={errors.code !== ''}
+                        error={errors.code !== '' && errors.code !== undefined}
                         value={inputs.code}
                       />
                       <TextField
