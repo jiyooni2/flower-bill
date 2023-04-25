@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import './AuthForm.scss'
 import Modal from 'renderer/components/Modal/Modal';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { signUpSubmitValidation, switched } from './validation';
 import { CreateOwnerInput } from 'main/owner/dtos/create-owner.dto';
+import { switched } from './validation';
 
 interface IProps {
   isOpen: boolean;
@@ -41,9 +41,24 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   };
 
   const handleSubmit = () => {
-    const validation = signUpSubmitValidation(inputs);
-    if (Object.values(validation).join('').length > 0) {
-      setErrors(validation);
+    if (!inputs.ownerId || !inputs.nickname || !inputs.password || !inputs.code && Object.values(errors).join('') !== "") {
+    let ownerId;
+    let nickname;
+    let password;
+    let code;
+    if (!inputs.ownerId) ownerId = '* 아이디가 입력되지 않았습니다.'
+    if (!inputs.nickname) nickname = '* 닉네임이 입력되지 않았습니다.'
+    if (!inputs.password) password = '* 비밀번호가 입력되지 않았습니다.'
+
+    if (!inputs.code) code = '* 비밀번호 변경 코드가 입력되지 않았습니다.'
+
+    setErrors({ ownerId: ownerId, nickname: nickname, password: password, code: code})
+    return;
+    } else if (inputs.password.length < 8) {
+      setErrors({...errors, password: '* 8자 이상 작성해야합니다.'});
+      return;
+    } else if (inputs.code.length > 6 || inputs.code.length < 6) {
+      setErrors({...errors, code: '* 6글자 코드를 작성하세요'})
       return;
     } else {
       const data : CreateOwnerInput = {
@@ -53,7 +68,7 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
         findPasswordCode: inputs.code
       }
       window.electron.ipcRenderer.sendMessage('create-owner', data);
-      console.log('yup')
+      console.log('회원 생성 성공')
 
       setInputs({nickname: '', ownerId: '', password: '', code: ''});
       setIsOpen(false);
@@ -80,10 +95,10 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="닉네임"
                   name="nickname"
-                  error={errors.nickname !== ''}
+                  error={errors.nickname !== "" && errors.nickname !== undefined}
                   variant="filled"
                   helperText={
-                    errors.nickname !== ''
+                    errors.nickname
                       ? errors.nickname
                       : ' '
                   }
@@ -96,9 +111,9 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="아이디"
                   name="ownerId"
-                  error={errors.ownerId !== ''}
+                  error={errors.ownerId !== '' && errors.ownerId !== undefined}
                   helperText={
-                    errors.ownerId !== ''
+                    errors.ownerId
                       ? errors.ownerId
                       : ' '
                   }
@@ -112,9 +127,9 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="비밀번호"
                   name="password"
-                  error={errors.password !== ''}
+                  error={errors.password !== '' && errors.password !== undefined}
                   helperText={
-                    errors.password !== ''
+                    errors.password
                       ? errors.password
                       : '8~16자리 내의 문자만 작성하실 수 있습니다.'
                   }
@@ -136,11 +151,11 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="비밀번호 변경 코드"
                   name="code"
-                  error={errors.code.length > 0}
+                  error={errors.code !== "" && errors.code !== undefined}
                   helperText={
-                    errors.code.length > 0
+                    errors.code
                       ? errors.code
-                      : ' '
+                      : '6자리 내 문자 혹은 숫자만 작성하실 수 있습니다.'
                   }
                   variant="filled"
                   onChange={changeHandler}
