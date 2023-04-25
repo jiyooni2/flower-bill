@@ -1,11 +1,11 @@
-import { Button, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { Button, IconButton, TextField } from '@mui/material';
+import React, { useState } from 'react';
 import styles from './FindPassword.module.scss'
 import Modal from 'renderer/components/Modal/Modal';
-import ChangePasswordModal from './ChangePasswordModal';
-import { ChangePasswordInput, ChangePasswordOutput } from '../../../../../main/auth/dtos/change-password.dto'
-import InfoModal from 'renderer/components/InfoModal/InfoModal';
+import { ChangePasswordOutput } from '../../../../../main/auth/dtos/change-password.dto'
 import { switched } from '../validation';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import { Close, Visibility, VisibilityOff } from '@mui/icons-material';
 
 
 interface IProps {
@@ -14,75 +14,62 @@ interface IProps {
 }
 
 const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
-  const [infoIsOpen, setInfoIsOpen] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [successed, setSuccessed] = useState<boolean>(false);
   const [errors, setErrors] = useState({ownerId: '', code: '', password: ''});
   const [inputs, setInputs] = useState({
     ownerId: '',
     code: '',
     password: '',
   })
-  const [changePasswordIsOpen, setChangePasswordIsOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    setInputs({ownerId: '', code: '', password: ''});
-    setErrors({ownerId: '', code: '', password: ''});
-  }, [])
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
     const validations = switched(name, value);
     if (validations.success) {
       setInputs({...inputs, [name]: value});
-      setErrors({...inputs, [name]: ''})
+      setErrors({...errors, [name]: ''})
     } else {
       setErrors({...inputs, [name]: validations.error})
     }
   }
 
   const passwordHandler = () => {
-    if (Object.values(inputs).length > 0 && Object.values(errors).length === 0) {
-      console.log('here')
-      const data : ChangePasswordInput = {
-        ownerId: inputs.ownerId,
-        findPasswordCode: inputs.code,
-        newPassword: inputs.password,
-      }
-
-      window.electron.ipcRenderer.sendMessage('change-password', data);
-      window.electron.ipcRenderer.on(
-        'change-password',
-        ({ ok, error }: ChangePasswordOutput) => {
-          if (ok) {
-            setInfoIsOpen(true);
-          } else {
-            if (error.startsWith('존재')) {
-              setErrors({...errors, ownerId: error})
-            } else if (error.startsWith('패스워드')) {
-              setErrors({...errors, password: error})
-            }
-          }
-        }
-      );
-    } else {
+    if (!inputs.ownerId || !inputs.code || !inputs.password) {
       let ownerId, code, password = '';
       if (!inputs.ownerId) ownerId = "* 아이디가 입력되지 않았습니다."
       if (!inputs.code) code = "* 비밀번호 변경 코드가 입력되지 않았습니다."
       if (!inputs.password) password = "* 새로운 비밀번호가 입력되지 않았습니다."
       setErrors({ ownerId: ownerId, code: code, password: password})
       return;
+    } else {
+      window.electron.ipcRenderer.sendMessage('change-password', {
+        ownerId: inputs.ownerId,
+        findPasswordCode: inputs.code,
+        newPassword: inputs.password,
+      });
+      window.electron.ipcRenderer.on(
+        'change-password',
+        (args: ChangePasswordOutput) => {
+          if (args.ok) {
+            console.log('ok')
+          } else if (args.error) {
+            console.log(args.error)
+          }
+        }
+      );
+      // setSuccessed(true);
+      // setInputs({ownerId: '', code: '', password: ''})
     }
   };
 
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
   return (
     <>
-      <InfoModal isOpen={infoIsOpen} setIsOpen={setInfoIsOpen} text="비밀번호가 재설정되었습니다!" />
-      <ChangePasswordModal
-        isOpen={changePasswordIsOpen}
-        setIsOpen={setChangePasswordIsOpen}
-      />
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <div className={styles.container}>
-                <div className={styles.content}>
+                {!successed ? (<div className={styles.content}>
                   <h1 className={styles.title} style={{ textAlign: 'center', lineHeight: '25px'}}>
                     비밀번호를 찾고자하는 아이디와 비밀번호 변경 코드,<br />새 비밀번호를 입력해주세요.
                   </h1>
@@ -94,7 +81,7 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
                         variant="filled"
                         onChange={changeHandler}
                         helperText={errors.ownerId ? errors.ownerId : " "}
-                        error={errors.ownerId.length > 0}
+                        error={errors.ownerId !== ''}
                         value={inputs.ownerId}
                       />
                       <TextField
@@ -104,23 +91,42 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
                         variant="filled"
                         onChange={changeHandler}
                         helperText={errors.code ? errors.code : " "}
-                        error={errors.code.length !== 0}
+                        error={errors.code !== ''}
                         value={inputs.code}
                       />
                       <TextField
                         fullWidth
-                        label="새 비밀번호"
+                        label="세 비밀번호"
                         name="password"
                         variant="filled"
+                        error={errors.password !== '' && errors.password !== undefined}
+                        helperText={
+                          errors.password
+                            ? errors.password
+                            : '8~16자리 내의 문자만 작성하실 수 있습니다.'
+                        }
                         onChange={changeHandler}
-                        helperText={errors.password ? errors.password: " "}
-                        error={errors.password.length > 0}
+                        type={showPassword ? 'text' : 'password'}
                         value={inputs.password}
-                        sx={{ marginBottom: '20px'}}
+                        InputProps={{
+                          endAdornment: (
+                            <IconButton onClick={handleClickShowPassword}>
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          ),
+                        }}
                       />
-                    <Button variant="contained" sx={{ float: 'right', marginTop: '-5px'}} onClick={passwordHandler}>비밀번호 찾기</Button>
+                    <Button variant="contained" sx={{ float: 'right', marginTop: '-5px'}} onClick={passwordHandler}>비밀번호 재설정하기</Button>
                   </div>
-                  </div>
+                  </div>) : (
+                    <>
+                    <Button sx={{ float: 'right', fontSize: '16px'}}><Close fontSize="inherit" onClick={() => {setIsOpen(false); setSuccessed(false)}} /></Button>
+                    <div className={styles.successContainer}>
+                      <TaskAltIcon sx={{ fontSize: '45px', color: '#539152' }} />
+                      <p>비밀번호 재설정에 성공하였습니다.</p>
+                    </div>
+                    </>
+                  )}
         </div>
       </Modal>
     </>
