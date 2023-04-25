@@ -6,6 +6,7 @@ import { ChangePasswordOutput } from '../../../../../main/auth/dtos/change-passw
 import { switched } from '../validation';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { Close, Visibility, VisibilityOff } from '@mui/icons-material';
+import InfoModal from 'renderer/components/InfoModal/InfoModal';
 
 
 interface IProps {
@@ -55,6 +56,12 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
             console.log('ok')
           } else if (args.error) {
             console.log(args.error)
+            if (args.error.startsWith('패스워드'))  {
+              setErrors({...errors, password: '* 비밀번호 변경 코드가 일치하지 않습니다.'})
+            }
+            if (args.error.startsWith('존재')) {
+              setErrors({...errors, ownerId: '* 존재하지 않는 사용자입니다.'})
+            }
           }
         }
       );
@@ -67,9 +74,10 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
 
   return (
     <>
+      <InfoModal isOpen={successed} setIsOpen={setSuccessed} text="비밀번호가 재설정 되었습니다." />
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <div className={styles.container}>
-                {!successed ? (<div className={styles.content}>
+                <div className={styles.content}>
                   <h1 className={styles.title} style={{ textAlign: 'center', lineHeight: '25px'}}>
                     비밀번호를 찾고자하는 아이디와 비밀번호 변경 코드,<br />새 비밀번호를 입력해주세요.
                   </h1>
@@ -103,7 +111,7 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
                         helperText={
                           errors.password
                             ? errors.password
-                            : '8~16자리 내의 문자만 작성하실 수 있습니다.'
+                            : ' '
                         }
                         onChange={changeHandler}
                         type={showPassword ? 'text' : 'password'}
@@ -118,15 +126,7 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
                       />
                     <Button variant="contained" sx={{ float: 'right', marginTop: '-5px'}} onClick={passwordHandler}>비밀번호 재설정하기</Button>
                   </div>
-                  </div>) : (
-                    <>
-                    <Button sx={{ float: 'right', fontSize: '16px'}}><Close fontSize="inherit" onClick={() => {setIsOpen(false); setSuccessed(false)}} /></Button>
-                    <div className={styles.successContainer}>
-                      <TaskAltIcon sx={{ fontSize: '45px', color: '#539152' }} />
-                      <p>비밀번호 재설정에 성공하였습니다.</p>
-                    </div>
-                    </>
-                  )}
+                  </div>
         </div>
       </Modal>
     </>

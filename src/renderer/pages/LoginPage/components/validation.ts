@@ -49,10 +49,7 @@ export const passwordValidation = (value: string) => {
   let success = false;
   let error = '';
 
-  if (value.length > 16) {
-    success = false;
-    error = '* 16글자 이상 작성하실 수 없습니다.'
-  } else if (value.startsWith(' ')) {
+  if (value.startsWith(' ')) {
     success = false,
     error = '* 공백으로 시작할 수 없습니다.'
   } else {
