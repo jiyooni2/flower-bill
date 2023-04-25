@@ -1,5 +1,6 @@
 import { Button } from "@mui/material";
 import { CreateStoreOutput } from "main/store/dtos/create-store.dto";
+import { DeleteStoreOutput } from "main/store/dtos/delete-store.dto";
 import { GetStoresOutput } from "main/store/dtos/get-stores.dto";
 import { Store } from "main/store/entities/store.entity";
 import React from "react";
@@ -25,20 +26,6 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
   const token = useRecoilValue(tokenState)
   const business = useRecoilValue(businessState);
 
-
-  const clearInputs = () => {
-    setErrors({ ...errors, storeNumber: '', storeName: '', owner: '', address: '' });
-    setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
-    setClickedStore({
-      business: null,
-      businessId: null,
-      businessNumber: 0,
-      name: '',
-      owner: '',
-      address: '',
-    });
-  };
-
   const updateDataHandler = () => {
     const findIndex = stores.findIndex(
       (element) => element.id == clickedStore.id
@@ -52,7 +39,16 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
       address: inputs.address,
     };
     setStores(updateStore);
-    clearInputs();
+    setErrors({ ...errors, storeNumber: '', storeName: '', owner: '', address: '' });
+    setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
+    setClickedStore({
+      business: null,
+      businessId: null,
+      businessNumber: 0,
+      name: '',
+      owner: '',
+      address: '',
+    });
     setInputs({...inputs, clicked: false})
   };
 
@@ -107,11 +103,57 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
         }
       );
     }
-    clearInputs();
+    setErrors({ ...errors, storeNumber: '', storeName: '', owner: '', address: '' });
+    setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
+    setClickedStore({
+      business: null,
+      businessId: null,
+      businessNumber: 0,
+      name: '',
+      owner: '',
+      address: '',
+    });
   };
 
   const deleteDataHandler = () => {
-    setStores(stores.filter((store) => store?.name !== clickedStore.name));
+    window.electron.ipcRenderer.sendMessage('delete-store', {
+      token,
+      businessId: business.id,
+      id: clickedStore.id,
+    });
+
+    window.electron.ipcRenderer.on(
+      'delete-store',
+      ({ ok, error }: DeleteStoreOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-stores', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-stores',
+            (args: GetStoresOutput) => {
+              setStores(args.stores as Store[]);
+            }
+          );
+        }
+        if (error) {
+          console.log(error);
+        }
+      }
+    );
+
+
+    setErrors({ ...errors, storeNumber: '', storeName: '', owner: '', address: '' });
+    setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
+    setClickedStore({
+      business: null,
+      businessId: null,
+      businessNumber: 0,
+      name: '',
+      owner: '',
+      address: '',
+    });
   };
 
   return (

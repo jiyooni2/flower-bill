@@ -1,6 +1,7 @@
 import { Inputs, StoreData } from "../types";
 import { switched } from "../validation";
 import styles from '../StorePage.module.scss';
+import useAddHyphen from "renderer/hooks/useAddHyphen";
 
 type IProps = {
   setErrors: React.Dispatch<React.SetStateAction<StoreData>>;
@@ -10,6 +11,8 @@ type IProps = {
 }
 
 const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
+  const addHyphen = useAddHyphen();
+
   const changeStoreDataHandler = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -36,14 +39,14 @@ const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
           <p className={styles.labels}>사업자 번호</p>
           <input
             name="storeNumber"
-            value={inputs.storeNumber}
+            value={inputs.storeNumber === "" ? inputs.storeNumber : addHyphen(inputs.storeNumber)}
             className={
-              errors.storeNumber.length > 0
+              errors.storeNumber !== ''
                 ? styles.hasError
                 : styles.dataInput
             }
             onChange={changeStoreDataHandler}
-            maxLength={10}
+            maxLength={12}
           />
         </div>
         {errors.storeNumber && (
@@ -53,7 +56,7 @@ const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
         )}
         <div
           className={
-            errors.storeName.length > 0
+            errors.storeName !== ''
               ? styles.itemWithError
               : styles.item
           }
@@ -63,7 +66,7 @@ const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
             name="storeName"
             value={inputs.storeName}
             className={
-              errors.storeName.length > 0
+              errors.storeName !== ''
                 ? styles.hasError
                 : styles.dataInput
             }
@@ -75,7 +78,7 @@ const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
         )}
           <div
             className={
-              errors.owner.length > 0
+              errors.owner !== ''
                 ? styles.itemWithError
                 : styles.item
             }
@@ -85,7 +88,7 @@ const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
               name="owner"
               value={inputs.owner}
               className={
-                errors.owner.length > 0
+                errors.owner != ''
                   ? styles.hasError
                   : styles.dataInput
               }
@@ -98,7 +101,7 @@ const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
         )}
         <div
           className={
-            errors.address.length > 0
+            errors.address !== ''
               ? styles.itemWithError
               : styles.item
           }
@@ -108,7 +111,7 @@ const StoreInput = ({ setErrors, setInputs, errors, inputs }: IProps) => {
             name="address"
             value={inputs.address}
             className={
-              errors.address.length > 0
+              errors.address !== ''
                 ? styles.hasError
                 : styles.dataInput
             }

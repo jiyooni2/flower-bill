@@ -2,21 +2,22 @@ export const numberValidation = (value:string) => {
   let error = '';
   let success = false;
 
-      const numPattern = /^[0-9]*$/;
-      if (!numPattern.test(value)) {
-          success= false;
-          error= '숫자 외의 문자는 작성하실 수 없습니다.';
-      } else if (value.startsWith('0')) {
-          success = false;
-          error = '첫 번쨰 자리는 0이 될 수 없습니다.';
-      } else {
-          success = true;
-          error = '';
-      }
-    return {
-      success: success,
-      error: error
-    }
+  const numPattern = /^[0-9]*$/;
+    if (!numPattern.test(value)) {
+      success= false;
+      error = '숫자 외의 문자는 작성하실 수 없습니다.';
+   } else if (value.startsWith('0')) {
+      success = false;
+      error = '첫 번쨰 자리는 0이 될 수 없습니다.';
+    } else {
+      success = true;
+      error = '';
+  }
+
+  return {
+    success: success,
+    error: error
+  }
 };
 
 
@@ -48,6 +49,7 @@ export const nameValidation = (value:string) => {
 export const ownerValidation = (value: string) => {
   let success = false;
   let error = '';
+
       const ownerPattern = /^[ㄱ-ㅎ가-힣a-zA-Z]*$/;
       if (!ownerPattern.test(value)) {
           success= false;
@@ -56,7 +58,7 @@ export const ownerValidation = (value: string) => {
           success= true;
           error= '';
       }
-
+      console.log(success, error)
     return {
       success: success,
       error: error
@@ -118,8 +120,16 @@ export const submitValidation = ( storeNumber: string, storeName: string, owner:
 
 
 export const switched = (name: string, value: string) => {
-  if (name === 'storeNumber') return numberValidation(value);
-  else if (name === 'storeName') return nameValidation(value);
-  else if (name === 'owner') return ownerValidation(value);
+  if (name === 'storeNumber' || name === 'businessNumber') return numberValidation(value);
+  else if (name === 'storeName' || name === 'name') return nameValidation(value);
+  else if (name === 'owner' || name === 'businessOwnerName') return ownerValidation(value);
+  else if (name === 'address') return addressValidation(value);
+}
+
+
+export const BusinessSwitched = (name: string, value:string) => {
+  if (name === 'businessNumber') return numberValidation(value);
+  else if (name === 'name') return nameValidation(value);
+  else if (name === 'businessOwnerName') return ownerValidation(value);
   else if (name === 'address') return addressValidation(value);
 }
