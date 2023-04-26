@@ -1,5 +1,7 @@
 import { Table, TableContainer,TableHead,TableRow,TableCell,TableBody } from "@mui/material";
 import { OrderProduct } from "main/orderProduct/entities/orderProduct.entity";
+import { useRecoilValue } from "recoil";
+import { categoriesState } from "renderer/recoil/states";
 
 
 type IProps = {
@@ -30,9 +32,6 @@ const DetailTable = ({ orderProducts }: IProps) => {
                 <TableCell width={'20%'} sx={{ fontSize: '13px' }}>
                   카테고리
                 </TableCell>
-                <TableCell width={'10%'} sx={{ fontSize: '12px' }}>
-                  품절
-                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -47,9 +46,8 @@ const DetailTable = ({ orderProducts }: IProps) => {
                     <TableCell component="th">
                       {item.product?.name}
                     </TableCell>
-                    <TableCell>{item.product.price} 원</TableCell>
+                    <TableCell>{item.orderPrice} 원</TableCell>
                     <TableCell>{item.product.categoryId}</TableCell>
-                    <TableCell align="center">X</TableCell>
                   </TableRow>
                 ))}
             </TableBody>
