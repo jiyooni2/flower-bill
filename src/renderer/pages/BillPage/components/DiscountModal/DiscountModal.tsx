@@ -1,10 +1,12 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import MiniModal from './MiniModal';
 import { useRecoilState } from 'recoil';
 import { orderProductsState } from 'renderer/recoil/states';
 import styles from './DiscountModal.module.scss';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
+import { render } from '@testing-library/react';
+import DiscountInputs from './DiscountInput';
 
 
 interface IProps {
@@ -15,22 +17,30 @@ interface IProps {
 
 const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
+  const inputRef = useRef([]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, product: OrderProduct) => {
-    const {value} = e.target;
-    setOrderProducts(
-      orderProducts?.map((item) => {
-        console.log('orderProduct Check', item.id, product.id)
-        if (item.product.id === product.product.id) {
-          return {
-            ...item,
-            orderPrice: parseInt(value),
-          };
-        }
-        return item;
-      })
-    );
-  };
+  useEffect(() => {
+    inputRef.current = inputRef.current.slice(0, orderProducts.length);
+ }, [orderProducts]);
+
+  const updateHandler = () => {
+    for (let i = 0; i < orderProducts.length; i++) {
+      const value = inputRef.current[i]
+      setOrderProducts(
+        orderProducts?.map((item) => {
+          if (item.product.id === value[1]) {
+            return {
+              ...item,
+              orderPrice: Number(value[0].value),
+            };
+          }
+          return item;
+        })
+      );
+    }
+    console.log(orderProducts)
+    setIsOpen(false);
+  }
 
   return (
     <MiniModal isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -58,7 +68,7 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {orderProducts?.map((item) => {
+              {orderProducts?.map((item, i) => {
                 return (
                   <TableRow key={item.id ? item?.id : Math.random()}>
                     <TableCell size="small" style={{ width: '18%' }}>
@@ -68,10 +78,9 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
                       {item.product.price} 원
                     </TableCell>
                     <TableCell size="small" align="center">
-                      <input
+                    <input
+                        ref={el => inputRef.current[i] = [el, item.product.id]}
                         className={styles.dataInput}
-                        value={item.orderPrice}
-                        onChange={(event) => handleChange(event, item)}
                       />
                       <span style={{ marginTop: '4px', marginLeft: '5px', fontSize: '14px' }}>
                         원
@@ -96,6 +105,9 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
             주문 상품이 없습니다.
           </span>
         )}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center'}}>
+        <Button variant='contained' sx={{ width: '70%'}} onClick={updateHandler}>수정하기</Button>
       </div>
     </MiniModal>
   );
