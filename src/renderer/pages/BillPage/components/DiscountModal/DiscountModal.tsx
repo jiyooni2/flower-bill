@@ -3,10 +3,7 @@ import MiniModal from './MiniModal';
 import { useRecoilState } from 'recoil';
 import { orderProductsState } from 'renderer/recoil/states';
 import styles from './DiscountModal.module.scss';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
-import { render } from '@testing-library/react';
-import DiscountInputs from './DiscountInput';
+import { useEffect, useRef } from 'react';
 
 
 interface IProps {
