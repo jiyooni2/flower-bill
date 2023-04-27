@@ -6,7 +6,7 @@ export class Owner extends CoreEntity {
   @Column()
   nickname: string;
 
-  @Column()
+  @Column({ unique: true })
   ownerId: string;
 
   @Column()
