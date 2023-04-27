@@ -1,11 +1,10 @@
 import { IconButton, TextField } from '@mui/material';
 import { Button } from '@mui/material';
-import React, { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import './AuthForm.scss'
 import Modal from 'renderer/components/Modal/Modal';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { CreateOwnerInput } from 'main/owner/dtos/create-owner.dto';
-import { switched } from './validation';
+import useInputsWithError from 'renderer/hooks/useInputsWithError';
 
 interface IProps {
   isOpen: boolean;
@@ -14,63 +13,50 @@ interface IProps {
 
 const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [inputs, setInputs] = useState({
-    nickname: '',
-    ownerId: '',
-    password: '',
-    code: '',
-  })
-  const [errors, setErrors] = useState({
-    nickname: '',
-    ownerId: '',
-    password: '',
-    code: '',
-  })
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [{ nickname, ownerId, password, confirm, question, answer }, onChange, setForm, errors, setErrors] = useInputsWithError(
+    { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' },
+    { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' }
+  );
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowConfirm = () => setShowConfirm((show) => !show);
 
-  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    const validation = switched(name, value)
-      if (validation.success) {
-        setInputs({...inputs, [name]: value})
-        setErrors({...errors, [name]: ''})
-      } else {
-        setErrors({...errors, [name]: validation.error})
-      }
-  };
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const handleSubmit = () => {
-    if (!inputs.ownerId || !inputs.nickname || !inputs.password || !inputs.code && Object.values(errors).join('') !== "") {
-    let ownerId;
-    let nickname;
-    let password;
-    let code;
-    if (!inputs.ownerId) ownerId = '* 아이디가 입력되지 않았습니다.'
-    if (!inputs.nickname) nickname = '* 닉네임이 입력되지 않았습니다.'
-    if (!inputs.password) password = '* 비밀번호가 입력되지 않았습니다.'
-
-    if (!inputs.code) code = '* 비밀번호 변경 코드가 입력되지 않았습니다.'
-
-    setErrors({ ownerId: ownerId, nickname: nickname, password: password, code: code})
-    return;
-    } else if (inputs.password.length < 8) {
-      setErrors({...errors, password: '* 8자 이상 작성해야합니다.'});
+    if (password != confirm) {
+      setErrors({ ...errors, confirm: '비밀번호가 일치하지 않습니다.' });
       return;
-    } else if (inputs.code.length > 6 || inputs.code.length < 6) {
-      setErrors({...errors, code: '* 6글자 코드를 작성하세요'})
-      return;
-    } else {
-      const data : CreateOwnerInput = {
-        nickname: inputs.nickname,
-        ownerId: inputs.ownerId,
-        password: inputs.password,
-        findPasswordCode: inputs.code
-      }
-      window.electron.ipcRenderer.sendMessage('create-owner', data);
-      console.log('회원 생성 성공')
+    }
 
-      setInputs({nickname: '', ownerId: '', password: '', code: ''});
+    if (!ownerId && !nickname && !password && !confirm && !question && !answer) {
+      setErrors({
+        ownerId: '아이디가 입력되지 않았습니다.',
+        nickname: '닉네임이 입력되지 않았습니다.',
+        password: '비밀번호가 입력되지 않았습니다.',
+        confirm: '비밀번호가 입력되지 않았습니다.',
+        question: '비밀번호 찾기 질문이 입력되지 않았습니다.',
+        answer: '비밀번호 찾기 답이 입력되지 않았습니다.',
+      });
+      return;
+    } else if (!ownerId || !nickname || !password || !confirm || !question || !answer) {
+      if (!ownerId) setErrors(({ ...errors, ownerId: '아이디가 입력되지 않았습니다.' }));
+      if (!nickname) setErrors({...errors, nickname: '닉네임이 입력되지 않았습니다.'});
+      if (!password) setErrors({...errors, password: '비밀번호가 입력되지 않았습니다.'});
+      if (!confirm) setErrors({...errors, confirm: '비밀번호가 입력되지 않았습니다.'});
+      if (!question) setErrors({...errors, question: '비밀번호 찾기 질문이 입력되지 않았습니다.'});
+      if (!answer) setErrors({...errors, answer: '비밀번호 찾기 답이 입력되지 않았습니다.'});
+      return;
+    } else if (ownerId && nickname && password && confirm && question && answer) {
+      window.electron.ipcRenderer.sendMessage('create-owner', {
+        nickname,
+        ownerId,
+        password,
+        findPasswordAnswer: answer,
+        findPasswordQuestion: question,
+      });
+      setForm({nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: ''});
       setIsOpen(false);
     }
   };
@@ -85,6 +71,7 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
             Flower Bill
           </h1>
         </div>
+        <form onSubmit={handleSubmit}>
           <div className="form-wrapper">
             <div style={{ width: '100%', marginBottom: '-15px' }}>
               <div
@@ -95,31 +82,29 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="닉네임"
                   name="nickname"
-                  error={errors.nickname !== "" && errors.nickname !== undefined}
+                  error={errors.nickname.length > 0}
                   variant="filled"
                   helperText={
-                    errors.nickname
+                    errors.nickname.length > 0
                       ? errors.nickname
-                      : ' '
+                      : '2글자 이상 작성하실 수 있습니다.'
                   }
-                  onChange={changeHandler}
-                  value={inputs.nickname}
+                  onChange={onChange}
+                  value={nickname}
                 />
-              </div>
-              <div className="text-wrapper">
                 <TextField
                   size="small"
-                  label="아이디"
+                  label="ID"
                   name="ownerId"
-                  error={errors.ownerId !== '' && errors.ownerId !== undefined}
+                  error={errors.ownerId.length > 0}
                   helperText={
-                    errors.ownerId
+                    errors.ownerId.length > 0
                       ? errors.ownerId
-                      : ' '
+                      : '2글자 이상 작성하실 수 있습니다.'
                   }
                   variant="filled"
-                  onChange={changeHandler}
-                  value={inputs.ownerId}
+                  onChange={onChange}
+                  value={ownerId}
                 />
               </div>
               <div className="text-wrapper">
@@ -127,16 +112,16 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   size="small"
                   label="비밀번호"
                   name="password"
-                  error={errors.password !== '' && errors.password !== undefined}
+                  error={errors.password.length > 0}
                   helperText={
-                    errors.password
+                    errors.password.length > 0
                       ? errors.password
-                      : '8~16자리 내의 문자만 작성하실 수 있습니다.'
+                      : ' '
                   }
                   variant="filled"
-                  onChange={changeHandler}
+                  onChange={onChange}
                   type={showPassword ? 'text' : 'password'}
-                  value={inputs.password}
+                  value={password}
                   InputProps={{
                     endAdornment: (
                       <IconButton onClick={handleClickShowPassword}>
@@ -149,17 +134,52 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
               <div className="text-wrapper">
                 <TextField
                   size="small"
-                  label="비밀번호 변경 코드"
-                  name="code"
-                  error={errors.code !== "" && errors.code !== undefined}
+                  label="비밀번호 확인"
+                  name="confirm"
+                  error={errors.confirm.length > 0}
                   helperText={
-                    errors.code
-                      ? errors.code
-                      : '6자리 내 문자 혹은 숫자만 작성하실 수 있습니다.'
+                    errors.confirm.length > 0
+                      ? errors.confirm
+                      : ' '
                   }
                   variant="filled"
-                  onChange={changeHandler}
-                  value={inputs.code}
+                  onChange={onChange}
+                  type={showConfirm ? 'text' : 'password'}
+                  value={confirm}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton onClick={handleClickShowConfirm}>
+                        {showConfirm ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    ),
+                  }}
+                />
+              </div>
+              <div
+                className="text-wrapper"
+                style={{ display: 'flex', gap: '15px' }}
+              >
+                <TextField
+                  size="small"
+                  label="비밀번호 찾기 질문"
+                  name="question"
+                  error={errors.question.length > 0}
+                  helperText={
+                    errors.question.length > 0 ? errors.question : 'asdf'
+                  }
+                  variant="filled"
+                  onChange={onChange}
+                  value={question}
+                />
+                <TextField
+                  size="small"
+                  label="비밀번호 찾기 답"
+                  name="answer"
+                  error={errors.answer.length > 0}
+                  helperText={errors.answer.length > 0 ? errors.answer : 'asdf'}
+                  variant="filled"
+                  onChange={onChange}
+                  value={answer}
                 />
               </div>
             </div>
@@ -176,11 +196,12 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
               >
                 닫기
               </Button>
-              <Button type="submit" variant="contained" sx={{ width: 'auto' }} onClick={() => handleSubmit()}>
+              <Button type="submit" variant="contained" sx={{ width: 'auto' }}>
                 회원가입
               </Button>
             </div>
           </div>
+        </form>
       </Modal>
     </>
   );
