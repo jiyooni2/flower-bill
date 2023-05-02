@@ -14,9 +14,9 @@ interface IProps {
 const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [{ nickname, ownerId, password, confirm, question, answer }, onChange, setForm, errors, setErrors] = useInputsWithError(
-    { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' },
-    { nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: '' }
+  const [inputs, onChange, setForm, errors, setErrors] = useInputsWithError(
+    { nickname: '', ownerId: '', password: '', confirm: '', code: ''},
+    { nickname: '', ownerId: '', password: '', confirm: '', code: ''}
   );
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -25,38 +25,28 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (password != confirm) {
+    if (inputs.password != inputs.confirm) {
       setErrors({ ...errors, confirm: '비밀번호가 일치하지 않습니다.' });
       return;
     }
 
-    if (!ownerId && !nickname && !password && !confirm && !question && !answer) {
-      setErrors({
-        ownerId: '아이디가 입력되지 않았습니다.',
-        nickname: '닉네임이 입력되지 않았습니다.',
-        password: '비밀번호가 입력되지 않았습니다.',
-        confirm: '비밀번호가 입력되지 않았습니다.',
-        question: '비밀번호 찾기 질문이 입력되지 않았습니다.',
-        answer: '비밀번호 찾기 답이 입력되지 않았습니다.',
-      });
+    if (!inputs.ownerId || !inputs.nickname || !inputs.password || !inputs.confirm || !inputs.code) {
+      let ownerId, nickname, password, confirm, code = '';
+      if (!inputs.ownerId) ownerId = '아이디가 입력되지 않았습니다.';
+      if (!inputs.nickname) nickname = '닉네임이 입력되지 않았습니다.';
+      if (!inputs.password) password = '비밀번호가 입력되지 않았습니다.';
+      if (!inputs.confirm) confirm = '비밀번호가 입력되지 않았습니다.';
+      if (!inputs.code) code = '비밀번호 찾기 코드가 입력되지 않았습니다.';
+      setErrors({ ownerId: ownerId, nickname: nickname, password: password, confirm: confirm, code: code})
       return;
-    } else if (!ownerId || !nickname || !password || !confirm || !question || !answer) {
-      if (!ownerId) setErrors(({ ...errors, ownerId: '아이디가 입력되지 않았습니다.' }));
-      if (!nickname) setErrors({...errors, nickname: '닉네임이 입력되지 않았습니다.'});
-      if (!password) setErrors({...errors, password: '비밀번호가 입력되지 않았습니다.'});
-      if (!confirm) setErrors({...errors, confirm: '비밀번호가 입력되지 않았습니다.'});
-      if (!question) setErrors({...errors, question: '비밀번호 찾기 질문이 입력되지 않았습니다.'});
-      if (!answer) setErrors({...errors, answer: '비밀번호 찾기 답이 입력되지 않았습니다.'});
-      return;
-    } else if (ownerId && nickname && password && confirm && question && answer) {
+    } else if (Object.values(inputs).join('').length > 0 && Object.values(errors).join('').length === 0) {
       window.electron.ipcRenderer.sendMessage('create-owner', {
-        nickname,
-        ownerId,
-        password,
-        findPasswordAnswer: answer,
-        findPasswordQuestion: question,
+        nickname: inputs.nickname,
+        ownerId: inputs.ownerId,
+        password: inputs.password,
+        findPasswordCode: inputs.code,
       });
-      setForm({nickname: '', ownerId: '', password: '', confirm: '', question: '', answer: ''});
+      setForm({nickname: '', ownerId: '', password: '', confirm: '', code: ''});
       setIsOpen(false);
     }
   };
@@ -87,10 +77,11 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   helperText={
                     errors.nickname.length > 0
                       ? errors.nickname
-                      : '2글자 이상 작성하실 수 있습니다.'
+                      : '3글자 이상 작성하실 수 있습니다.'
                   }
+                  inputProps={{ minLength: 3 }}
                   onChange={onChange}
-                  value={nickname}
+                  value={inputs.nickname}
                 />
                 <TextField
                   size="small"
@@ -100,11 +91,12 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   helperText={
                     errors.ownerId.length > 0
                       ? errors.ownerId
-                      : '2글자 이상 작성하실 수 있습니다.'
+                      : '3글자 이상 작성하실 수 있습니다.'
                   }
                   variant="filled"
+                  inputProps={{ minLength: 3 }}
                   onChange={onChange}
-                  value={ownerId}
+                  value={inputs.ownerId}
                 />
               </div>
               <div className="text-wrapper">
@@ -114,14 +106,12 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   name="password"
                   error={errors.password.length > 0}
                   helperText={
-                    errors.password.length > 0
-                      ? errors.password
-                      : ' '
+                    errors.password.length > 0 ? errors.password : ' '
                   }
                   variant="filled"
                   onChange={onChange}
                   type={showPassword ? 'text' : 'password'}
-                  value={password}
+                  value={inputs.password}
                   InputProps={{
                     endAdornment: (
                       <IconButton onClick={handleClickShowPassword}>
@@ -137,15 +127,11 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   label="비밀번호 확인"
                   name="confirm"
                   error={errors.confirm.length > 0}
-                  helperText={
-                    errors.confirm.length > 0
-                      ? errors.confirm
-                      : ' '
-                  }
+                  helperText={errors.confirm.length > 0 ? errors.confirm : ' '}
                   variant="filled"
                   onChange={onChange}
                   type={showConfirm ? 'text' : 'password'}
-                  value={confirm}
+                  value={inputs.confirm}
                   InputProps={{
                     endAdornment: (
                       <IconButton onClick={handleClickShowConfirm}>
@@ -155,31 +141,16 @@ const SignUpForm = ({isOpen, setIsOpen}: IProps) => {
                   }}
                 />
               </div>
-              <div
-                className="text-wrapper"
-                style={{ display: 'flex', gap: '15px' }}
-              >
+              <div className="text-wrapper">
                 <TextField
                   size="small"
-                  label="비밀번호 찾기 질문"
-                  name="question"
-                  error={errors.question.length > 0}
-                  helperText={
-                    errors.question.length > 0 ? errors.question : 'asdf'
-                  }
+                  label="비밀번호 찾기 코드"
+                  name="code"
+                  error={errors.code.length > 0}
+                  helperText={errors.code.length > 0 ? errors.code : ' '}
                   variant="filled"
                   onChange={onChange}
-                  value={question}
-                />
-                <TextField
-                  size="small"
-                  label="비밀번호 찾기 답"
-                  name="answer"
-                  error={errors.answer.length > 0}
-                  helperText={errors.answer.length > 0 ? errors.answer : 'asdf'}
-                  variant="filled"
-                  onChange={onChange}
-                  value={answer}
+                  value={inputs.code}
                 />
               </div>
             </div>
