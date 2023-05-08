@@ -1,16 +1,24 @@
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import MiniModal from './MiniModal';
 import { useRecoilState } from 'recoil';
 import { orderProductsState } from 'renderer/recoil/states';
 import styles from './DiscountModal.module.scss';
 import { useEffect, useRef } from 'react';
-
+import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
 
 interface IProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
 
 const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
@@ -18,26 +26,27 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
 
   useEffect(() => {
     inputRef.current = inputRef.current.slice(0, orderProducts.length);
- }, [orderProducts]);
+  }, [orderProducts]);
 
   const updateHandler = () => {
+    let newOrderProducts = [...orderProducts];
+
     for (let i = 0; i < orderProducts.length; i++) {
-      const value = inputRef.current[i]
-      setOrderProducts(
-        orderProducts?.map((item) => {
-          if (item.product.id === value[1]) {
-            return {
-              ...item,
-              orderPrice: Number(value[0].value),
-            };
-          }
-          return item;
-        })
-      );
+      const value = inputRef.current[i];
+
+      newOrderProducts = newOrderProducts?.map((item) => {
+        if (item.product.id === value[1]) {
+          return {
+            ...item,
+            orderPrice: Number(value[0].value),
+          };
+        }
+        return item;
+      });
     }
-    console.log(orderProducts)
+    setOrderProducts(newOrderProducts);
     setIsOpen(false);
-  }
+  };
 
   return (
     <MiniModal isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -75,16 +84,25 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
                       {item.product.price} 원
                     </TableCell>
                     <TableCell size="small" align="center">
-                    <input
-                        ref={el => inputRef.current[i] = [el, item.product.id]}
+                      <input
+                        ref={(el) =>
+                          (inputRef.current[i] = [el, item.product.id])
+                        }
                         className={styles.dataInput}
+                        defaultValue={item.orderPrice}
                       />
-                      <span style={{ marginTop: '4px', marginLeft: '5px', fontSize: '14px' }}>
+                      <span
+                        style={{
+                          marginTop: '4px',
+                          marginLeft: '5px',
+                          fontSize: '14px',
+                        }}
+                      >
                         원
                       </span>
                     </TableCell>
                   </TableRow>
-                )
+                );
               })}
             </TableBody>
           </Table>
@@ -103,8 +121,14 @@ const DiscountModal = ({ isOpen, setIsOpen }: IProps) => {
           </span>
         )}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center'}}>
-        <Button variant='contained' sx={{ width: '70%'}} onClick={updateHandler}>수정하기</Button>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Button
+          variant="contained"
+          sx={{ width: '70%' }}
+          onClick={updateHandler}
+        >
+          수정하기
+        </Button>
       </div>
     </MiniModal>
   );
