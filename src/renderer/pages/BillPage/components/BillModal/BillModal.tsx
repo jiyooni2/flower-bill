@@ -24,8 +24,8 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
-  const memo = useRecoilValue(memoState);
-  const store = useRecoilValue(storeState);
+  const [memo, setMemo] = useRecoilState(memoState);
+  const [store, setStore] = useRecoilState(storeState);
   const printRef = useRef();
   const movePage = useNavigate();
 
@@ -40,7 +40,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     const newBill: CreateBillInput = {
       businessId: business.id,
       token,
-      storeId: store.id,
+      storeId: store ? store.id : null,
       memo,
       orderProductInputs,
     };
@@ -52,7 +52,10 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
       'create-bill',
       ({ ok, error }: GetBillOutput) => {
         if (ok) {
-          console.log('ok')
+          console.log('ok');
+          setOrderProducts([]);
+          setMemo('');
+          setStore(null);
         } else if (error) {
           console.error(error);
         }
@@ -64,7 +67,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     setIsOpen(false);
     setOrderProducts([]);
     movePage('/bills');
-  }
+  };
 
   let sum = 0;
   orderProducts?.map((items) => {
@@ -77,8 +80,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
 
   const saveHandler = () => {
     handleClick();
-    setOrderProducts([]);
-    movePage('/bills')
+    movePage('/bills');
   };
 
   return (
@@ -112,15 +114,17 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               className={styles.ownerData}
             >
               <tbody>
-                <td style={{ width: '45%' }}>
-                  <span style={{ fontSize: '15px', fontWeight: '400' }}>
-                    No.
-                  </span>
-                </td>
-                <td className={styles.name}>
-                {store.owner ? store.owner : '(익명)'} 님
-                </td>
-                <td className={styles.for}>&ensp;귀하</td>
+                <tr>
+                  <td style={{ width: '45%' }}>
+                    <span style={{ fontSize: '15px', fontWeight: '400' }}>
+                      No.
+                    </span>
+                  </td>
+                  <td className={styles.name}>
+                    {store ? store.owner : '(익명)'} 님
+                  </td>
+                  <td className={styles.for}>&ensp;귀하</td>
+                </tr>
               </tbody>
             </table>
             <table
@@ -218,14 +222,18 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 border: '1px solid black',
               }}
             >
-              <td
-                style={{
-                  fontSize: '15px',
-                  fontWeight: 'bold',
-                }}
-              >
-                공&ensp;&ensp;급&ensp;&ensp;내&ensp;&ensp;역
-              </td>
+              <tbody>
+                <tr>
+                  <td
+                    style={{
+                      fontSize: '15px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    공&ensp;&ensp;급&ensp;&ensp;내&ensp;&ensp;역
+                  </td>
+                </tr>
+              </tbody>
             </table>
             <table
               width="100%"
@@ -279,16 +287,24 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
               </tbody>
             </table>
             <table className={styles.sumDiv}>
-              <tbody style={{ display: 'flex', justifyContent: 'space-between', width: '100%'}}>
-                <td className={styles.lastSum}>합&ensp;&ensp;계</td>
-                <td
-                  style={{
-                    marginRight: '10px',
-                    color: 'black',
-                  }}
-                >
-                  ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                </td>
+              <tbody
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
+                <tr>
+                  <td className={styles.lastSum}>합&ensp;&ensp;계</td>
+                  <td
+                    style={{
+                      marginRight: '10px',
+                      color: 'black',
+                    }}
+                  >
+                    ₩ {sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
