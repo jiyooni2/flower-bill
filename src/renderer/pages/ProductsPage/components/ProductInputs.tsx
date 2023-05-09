@@ -1,93 +1,85 @@
 import { StarOutlineRounded, StarRateRounded } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
-import { CreateProductInput, CreateProductOutput } from 'main/product/dtos/create-product.dto';
+import {
+  CreateProductInput,
+  CreateProductOutput,
+} from 'main/product/dtos/create-product.dto';
 import { DeleteProductOutput } from 'main/product/dtos/delete-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
-import { UpdateProductInput, UpdateProductOutput } from 'main/product/dtos/update-product.dto';
+import {
+  UpdateProductInput,
+  UpdateProductOutput,
+} from 'main/product/dtos/update-product.dto';
 import { Product } from 'main/product/entities/product.entity';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SetterOrUpdater, useRecoilValue } from 'recoil';
 import useAddComma from 'renderer/hooks/useAddComma';
 import { businessState, tokenState } from 'renderer/recoil/states';
 import styles from '.././ProductsPage.module.scss';
-import { Error, Input } from '../types';
-import { createValidation, switched } from '../validation';
+import { Input } from '../types';
 import CategoryModal from './CategoryModal/CategoryModal';
-
+import { toast } from 'react-toastify';
 
 type IProps = {
   inputs: Input;
-  errors: Error;
   setInputs: React.Dispatch<Input>;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  setErrors: React.Dispatch<React.SetStateAction<Error>>;
   setCategoryId: SetterOrUpdater<number>;
   id: number;
   clicked: boolean;
-}
+};
 
-const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts, setCategoryId, clicked } : IProps ) => {
+const ProductInputs = ({
+  inputs,
+  setInputs,
+  id,
+  setProducts,
+  setCategoryId,
+  clicked,
+}: IProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [alert, setAlert] = useState({ success: '', error: '' });
   const addComma = useAddComma();
 
+  useEffect(() => {
+    if (alert.error && !alert.success) {
+      if (alert.error.startsWith('네트워크')) {
+        toast.error(alert.error.split('네트워크')[1], {
+          autoClose: 10000,
+          position: 'top-right',
+          hideProgressBar: true,
+        });
+      } else {
+        toast.error(alert.error, {
+          autoClose: 3000,
+          position: 'top-right',
+        });
+      }
+    } else if (alert.success && !alert.error) {
+      toast.success(alert.success, {
+        autoClose: 2000,
+        position: 'top-right',
+      });
+    }
+  }, [alert]);
 
   const clearInputs = () => {
-    setInputs({...inputs, name: '', price: '', clicked: false})
+    setInputs({ ...inputs, name: '', price: '', clicked: false });
     setCategoryId(0);
-    setErrors({ name: '', price: '', category: '' });
   };
 
   const changeStoreDataHandler = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = event.target;
-    const validation = switched(name, value)
-    if (validation.success) {
-      setErrors({ ...errors, [name]: '' });
-      setInputs({...inputs, [name]: value})
-    } else {
-      setErrors({ ...errors, [name]: validation.error})
-    }
+    setInputs({ ...inputs, [name]: value });
   };
 
   const starHandler = () => {
-    setInputs({...inputs, favorite: !inputs.favorite})
-
-     const newData: UpdateProductInput = {
-       id: inputs.id,
-       name: inputs.name,
-       price: Number(inputs.price),
-       categoryId: id,
-       token,
-       businessId: business.id,
-       isFavorite: !inputs.favorite,
-     };
-
-    window.electron.ipcRenderer.sendMessage('update-product', newData);
-
-    window.electron.ipcRenderer.on(
-      'update-product',
-      ({ ok, error }: UpdateProductOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-products', {
-            token,
-            businessId: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-products',
-            (args: GetProductsOutput) => {
-              setProducts(args.products as Product[]);
-            }
-          );
-        }
-        if (error) {
-          console.error(error);
-        }
-      }
-    );
-  }
+    setInputs({ ...inputs, favorite: !inputs.favorite });
+  };
 
   const deleteDataHandler = () => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
@@ -101,6 +93,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
         'delete-product',
         ({ ok, error }: DeleteProductOutput) => {
           if (ok) {
+            setAlert({ error: '', success: '상품이 삭제되었습니다.' });
             window.electron.ipcRenderer.sendMessage('get-products', {
               token,
               businessId: business.id,
@@ -111,11 +104,14 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
                 setProducts(args.products as Product[]);
               }
             );
+            clearInputs();
           }
           if (error) {
             console.error(error);
-            if (error.startsWith('존재')) {
-              setErrors({...errors, name: '존재하지 않는 상품입니다.'})
+            if (error.startsWith('존재') || error.startsWith('해당 상품')) {
+              setAlert({ success: '', error: error });
+            } else {
+              setAlert({ success: '', error: `네트워크 ${error}` });
             }
           }
         }
@@ -140,6 +136,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
       'update-product',
       ({ ok, error }: UpdateProductOutput) => {
         if (ok) {
+          setAlert({ success: '상품이 수정되었습니다.', error: '' });
           window.electron.ipcRenderer.sendMessage('get-products', {
             token,
             businessId: business.id,
@@ -150,67 +147,67 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
               setProducts(args.products as Product[]);
             }
           );
+          clearInputs();
         }
         if (error) {
           console.error(error);
+          if (error.startsWith('존재') || error.startsWith('해당 상품')) {
+            setAlert({ success: '', error: error });
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}` });
+          }
         }
       }
     );
-    setInputs({...inputs, favorite: false})
+    setInputs({ ...inputs, favorite: false });
   };
 
   const addDataHandler = () => {
     if (id == 0) {
-      setErrors({ ...errors, category: '카테고리가 선택되지 않았습니다.' });
+      setAlert({ success: '', error: '카테고리가 선택되지 않았습니다.' });
       return;
     }
 
-    const validation = createValidation(inputs)
-    if (!validation.success) {
-      setErrors({...errors, [validation.name]: validation.error})
-    } else {
-      const newData: CreateProductInput = {
-        name: inputs.name,
-        price: Number(inputs.price),
-        categoryId: id,
-        businessId: business.id,
-        token,
-      };
-
-      window.electron.ipcRenderer.sendMessage('create-product', newData);
-      window.electron.ipcRenderer.on(
-        'create-product',
-        ({ ok, error }: CreateProductOutput) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-products', {
-              token,
-              page: inputs.page - 1,
-              businessId: business.id,
-            });
-            window.electron.ipcRenderer.on(
-              'get-products',
-              ({ ok, error, products }: GetProductsOutput) => {
-                if (ok) {
-                  setProducts(products);
-                }
-                if (error) {
-                  console.error(error);
-                }
+    const newData: CreateProductInput = {
+      name: inputs.name,
+      price: Number(inputs.price),
+      categoryId: id,
+      businessId: business.id,
+      token,
+    };
+    window.electron.ipcRenderer.sendMessage('create-product', newData);
+    window.electron.ipcRenderer.on(
+      'create-product',
+      ({ ok, error }: CreateProductOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-products', {
+            token,
+            page: inputs.page - 1,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-products',
+            ({ ok, error, products }: GetProductsOutput) => {
+              if (ok) {
+                setAlert({ success: '상품이 생성되었습니다.', error: '' });
+                setProducts(products);
+                clearInputs();
               }
-            );
-          }
-          if (error) {
-            console.log(error);
-            if (error.startsWith('최하위')) {
-              setErrors({...errors, category: '* 최하위 카테고리를 입력해야 합니다.'})
-            } else if (error.startsWith('없는')) {
-              setErrors({...errors, category: '* 없는 카테고리입니다.'})
+              if (error) {
+                setAlert({ success: '', error: `네트워크 ${error}` });
+              }
             }
+          );
+        }
+        if (error) {
+          if (error.startsWith('최하위') || error.startsWith('없는')) {
+            setAlert({ success: '', error: error });
+          } else {
+          setAlert({ success: '', error: `네트워크 ${error}` });
           }
         }
-      );
-    }
-    clearInputs();
+      }
+    );
   };
 
   const categoryClickHandler = () => {
@@ -219,7 +216,12 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
 
   return (
     <>
-      <CategoryModal isOpen={isOpen} setIsOpen={setIsOpen} setCategoryId={setCategoryId} categoryId={id} />
+      <CategoryModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        setCategoryId={setCategoryId}
+        categoryId={id}
+      />
       <div className={styles.infoContent}>
         <Typography
           variant="h6"
@@ -243,8 +245,9 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
             <div>
               <div className={styles.item}>
                 <p className={styles.labels}>즐겨찾기</p>
-                <div style={{ width: '50%', height: '33px'}}>
-                  {inputs.name !== '' || inputs.price !== '' ? inputs.favorite ? (
+                <div style={{ width: '50%', height: '33px' }}>
+                  {inputs.name !== '' || inputs.price !== '' ? (
+                    inputs.favorite ? (
                       <StarRateRounded
                         className={styles.favorite}
                         sx={{ color: 'gold', cursor: 'pointer' }}
@@ -257,27 +260,26 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
                         color="action"
                         onClick={() => starHandler()}
                       />
+                    )
                   ) : (
                     <StarOutlineRounded
-                        className={styles.favorite}
-                        color="action"
-                      />
+                      className={styles.favorite}
+                      color="action"
+                    />
                   )}
                 </div>
               </div>
               <div
                 className={
-                  errors.name.length > 0
-                    ? styles.itemWithError
-                    : styles.item
+                  // errors.name.length > 0 ? styles.itemWithError : styles.item
+                  styles.item
                 }
               >
                 <p className={styles.labels}>상품명</p>
                 <input
                   className={
-                    errors.name.length > 0
-                      ? styles.hasError
-                      : styles.dataInput
+                    // errors.name.length > 0 ? styles.hasError : styles.dataInput
+                    styles.dataInput
                   }
                   value={inputs.name}
                   name="name"
@@ -285,33 +287,29 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
                   maxLength={20}
                 />
               </div>
-              {errors.name && (
+              {/* {errors.name && (
                 <span className={styles.errorMessage}>{errors.name}</span>
-              )}
+              )} */}
               <div
                 className={
-                  errors.price.length > 0
-                    ? styles.itemWithError
-                    : styles.item
+                  // errors.price.length > 0 ? styles.itemWithError : styles.item
+                  styles.item
                 }
               >
                 <p className={styles.labels}>판매가</p>
                 <input
                   className={
-                    errors.price.length > 0
-                      ? styles.hasError
-                      : styles.dataInput
-                    }
+                    // errors.price.length > 0 ? styles.hasError : styles.dataInput
+                    styles.dataInput
+                  }
                   value={addComma(inputs.price)}
                   name="price"
                   onChange={changeStoreDataHandler}
                 />
               </div>
-              {errors.price && (
-                <span className={styles.errorMessage}>
-                  {errors.price}
-                </span>
-              )}
+              {/* {errors.price && (
+                <span className={styles.errorMessage}>{errors.price}</span>
+              )} */}
               <div className={styles.lastItem}>
                 <p className={styles.categoryLabel}>카테고리</p>
                 {!clicked && id ? (
@@ -327,9 +325,10 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
                   <>
                     <button
                       className={
-                        errors.category.length > 0
-                          ? styles.categoryError
-                          : styles.buttons
+                        // errors.category.length > 0
+                        //   ? styles.categoryError
+                        //   : styles.buttons
+                        styles.buttons
                       }
                       style={{ float: 'right' }}
                       onClick={categoryClickHandler}
@@ -339,38 +338,36 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
                   </>
                 )}
               </div>
-                {errors.category ? (
-                  <span className={styles.errorMessage}>
-                    {errors.category}
-                  </span>
-                ) : (
-                  <span className={styles.infoMessage}>
-                    카테고리는 소분류만 선택 가능합니다.
-                    </span>
-                )}
-              </div>
-            </div>
-            <div className={styles.buttonList}>
-              {inputs.clicked ? (
-                <Button
-                  variant="contained"
-                  size="small"
-                  sx={{ marginLeft: '40px' }}
-                  color="error"
-                  onClick={deleteDataHandler}
-                >
-                  삭제
-                </Button>
+              {/* {errors.category ? (
+                <span className={styles.errorMessage}>{errors.category}</span>
               ) : (
-                <div></div>
-              )}
+                <span className={styles.infoMessage}>
+                  카테고리는 소분류만 선택 가능합니다.
+                </span>
+              )} */}
+            </div>
+          </div>
+          <div className={styles.buttonList}>
+            {inputs.clicked ? (
+              <Button
+                variant="contained"
+                size="small"
+                sx={{ marginLeft: '40px' }}
+                color="error"
+                onClick={deleteDataHandler}
+              >
+                삭제
+              </Button>
+            ) : (
+              <div></div>
+            )}
             {!inputs.clicked ? (
               <Button
                 variant="contained"
                 size="small"
                 sx={{ marginRight: '10px' }}
                 onClick={addDataHandler}
-                disabled={errors.name.length > 0}
+                // disabled={errors.name.length > 0}
               >
                 생성
               </Button>
@@ -388,7 +385,7 @@ const ProductInputs = ( { inputs, setInputs, errors, setErrors, id, setProducts,
         </div>
       </div>
     </>
-  )
+  );
 };
 
 export default ProductInputs;

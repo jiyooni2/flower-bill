@@ -176,8 +176,6 @@ const ProductsPage = () => {
           <ProductInputs
             inputs={inputs}
             setInputs={setInputs}
-            errors={errors}
-            setErrors={setErrors}
             id={categoryId}
             setCategoryId={setCategoryId}
             setProducts={setProducts}
