@@ -15,12 +15,20 @@ import DetailBillPage from './pages/BillsPage/DetailPage/DetailBillPage';
 import UpdateBillPage from './pages/BillsPage/UpdateBillPage/UpdateBIllPage';
 import ConfirmPage from './pages/BusinessPage/components/Confirmpage/Confirmpage';
 import BusinessInfoPage from './pages/BusinessPage/BusinessPage';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function App() {
   return (
     <RecoilRoot>
       <Router>
         <Layout>
+          <ToastContainer
+            limit={1}
+            position="top-right"
+            draggable
+            closeOnClick
+          />
           <Routes>
             <Route path={ROUTES.HOME} element={<HomePage />} />
             <Route path={ROUTES.BILL} element={<BillPage />} />
