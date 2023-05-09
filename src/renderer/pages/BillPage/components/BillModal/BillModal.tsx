@@ -243,7 +243,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             >
               <tbody>
                 <tr>
-                  <th style={{ width: '17%' }}>월일</th>
                   <th style={{ width: '30%' }}>품목</th>
                   <th style={{ width: '13%' }}>수량</th>
                   <th>단가</th>
@@ -257,7 +256,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                       <tr
                         key={orderProduct.id ? orderProduct.id : Math.random()}
                       >
-                        <td className={styles.item}>{`${month} / ${day}`}</td>
                         <td className={styles.item}>
                           {orderProduct.product?.name}
                         </td>
@@ -265,12 +263,12 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                         <td className={styles.price}>
                           {orderProduct.orderPrice
                             .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} 원
                         </td>
                         <td className={styles.sum}>
                           {(orderProduct.orderPrice * orderProduct.count)
                             .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} 원
                         </td>
                       </tr>
                     );
