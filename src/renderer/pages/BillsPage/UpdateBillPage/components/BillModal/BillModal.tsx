@@ -241,7 +241,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                   <th>품목</th>
                   <th>수량</th>
                   <th>단가</th>
-                  <th>공급가액</th>
+                  <th>공급가 총액</th>
                 </tr>
               </tbody>
               {orderProducts?.map((orderProduct) => {

@@ -136,7 +136,7 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
             <tbody>
               <tr>
                 <th>작성년월일</th>
-                <th>공급대가총액</th>
+                <th>공급가 총액</th>
                 <th>비고</th>
               </tr>
               <tr>
