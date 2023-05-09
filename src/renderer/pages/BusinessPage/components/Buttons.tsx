@@ -1,107 +1,119 @@
-import { Button } from "@mui/material";
+import { Button } from '@mui/material';
 import styles from '../BusinessPage.module.scss';
-import { useRecoilState, useRecoilValue } from "recoil";
-import { businessesState, businessState, tokenState } from "renderer/recoil/states";
-import { Inputs } from "../types";
-import { DeleteBusinessOutput } from "main/business/dtos/delete-business.dto";
-import { Business } from "main/business/entities/business.entity";
-import { GetBusinessesOutput } from "main/business/dtos/get-businesses.dto";
-import { UpdateBusinessInput, UpdateBusinessOutPut } from "main/business/dtos/update-busiess.dto";
-import InfoModal from "renderer/components/InfoModal/InfoModal";
-import { useState } from "react";
-
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  businessesState,
+  businessState,
+  tokenState,
+} from 'renderer/recoil/states';
+import { Inputs } from '../types';
+import { Business } from 'main/business/entities/business.entity';
+import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
+import {
+  UpdateBusinessInput,
+  UpdateBusinessOutPut,
+} from 'main/business/dtos/update-busiess.dto';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import DeleteModal from './DeleteModal/DeleteModal';
 
 type IProps = {
   inputs: Inputs;
-}
+};
 
-const Buttons = ({ inputs} : IProps) => {
-  const token = useRecoilValue(tokenState)
+const Buttons = ({ inputs }: IProps) => {
+  const token = useRecoilValue(tokenState);
   const [business, setBusiness] = useRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
+  const [alert, setAlert] = useState({ success: '', error: '' });
+  const [disabled, setDisabled] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const deleteDataHandler = () => {
-    if (window.confirm('정말 삭제하시겠습니까?')) {
-      window.electron.ipcRenderer.sendMessage('delete-business', {
-        token,
-        businessId: business.id,
-      });
-
-      window.electron.ipcRenderer.on(
-        'delete-business',
-        ({ ok, error }: DeleteBusinessOutput) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-businesses', {
-              token,
-              businessId: business.id,
-            });
-            window.electron.ipcRenderer.on(
-              'get-businesses',
-              (args: GetBusinessesOutput) => {
-                setBusinesses(args.businesses as Business[]);
-                setBusiness(businesses[0]);
-              }
-            );
-          }
-          if (error) {
-            console.log(error);
-          }
-        }
-      );
+  useEffect(() => {
+    if (
+      business.businessNumber !== Number(inputs.businessNumber) ||
+      business.address !== inputs.address ||
+      business.businessOwnerName !== inputs.businessOwnerName ||
+      business.name !== inputs.name
+    ) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
     }
-  };
+  }, [inputs]);
+
+  useEffect(() => {
+    if (alert.error && !alert.success) {
+      if (alert.error.startsWith('네트워크')) {
+        toast.error(alert.error.split('네트워크')[1], {
+          autoClose: 10000,
+          position: 'top-right',
+          hideProgressBar: true,
+        });
+      } else {
+        toast.error(alert.error, {
+          autoClose: 3000,
+          position: 'top-right',
+        });
+      }
+    } else if (alert.success && !alert.error) {
+      toast.success(alert.success, {
+        autoClose: 2000,
+        position: 'top-right',
+      });
+    }
+  }, [alert]);
 
   const updateDataHandler = () => {
-      const number = parseInt(inputs.businessNumber);
+    const newData: UpdateBusinessInput = {
+      businessNumber: parseInt(inputs.businessNumber),
+      address: inputs.address,
+      name: inputs.name,
+      businessOwnerName: inputs.businessOwnerName,
+      token,
+      businessId: business.id,
+    };
 
-      const newData: UpdateBusinessInput = {
-        businessNumber: number,
-        address: inputs.address,
-        name: inputs.name,
-        businessOwnerName: inputs.businessOwnerName,
-        token,
-        businessId: business.id,
-      };
+    window.electron.ipcRenderer.sendMessage('update-business', {
+      ...newData,
+    });
 
-      window.electron.ipcRenderer.sendMessage('update-business', {
-        ...newData,
-      });
-
-      window.electron.ipcRenderer.on(
-        'update-business',
-        ({ ok, error }: UpdateBusinessOutPut) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-businesses', {
-              token,
-              businessId: business.id,
-            });
-            window.electron.ipcRenderer.on(
-              'get-businesses',
-              (args: GetBusinessesOutput) => {
-                setBusinesses(args.businesses as Business[]);
-                setIsOpen(true);
-              }
-            );
-          }
-          if (error) {
-            console.log(error);
-          }
+    window.electron.ipcRenderer.on(
+      'update-business',
+      ({ ok, error }: UpdateBusinessOutPut) => {
+        if (ok) {
+          setAlert({ success: '사업자가 수정되었습니다.', error: '' });
+          window.electron.ipcRenderer.sendMessage('get-businesses', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-businesses',
+            (args: GetBusinessesOutput) => {
+              setBusinesses(args.businesses as Business[]);
+            }
+          );
         }
-      );
+        if (error) {
+          console.log(error);
+          setAlert({ success: '', error: `네트워크 ${error}` });
+        }
+      }
+    );
   };
 
   return (
     <>
-      <InfoModal isOpen={isOpen} setIsOpen={setIsOpen} text="사업자 정보를 수정하였습니다." />
+      <DeleteModal isOpen={isOpen} setIsOpen={setIsOpen} setAlert={setAlert} />
       <div className={styles.list}>
         <div className={styles.buttonList}>
           <Button
             variant="contained"
             size="small"
             onClick={updateDataHandler}
+            disabled={disabled}
           >
-            수정하기
+            사업자 수정하기
           </Button>
         </div>
         <hr />
@@ -111,13 +123,13 @@ const Buttons = ({ inputs} : IProps) => {
             color: 'darkgray',
             cursor: 'pointer',
           }}
-          onClick={() => deleteDataHandler()}
+          onClick={() => setIsOpen(true)}
         >
           사업자 삭제하기
         </span>
       </div>
     </>
-  )
+  );
 };
 
 export default Buttons;
