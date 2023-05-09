@@ -7,7 +7,7 @@ import { Store } from 'main/store/entities/store.entity';
 import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 import StoreInput from './components/StoreInput';
-import { Inputs, StoreData } from './types';
+import { Inputs } from './types';
 import Buttons from './components/Buttons';
 import StoreTable from './components/StoreTable';
 
@@ -15,12 +15,6 @@ const StorePage = () => {
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const [stores, setStores] = useRecoilState(storesState);
-  const [errors, setErrors] = useState<StoreData>({
-    storeNumber: '',
-    storeName: '',
-    owner: '',
-    address: '',
-  });
   const [inputs, setInputs] = useState<Inputs>({
     storeNumber: '',
     storeName: '',
@@ -75,7 +69,6 @@ const StorePage = () => {
   };
 
   const clearInputs = () => {
-    setErrors({ ...errors, storeNumber: '', storeName: '', owner: '', address: '' });
     setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
     setClickedStore({
       business: null,
@@ -123,13 +116,12 @@ const StorePage = () => {
                 비우기
               </button>
               <div className={styles.list}>
-                <StoreInput setErrors={setErrors} setInputs={setInputs} errors={errors} inputs={inputs} />
+                <StoreInput setInputs={setInputs} inputs={inputs} />
                 <Buttons
                   clickedStore={clickedStore}
                   setClickedStore={setClickedStore}
                   inputs={inputs} setInputs={setInputs}
-                  errors={errors} setErrors={setErrors}
-                  stores={stores} setStores={setStores}  />
+                />
               </div>
             </div>
           </div>

@@ -1,46 +1,65 @@
-import { Button } from "@mui/material";
-import { CreateStoreOutput } from "main/store/dtos/create-store.dto";
-import { DeleteStoreOutput } from "main/store/dtos/delete-store.dto";
-import { GetStoresOutput } from "main/store/dtos/get-stores.dto";
-import { Store } from "main/store/entities/store.entity";
-import React from "react";
-import { SetterOrUpdater, useRecoilValue } from "recoil";
-import { businessState, tokenState } from "renderer/recoil/states";
+import { Button } from '@mui/material';
+import { CreateStoreOutput } from 'main/store/dtos/create-store.dto';
+import { DeleteStoreOutput } from 'main/store/dtos/delete-store.dto';
+import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
+import { Store } from 'main/store/entities/store.entity';
+import React, { useEffect, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { businessState, storesState, tokenState } from 'renderer/recoil/states';
 import styles from '../StorePage.module.scss';
-import { Inputs, StoreData } from "../types";
-import { submitValidation } from "../validation";
-
+import { Inputs } from '../types';
+import { toast } from 'react-toastify';
+import { UpdateStoreInput, UpdateStoreOutput } from 'main/store/dtos/update-store.dto';
 
 type IProps = {
   clickedStore: Store;
   inputs: Inputs;
-  errors: StoreData;
-  stores: Store[];
-  setStores: SetterOrUpdater<Store[]>;
   setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
-  setErrors: React.Dispatch<React.SetStateAction<StoreData>>;
   setClickedStore: React.Dispatch<React.SetStateAction<Store>>;
-}
+};
 
-const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, setErrors, stores, setStores } : IProps) => {
-  const token = useRecoilValue(tokenState)
+const Buttons = ({
+  clickedStore,
+  setClickedStore,
+  inputs,
+  setInputs,
+}: IProps) => {
+  const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
+  const [stores, setStores] = useRecoilState(storesState);
+  const [alert, setAlert] = useState({ success: '', error: '' });
 
-  const updateDataHandler = () => {
-    const findIndex = stores.findIndex(
-      (element) => element.id == clickedStore.id
-    );
-    const updateStore = [...stores];
-    updateStore[Number(findIndex)] = {
-      ...updateStore[Number(findIndex)],
-      businessNumber: parseInt(inputs.storeNumber),
-      name: inputs.storeName,
-      owner: inputs.owner,
-      address: inputs.address,
-    };
-    setStores(updateStore);
-    setErrors({ ...errors, storeNumber: '', storeName: '', owner: '', address: '' });
-    setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
+  useEffect(() => {
+    if (alert.error && !alert.success) {
+      if (alert.error.startsWith('네트워크')) {
+        toast.error(alert.error.split('네트워크')[1], {
+          autoClose: 10000,
+          position: 'top-right',
+          hideProgressBar: true,
+        });
+      } else {
+        toast.error(alert.error, {
+          autoClose: 3000,
+          position: 'top-right',
+        });
+      }
+    } else if (alert.success && !alert.error) {
+      toast.success(alert.success, {
+        autoClose: 2000,
+        position: 'top-right',
+      });
+    }
+  }, [alert]);
+
+  const clear = () => {
+    setInputs({
+      ...inputs,
+      clicked: false,
+      storeNumber: '',
+      storeName: '',
+      owner: '',
+      address: '',
+    });
     setClickedStore({
       business: null,
       businessId: null,
@@ -49,7 +68,45 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
       owner: '',
       address: '',
     });
-    setInputs({...inputs, clicked: false})
+  };
+
+  const updateDataHandler = () => {
+    const updateData: UpdateStoreInput = {
+      businessNumber: parseInt(inputs.storeNumber),
+      name: inputs.storeName,
+      address: inputs.address,
+      owner: inputs.owner,
+      id: clickedStore.id,
+      businessId: business.id,
+      token,
+    };
+    window.electron.ipcRenderer.sendMessage('update-store', updateData);
+    window.electron.ipcRenderer.on(
+      'update-store',
+      ({ ok, error }: UpdateStoreOutput) => {
+        if (ok) {
+          setAlert({ success: '스토어가 수정되었습니다.', error: '' });
+          window.electron.ipcRenderer.sendMessage('get-stores', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-stores',
+            (args: GetStoresOutput) => {
+              setStores(args.stores as Store[]);
+            }
+          );
+          clear();
+        }
+        if (error) {
+          if (error.startsWith('없는') || error.startsWith('해당 스토어')) {
+            setAlert({ success: '', error: error });
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}` });
+          }
+        }
+      }
+    );
   };
 
   const addDataHandler = () => {
@@ -58,61 +115,47 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
         (data) => data.businessNumber.toString() == inputs.storeNumber
       ) != -1
     ) {
-      errors.storeNumber = '동일한 사업자 번호가 존재합니다.';
+      setAlert({ success: '', error: '동일한 사업자 번호가 존재합니다.' });
       return;
     }
 
-    const validate = submitValidation( inputs.storeNumber, inputs.storeName, inputs.owner, inputs.address)
-    if (validate.storeNumber || validate.storeName || validate.owner || validate.address) {
-      setErrors({...inputs, ...validate});
-      return;
-    } else {
-      const newData: Store = {
-        name: inputs.storeName,
-        businessNumber: parseInt(inputs.storeNumber),
-        owner: inputs.owner,
-        address: inputs.address,
-        business: business,
-        businessId: business.id,
-      };
+    const newData: Store = {
+      name: inputs.storeName,
+      businessNumber: parseInt(inputs.storeNumber),
+      owner: inputs.owner,
+      address: inputs.address,
+      business: business,
+      businessId: business.id,
+    };
 
-      window.electron.ipcRenderer.sendMessage('create-store', {
-        ...newData,
-        token,
-        businessId: business.id,
-      });
-
-      window.electron.ipcRenderer.on(
-        'create-store',
-        ({ ok, error }: CreateStoreOutput) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-stores', {
-              token,
-              businessId: business.id,
-            });
-            window.electron.ipcRenderer.on(
-              'get-stores',
-              (args: GetStoresOutput) => {
-                setStores(args.stores as Store[]);
-              }
-            );
-          }
-          if (error) {
-            console.log(error);
-          }
-        }
-      );
-    }
-    setErrors({ ...errors, storeNumber: '', storeName: '', owner: '', address: '' });
-    setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
-    setClickedStore({
-      business: null,
-      businessId: null,
-      businessNumber: 0,
-      name: '',
-      owner: '',
-      address: '',
+    window.electron.ipcRenderer.sendMessage('create-store', {
+      ...newData,
+      token,
+      businessId: business.id,
     });
+
+    window.electron.ipcRenderer.on(
+      'create-store',
+      ({ ok, error }: CreateStoreOutput) => {
+        if (ok) {
+          setAlert({ success: '스토어가 생성되었습니다.', error: '' });
+          window.electron.ipcRenderer.sendMessage('get-stores', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-stores',
+            (args: GetStoresOutput) => {
+              setStores(args.stores as Store[]);
+            }
+          );
+          clear();
+        }
+        if (error) {
+          setAlert({ success: '', error: `네트워크 ${error}` });
+        }
+      }
+    );
   };
 
   const deleteDataHandler = () => {
@@ -126,6 +169,7 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
       'delete-store',
       ({ ok, error }: DeleteStoreOutput) => {
         if (ok) {
+          setAlert({ success: '스토어가 삭제되었습니다.', error: '' });
           window.electron.ipcRenderer.sendMessage('get-stores', {
             token,
             businessId: business.id,
@@ -136,24 +180,18 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
               setStores(args.stores as Store[]);
             }
           );
+          clear();
         }
         if (error) {
           console.log(error);
+          if (error.startsWith('없는') || error.startsWith('해당 스토어')) {
+            setAlert({ success: '', error: error });
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}` });
+          }
         }
       }
     );
-
-
-    setErrors({ ...errors, storeNumber: '', storeName: '', owner: '', address: '' });
-    setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
-    setClickedStore({
-      business: null,
-      businessId: null,
-      businessNumber: 0,
-      name: '',
-      owner: '',
-      address: '',
-    });
   };
 
   return (
@@ -192,7 +230,7 @@ const Buttons = ({ clickedStore, setClickedStore, inputs, setInputs, errors, set
         </Button>
       )}
     </div>
-  )
+  );
 };
 
 export default Buttons;
