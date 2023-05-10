@@ -30,4 +30,14 @@ export class Business extends CoreEntity {
   //업종
   @Column({ nullable: true })
   sector?: string;
+
+  @Column({ nullable: true })
+  accountNumber: string;
+
+  @Column({ nullable: true })
+  accountBank: string;
+  
+  @Column({ nullable: true })
+  accountOwner: string;
+
 }

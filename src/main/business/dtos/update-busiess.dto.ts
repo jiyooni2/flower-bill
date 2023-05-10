@@ -12,6 +12,9 @@ export interface UpdateBusinessInput
         | 'businessOwnerName'
         | 'typeofBusiness'
         | 'sector'
+        | 'accountBank'
+        | 'accountNumber'
+        | 'accountOwner'
       >
     >,
     AuthInput {

@@ -11,6 +11,9 @@ export interface CreateBusinessInput
       | 'address'
       | 'typeofBusiness'
       | 'sector'
+      | 'accountBank'
+      | 'accountNumber'
+      | 'accountOwner'
     >,
     AuthInput {}
 

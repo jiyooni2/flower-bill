@@ -38,6 +38,9 @@ export class BusinessService {
     typeofBusiness,
     sector,
     token,
+    accountBank,
+    accountNumber,
+    accountOwner,
   }: CreateBusinessInput): Promise<CreateBusinessOutput> {
     try {
       //owner 검증
@@ -60,6 +63,9 @@ export class BusinessService {
           typeofBusiness,
           sector,
           ownerId: owner.id,
+          accountNumber,
+          accountBank,
+          accountOwner,
         })
         .execute();
 
@@ -98,6 +104,9 @@ export class BusinessService {
     typeofBusiness,
     sector,
     name,
+    accountNumber,
+    accountBank,
+    accountOwner,
   }: UpdateBusinessInput): Promise<UpdateBusinessOutPut> {
     try {
       await authService.checkBusinessAuth(token, businessId);
@@ -111,6 +120,9 @@ export class BusinessService {
           name,
           typeofBusiness,
           sector,
+          accountNumber,
+          accountBank,
+          accountOwner,
         }
       );
 
