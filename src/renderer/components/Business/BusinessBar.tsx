@@ -89,7 +89,7 @@ const BusinessBar = () => {
                 width: '80%',
                 height: '70%',
                 color: '#73777B',
-                marginLeft: '5px',
+                marginLeft: '4px',
                 cursor: 'pointer',
                 marginTop: '25px',
               }}
