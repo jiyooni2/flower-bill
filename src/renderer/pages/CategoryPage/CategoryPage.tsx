@@ -7,24 +7,19 @@ import {
   categoriesState,
   tokenState,
 } from 'renderer/recoil/states';
-import {
-  CreateCategoryInput,
-  CreateCategoryOutput,
-} from 'main/category/dtos/create-category.dto';
 import { Category } from 'main/category/entities/category.entity';
 import { ChevronRight, ExpandMore, AddRounded } from '@mui/icons-material';
 import { Typography } from '@mui/material';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { CategoryResult } from 'main/common/dtos/category-result.dto';
-import { changeValidation } from './validation';
 import InfoModal from 'renderer/components/InfoModal/InfoModal';
 import Buttons from './components/Buttons';
-
+import { toast } from 'react-toastify';
 
 const CategoryPage = () => {
-  const [categories, setCategories] = useRecoilState(categoriesState);
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
+  const [categories, setCategories] = useRecoilState(categoriesState);
   const [clicked, setClicked] = useState<boolean>(false);
   const [addNew, setAddNew] = useState<boolean>(false);
   const [categoryId, setCategoryId] = useState<string>('');
@@ -32,10 +27,31 @@ const CategoryPage = () => {
   const [levelName, setLevelName] = useState<string>('');
   const [parentCategoryName, setParentCategoryName] = useState<string>('');
   const [parentCategoryId, setParentCategoryId] = useState<number>(0);
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const [errors, setErrors] = useState({ name: '' });
   const [developOpen, setDevelopOpen] = useState<boolean>(false);
+  const [alert, setAlert] = useState({ success: '', error: ''})
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (alert.error && !alert.success) {
+      if (alert.error.startsWith('네트워크')) {
+        toast.error(alert.error.split('네트워크')[1], {
+          autoClose: 10000,
+          position: 'top-right',
+          hideProgressBar: true,
+        });
+      } else {
+        toast.error(alert.error, {
+          autoClose: 3000,
+          position: 'top-right',
+        });
+      }
+    } else if (alert.success && !alert.error) {
+      toast.success(alert.success, {
+        autoClose: 2000,
+        position: 'top-right',
+      });
+    }
+  }, [alert]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -44,12 +60,17 @@ const CategoryPage = () => {
     });
     window.electron.ipcRenderer.on(
       'get-categories',
-       ({ ok, error, categories }: GetCategoriesOutput) => {
-         if (ok) {
-           setCategories(categories);
-         } else {
-           console.error(error);
-         }
+      ({ ok, error, categories }: GetCategoriesOutput) => {
+        if (ok) {
+          setCategories(categories);
+        } else {
+          console.error(error);
+          if (error.startsWith('존재')) {
+            setAlert({ success: '', error: error})
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}`})
+          }
+        }
       }
     );
   }, []);
@@ -156,18 +177,12 @@ const CategoryPage = () => {
         : nodes.level < 4
         ? addTree(nodes, false)
         : null}
-      </TreeItem>
+    </TreeItem>
   );
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target;
-      const validation = changeValidation(value);
-      if (validation.success) {
-        setCategoryName(value);
-        setErrors({ name: '' })
-      } else {
-        setErrors({ name: validation.error })
-      }
+    const { value } = e.target;
+    setCategoryName(value);
   };
 
   const idChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +191,11 @@ const CategoryPage = () => {
 
   return (
     <>
-      <InfoModal isOpen={developOpen} setIsOpen={setDevelopOpen} text="이 기능은 현재 개발중입니다."/>
+      <InfoModal
+        isOpen={developOpen}
+        setIsOpen={setDevelopOpen}
+        text="이 기능은 현재 개발중입니다."
+      />
       <div className={styles.category}>
         <div className={styles.container}>
           <div className={styles.search}></div>
@@ -227,7 +246,7 @@ const CategoryPage = () => {
                 카테고리 생성
               </Typography>
               <div className={styles.list}>
-              <div>
+                <div>
                   <div>
                     <div className={styles.item}>
                       <p className={styles.labels}>카테고리 번호</p>
@@ -238,14 +257,10 @@ const CategoryPage = () => {
                         readOnly
                       />
                     </div>
-                    <div className={styles.itemWithError}>
+                    <div className={styles.item}>
                       <p className={styles.labels}>카테고리명</p>
                       <input
-                        className={
-                          errors.name !== ''
-                            ? styles.hasError
-                            : styles.dataInput
-                        }
+                        className={styles.dataInput}
                         ref={nameInputRef}
                         value={categoryName}
                         onChange={changeHandler}
@@ -254,18 +269,6 @@ const CategoryPage = () => {
                         required
                       />
                     </div>
-                    {errors.name !== '' ? (
-                      <span className={styles.errorMessage}>{errors.name}</span>
-                    ) : !clicked ? (
-                      <span className={styles.infoMessage}>
-                        &apos;분류 추가하기&apos;를 눌러 카테고리를 추가하세요.
-                      </span>
-                    ) : (
-                      <span
-                        className={styles.infoMessage}
-                        style={{ marginTop: '16.5px' }}
-                      ></span>
-                    )}
                     <div className={styles.item}>
                       <p className={styles.labels}>분류명</p>
                       <input
@@ -289,15 +292,16 @@ const CategoryPage = () => {
                 </div>
                 <div className={styles.buttonList}>
                   <Buttons
-                    setErrors={setErrors}
-                    categoryName={categoryName} setCategoryName={setCategoryName}
+                    categoryName={categoryName}
+                    setCategoryName={setCategoryName}
                     setCategoryId={setCategoryId}
                     setLevelName={setLevelName}
                     setParentCategoryName={setParentCategoryName}
                     parentCategoryId={parentCategoryId}
                     clicked={clicked}
-                    errors={errors}
                     parentCategoryName={parentCategoryName}
+                    alert={alert}
+                    setAlert={setAlert}
                   />
                 </div>
               </div>
