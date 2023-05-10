@@ -123,6 +123,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.0",
     "react-to-print": "^2.14.12",
+    "react-toastify": "^9.1.2",
     "recoil": "^0.7.6"
   },
   "devDependencies": {

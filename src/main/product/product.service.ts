@@ -48,7 +48,7 @@ export class ProductService {
         .select()
         .where(`businessId=:businessId`, { businessId })
         .orderBy(`${Product.name}.isFavorite`, 'DESC')
-        .addOrderBy(`${Product.name}.id`)
+        .addOrderBy(`${Product.name}.name`)
         .offset(page)
         .limit(10)
         .getMany();
@@ -174,7 +174,7 @@ export class ProductService {
         .where(`name LIKE "%${keyword}%"`)
         .andWhere(`businessId=:businessId`, { businessId })
         .orderBy(`${Product.name}.isFavorite`, 'DESC')
-        .addOrderBy(`${Product.name}.id`)
+        .addOrderBy(`${Product.name}.name`)
         .offset(page)
         .limit(10)
         .getMany();
@@ -224,7 +224,7 @@ export class ProductService {
           .where('categoryId=:categoryId', { categoryId })
           .andWhere('businessId=:businessId', { businessId })
           .orderBy(`${Product.name}.isFavorite`, 'DESC')
-          .addOrderBy(`${Product.name}.id`)
+          .addOrderBy(`${Product.name}.name`)
           .offset(page)
           .limit(10)
           .getMany();
@@ -243,7 +243,7 @@ export class ProductService {
           })
           .andWhere('businessId=:businessId', { businessId })
           .orderBy(`${Product.name}.isFavorite`, 'DESC')
-          .addOrderBy(`${Product.name}.id`)
+          .addOrderBy(`${Product.name}.name`)
           .offset(page)
           .limit(10)
           .getMany();
@@ -276,7 +276,7 @@ export class ProductService {
           })
           .andWhere('businessId=:businessId', { businessId })
           .orderBy(`${Product.name}.isFavorite`, 'DESC')
-          .addOrderBy(`${Product.name}.id`)
+          .addOrderBy(`${Product.name}.name`)
           .offset(page)
           .limit(10)
           .getMany();
