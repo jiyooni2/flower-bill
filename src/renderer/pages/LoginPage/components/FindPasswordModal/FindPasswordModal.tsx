@@ -3,9 +3,7 @@ import React, { useState } from 'react';
 import styles from './FindPassword.module.scss'
 import Modal from 'renderer/components/Modal/Modal';
 import { ChangePasswordOutput } from '../../../../../main/auth/dtos/change-password.dto'
-import { switched } from '../validation';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import { Close, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import InfoModal from 'renderer/components/InfoModal/InfoModal';
 
 
@@ -26,13 +24,7 @@ const FindPasswordModal = ({isOpen, setIsOpen}: IProps) => {
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
-    const validations = switched(name, value);
-    if (validations.success) {
-      setInputs({...inputs, [name]: value});
-      setErrors({...errors, [name]: ''})
-    } else {
-      setErrors({...inputs, [name]: validations.error})
-    }
+    setInputs({ ...inputs, [name]: value });
   }
 
   const passwordHandler = () => {

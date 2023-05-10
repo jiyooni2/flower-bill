@@ -85,6 +85,7 @@ const ProductTable = ({ products, categories, inputs, setInputs, setId, setClick
                       {item.id}
                     </TableCell>
                     <TableCell
+                      className={styles.cutText}
                       component="th"
                       align="left"
                       sx={{ width: '25%' }}
