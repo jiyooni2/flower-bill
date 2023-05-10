@@ -1,0 +1,17 @@
+export const data = [
+  { name: '신한', count: '14' },
+  { name: '국민', count: '14' },
+  { name: '기업', count: '14' },
+  { name: '산업', count: '14' },
+  { name: '우리', count: '14' },
+  { name: '하나', count: '14' },
+  { name: 'SC제일', count: '14' },
+  { name: '새마을', count: '14' },
+  { name: '수협', count: '15' },
+  { name: '농협', count: '13' },
+  { name: '카카오뱅크', count: '13' },
+  { name: 'BNK부산', count: '13' },
+  { name: '씨티', count: '12' },
+  { name: '케이', count: '12' },
+  { name: 'DGB대구', count: '12' },
+];
