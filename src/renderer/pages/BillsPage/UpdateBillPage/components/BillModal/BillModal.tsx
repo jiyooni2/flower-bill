@@ -10,12 +10,13 @@ import {
   tokenState,
 } from 'renderer/recoil/states';
 import Modal from './Modal';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@mui/material';
 import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
 import { UpdateBillInput, UpdateBillOutput } from 'main/bill/dtos/update-bill.dto';
 import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 interface IProps {
   isOpen: boolean;
@@ -29,8 +30,31 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const [bills, setBills] = useRecoilState(billListState)
   const bill = useRecoilValue(billState)
   const store = useRecoilValue(storeState);
+  const [alert, setAlert] = useState({ success: '', error: '' });
   const printRef = useRef();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (alert.error && !alert.success) {
+      if (alert.error.startsWith('네트워크')) {
+        toast.error(alert.error.split('네트워크')[1], {
+          autoClose: 10000,
+          position: 'top-right',
+          hideProgressBar: true,
+        });
+      } else {
+        toast.error(alert.error, {
+          autoClose: 3000,
+          position: 'top-right',
+        });
+      }
+    } else if (alert.success && !alert.error) {
+      toast.success(alert.success, {
+        autoClose: 2000,
+        position: 'top-right',
+      });
+    }
+  }, [alert]);
 
 
   const updateBillhandler = () => {
@@ -67,14 +91,21 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             ({ ok, error, bills }: GetBillsOutput) => {
               if (ok) {
                 setBills(bills);
+                setAlert({ success: '계산서가 수정되었습니다.', error: ''})
               } else if (error) {
                 console.log(error);
+                setAlert({ success: '', error: `네트워크 ${error}`})
               }
             }
           );
           console.log('done')
         } else if (error) {
           console.log(error);
+          if (error.startsWith('없는')) {
+            setAlert({ success: '', error: error})
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}`})
+          }
         }
       }
     );

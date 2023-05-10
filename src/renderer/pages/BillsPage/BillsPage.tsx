@@ -9,6 +9,7 @@ import { GetBillOutput } from "main/bill/dtos/get-bill.dto";
 import { Link } from "react-router-dom";
 import { Delete } from "@mui/icons-material";
 import { DeleteBillOutput } from "main/bill/dtos/delete-bill.dto";
+import { toast } from "react-toastify";
 
 const BillsPage = () => {
   const token = useRecoilValue(tokenState)
@@ -17,6 +18,29 @@ const BillsPage = () => {
   const [bill, setBill] = useRecoilState(billState)
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState)
   const [page, setPage] = useState(0);
+  const [alert, setAlert] = useState({ success: '', error: '' });
+
+  useEffect(() => {
+    if (alert.error && !alert.success) {
+      if (alert.error.startsWith('네트워크')) {
+        toast.error(alert.error.split('네트워크')[1], {
+          autoClose: 10000,
+          position: 'top-right',
+          hideProgressBar: true,
+        });
+      } else {
+        toast.error(alert.error, {
+          autoClose: 3000,
+          position: 'top-right',
+        });
+      }
+    } else if (alert.success && !alert.error) {
+      toast.success(alert.success, {
+        autoClose: 2000,
+        position: 'top-right',
+      });
+    }
+  }, [alert]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-bills', {
@@ -57,7 +81,6 @@ const BillsPage = () => {
       'get-bill',
       ({ ok, error, bill }: GetBillOutput) => {
         if (ok) {
-          // setDetailBill(bill);
           setOrderProducts(bill.orderProducts)
           setBill(bill)
         } else {
@@ -89,8 +112,13 @@ const BillsPage = () => {
                setBills(args.bills as Bill[]);
             }
           );
+          setAlert({ success: '계산서가 삭제되었습니다.', error: '' });
         } else {
-          console.log(error);
+          if (error.startsWith('존재')) {
+            setAlert({ success: '', error: error})
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}`})
+          }
         }
       }
     );
