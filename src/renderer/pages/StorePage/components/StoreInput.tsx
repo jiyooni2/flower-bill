@@ -1,7 +1,6 @@
 import { Inputs } from '../types';
 import styles from '../StorePage.module.scss';
 import useAddHyphen from 'renderer/hooks/useAddHyphen';
-import { AddComment } from '@mui/icons-material';
 
 type IProps = {
   setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
@@ -34,7 +33,7 @@ const StoreInput = ({ setInputs, inputs }: IProps) => {
           <input
             name="storeNumber"
             value={
-              Number(inputs.storeNumber) < 12
+              Number(inputs.storeNumber.length) < 10
                 ? inputs.storeNumber
                 : addHyphen(inputs.storeNumber)
             }
