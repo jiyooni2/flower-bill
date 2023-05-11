@@ -35,7 +35,22 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
     sector: '',
     bank: '',
     bankNumber: '',
+    bankOwner: '',
   });
+
+  useEffect(() => {
+    setInputs({
+      businessNumber: '',
+      name: '',
+      address: '',
+      owner: '',
+      type: '',
+      sector: '',
+      bank: '',
+      bankNumber: '',
+      bankOwner: '',
+    });
+  }, []);
 
   useEffect(() => {
     if (alert.error && !alert.success) {
@@ -69,7 +84,9 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
         address: inputs.address,
         typeofBusiness: inputs.type,
         sector: inputs.sector,
-        // bank: inputs.bank,
+        accountBank: inputs.bank,
+        accountNumber: inputs.bankNumber,
+        accountOwner: inputs.bankOwner,
       };
 
       window.electron.ipcRenderer.sendMessage('create-business', newBusiness);
@@ -118,6 +135,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
         sector: '',
         bank: '',
         bankNumber: '',
+        bankOwner: '',
       });
       setIsOpen(false);
     }

@@ -3,4 +3,7 @@ export type Inputs = {
   name: string;
   businessOwnerName: string;
   address: string;
+  bank: string;
+  bankNumber: string;
+  bankOwner: string;
 }

@@ -7,4 +7,5 @@ export type Inputs = {
   sector: string;
   bank: string;
   bankNumber: string;
+  bankOwner: string;
 };

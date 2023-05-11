@@ -3,9 +3,11 @@
 
   .content {
     display: flex;
+    justify-content: center;
+    width: 100%;
 
     &>div {
-      flex-basis: 50%;
+      flex-basis: 60%;
       height: 100vh;
       padding-top: 10px;
     }
@@ -14,7 +16,6 @@
 
 
 .infoContent {
-  margin: 0 auto;
   position: relative;
   height: 96vh;
 

@@ -125,7 +125,6 @@ const BusinessModalForm = ({ inputs, setInputs }: IProps) => {
         ) : (
           <TextField
             size="small"
-            sx={{ width: '23%' }}
             label="은행"
             name="bank"
             variant="filled"
@@ -148,9 +147,10 @@ const BusinessModalForm = ({ inputs, setInputs }: IProps) => {
             value={inputs.bank}
           />
         )}
+
         <TextField
           size="small"
-          sx={{ width: '64%' }}
+          sx={{ width: '31%' }}
           label="계좌번호"
           name="bankNumber"
           variant="filled"
@@ -158,6 +158,16 @@ const BusinessModalForm = ({ inputs, setInputs }: IProps) => {
           helperText={' '}
           value={inputs.bankNumber}
           inputProps={{ maxLength: 15 }}
+        />
+        <TextField
+          size="small"
+          sx={{ width: '30%' }}
+          label="계좌 소유주 성명"
+          name="bankOwner"
+          variant="filled"
+          onChange={handleChange}
+          helperText={' '}
+          value={inputs.bankOwner}
         />
       </div>
     </div>

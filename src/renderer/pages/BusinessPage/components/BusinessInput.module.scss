@@ -1,54 +1,29 @@
 .list {
-  margin-top: 60px;
-
-  .errorMessage {
-    margin-right: 10%;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: right;
-    font-size: 11.5px;
-    color: crimson;
-  }
-
-  .infoMessage {
-    margin-right: 10%;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: right;
-    font-size: 11.5px;
-    color: dimgray;
-  }
-
-  .error {
-    display: flex;
-    justify-content: center;
-    font-size: 14px;
-  }
-
-  .itemWithError {
-    justify-content: center;
-    display: flex;
-    align-items: center;
-  }
+  margin-top: 40px;
+  display: flex;
+  gap: 30px;
 
   .item {
     justify-content: center;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     margin-bottom: 31.5px;
+
+    &:nth-child(5) {
+      align-items: flex-start;
+    }
   }
 
   .labels {
-    width: 30%;
+    width: 100%;
     font-size: 15px;
     margin-top: 2px;
+    margin-bottom: 10px;
   }
 }
 
 .dataInput {
-  width: 50%;
+  width: 90%;
   height: 33px;
   border-radius: 5px;
   border: 1px solid darkgray;
