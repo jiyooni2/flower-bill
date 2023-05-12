@@ -101,7 +101,7 @@ const CategoryPage = () => {
       setCategoryId((categories.length + 1).toString());
     } else if (name === 'item') {
       setClicked(true);
-      setAddNew(false);
+      setAddNew(true);
       if (item.level === 1) {
         setLevelName('대분류');
       } else if (item.level === 2) {
@@ -123,6 +123,7 @@ const CategoryPage = () => {
       }
       setCategoryName(item.name);
     }
+    nameInputRef.current.focus()
   };
 
   const addTreeItem = (item: Category, text: string) => {
@@ -294,7 +295,7 @@ const CategoryPage = () => {
                   <Buttons
                     categoryName={categoryName}
                     setCategoryName={setCategoryName}
-                    setCategoryId={setCategoryId}
+                    setCategoryId={setCategoryId} categoryId={categoryId}
                     setLevelName={setLevelName}
                     setParentCategoryName={setParentCategoryName}
                     parentCategoryId={parentCategoryId}

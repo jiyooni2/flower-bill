@@ -4,13 +4,24 @@ import {
   CreateCategoryInput,
   CreateCategoryOutput,
 } from 'main/category/dtos/create-category.dto';
+import {
+  DeleteCategoryInput,
+  DeleteCategoryOutput,
+} from 'main/category/dtos/delete-category.dto';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-import { useState } from 'react';
+import {
+  UpdateCategoryInput,
+  UpdateCategoryOutput,
+} from 'main/category/dtos/update-category.dto';
+import { Category } from 'main/category/entities/category.entity';
+import { CategoryResult } from 'main/common/dtos/category-result.dto';
+import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import InfoModal from 'renderer/components/InfoModal/InfoModal';
 import {
   businessState,
   categoriesState,
+  productsState,
   tokenState,
 } from 'renderer/recoil/states';
 
@@ -23,6 +34,7 @@ type IProps = {
   parentCategoryId: number;
   clicked: boolean;
   parentCategoryName: string;
+  categoryId: string;
   alert: {
     success: string;
     error: string;
@@ -39,6 +51,7 @@ const Buttons = ({
   categoryName,
   parentCategoryId,
   setCategoryId,
+  categoryId,
   setCategoryName,
   setLevelName,
   setParentCategoryName,
@@ -50,6 +63,43 @@ const Buttons = ({
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [disable, setDisable] = useState<boolean>(false);
+  const products = useRecoilValue(productsState);
+  const [categoryResult, setCategoryResult] = useState<CategoryResult[]>(null);
+
+  useEffect(() => setCategoryResult(categories), [categories]);
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-categories', {
+      token,
+      businessId: business.id,
+    });
+    window.electron.ipcRenderer.on(
+      'get-categories',
+      ({ ok, error, categories }: GetCategoriesOutput) => {
+        if (ok) {
+          setCategories(categories);
+        } else {
+          console.error(error);
+          if (error.startsWith('존재')) {
+            setAlert({ success: '', error: error });
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}` });
+          }
+        }
+      }
+    );
+  }, []);
+
+
+  useEffect(() => {
+    const idx = categories.findIndex((el) => el.id === Number(categoryId));
+    if (categories[idx]?.name === categoryName || categoryName === '') {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [categoryName]);
 
   const newCategoryHandler = () => {
     if (!categoryName) {
@@ -103,7 +153,7 @@ const Buttons = ({
             );
           } else if (error) {
             console.log(error);
-            setAlert({ success: '', error: `네트워크 ${error}`})
+            setAlert({ success: '', error: `네트워크 ${error}` });
           }
         }
       );
@@ -113,6 +163,52 @@ const Buttons = ({
     setLevelName('');
     setParentCategoryName('');
   };
+
+  const updateHandler = () => {
+    const updateData: UpdateCategoryInput = {
+      name: categoryName,
+      id: parseInt(categoryId),
+      businessId: business.id,
+      token,
+    };
+
+    window.electron.ipcRenderer.sendMessage('update-category', updateData);
+
+    window.electron.ipcRenderer.on(
+      'update-category',
+      ({ ok, error }: UpdateCategoryOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-categories', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-categories',
+            ({ ok, error, categories }: GetCategoriesOutput) => {
+              if (ok) {
+                setAlert({
+                  success: '카테고리가 수정되었습니다.',
+                  error: '',
+                });
+                setCategories(categories);
+                setCategoryId('');
+                setCategoryName('');
+                setLevelName('');
+              } else {
+                console.error(error);
+              }
+            }
+          );
+        } else if (error) {
+          console.log(error);
+          setAlert({ success: '', error: `네트워크 ${error}` });
+        }
+      }
+    );
+  };
+
+
+
 
   return (
     <>
@@ -127,7 +223,7 @@ const Buttons = ({
           size="small"
           sx={{ marginLeft: '30px' }}
           color="error"
-          onClick={() => setIsOpen(true)}
+          onClick={() => deleteHandler()}
         >
           <Delete sx={{ fontSize: '23px' }} />
         </Button>
@@ -148,8 +244,8 @@ const Buttons = ({
           variant="contained"
           size="small"
           sx={{ marginRight: '10px', backgroundColor: 'coral' }}
-          // onClick={updateDataHandler}
-          onClick={() => setIsOpen(true)}
+          onClick={updateHandler}
+          disabled={disable}
         >
           수정
         </Button>
