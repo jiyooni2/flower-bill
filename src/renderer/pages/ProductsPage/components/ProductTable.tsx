@@ -5,6 +5,7 @@ import { Product } from "main/product/entities/product.entity";
 import { SetterOrUpdater } from "recoil";
 import styles from '../ProductsPage.module.scss';
 import { Input } from "../types";
+import useAddComma from "renderer/hooks/useAddComma";
 
 
 type IProps = {
@@ -17,6 +18,7 @@ type IProps = {
 }
 
 const ProductTable = ({ products, categories, inputs, setInputs, setId, setClicked }: IProps) => {
+  const addComma = useAddComma();
 
   const changeDataHandler = (
     event: React.MouseEvent<unknown>,
@@ -50,9 +52,6 @@ const ProductTable = ({ products, categories, inputs, setInputs, setId, setClick
                 }}
               >
                 <TableCell component="th" align="left">
-                  ID
-                </TableCell>
-                <TableCell component="th" align="left">
                   상품명
                 </TableCell>
                 <TableCell component="th" align="left">
@@ -66,73 +65,68 @@ const ProductTable = ({ products, categories, inputs, setInputs, setId, setClick
             </TableHead>
             <TableBody>
               {products != undefined &&
-                products.slice((inputs.page - 1) * 9, inputs.page * 9)?.map((item) => (
-                  <TableRow
-                    key={item?.name}
-                    className={styles.dataRow}
-                    onClick={(event) => changeDataHandler(event, item)}
-                    sx={{
-                      '& th': {
-                        fontSize: '14px',
-                      },
-                    }}
-                  >
-                    <TableCell
-                      component="th"
-                      align="left"
-                      sx={{ width: '10%' }}
+                products
+                  .slice((inputs.page - 1) * 9, inputs.page * 9)
+                  ?.map((item) => (
+                    <TableRow
+                      key={item?.name}
+                      className={styles.dataRow}
+                      onClick={(event) => changeDataHandler(event, item)}
+                      sx={{
+                        '& th': {
+                          fontSize: '14px',
+                        },
+                      }}
                     >
-                      {item.id}
-                    </TableCell>
-                    <TableCell
-                      className={styles.cutText}
-                      component="th"
-                      align="left"
-                      sx={{ width: '25%' }}
-                    >
+                      <TableCell
+                        className={styles.cutText}
+                        component="th"
+                        align="left"
+                        sx={{ width: '50%' }}
+                      >
                         {item.name}
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      align="left"
-                      sx={{ width: '28%' }}
-                    >
-                      {item.price}
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      align="left"
-                      className={styles.cutText}
-                      sx={{ width: '45%' }}
-                    >
-                      {categories != undefined &&
-                        categories?.map((cat) => {
-                          if (cat.id === item.categoryId) {
-                            if (cat.parentCategory.parentCategory) {
-                              return `${cat.parentCategory.parentCategory?.name} / ${cat.parentCategory?.name} / ${cat?.name}`;
-                            } else if (cat.parentCategory) {
-                              return `${cat.parentCategory?.name}/${cat?.name}`;
-                            } else {
-                              return cat?.name;
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        align="left"
+                        sx={{ width: '28%' }}
+                      >
+                        {addComma(`${item.price}`)}
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        align="left"
+                        className={styles.cutText}
+                        sx={{ width: '35%' }}
+                      >
+                        {categories != undefined &&
+                          categories?.map((cat) => {
+                            if (cat.id === item.categoryId) {
+                              if (cat.parentCategory.parentCategory) {
+                                return `${cat.parentCategory.parentCategory?.name} / ${cat.parentCategory?.name} / ${cat?.name}`;
+                              } else if (cat.parentCategory) {
+                                return `${cat.parentCategory?.name}/${cat?.name}`;
+                              } else {
+                                return cat?.name;
+                              }
                             }
-                          }
-                        })}
-                    </TableCell>
-                    <TableCell>
-                      {item.isFavorite ? (
-                        <StarRateRounded
-                          className={styles.favorite}
-                          sx={{ color: 'gold' }}
-                        />
-                      ) : (
-                        <StarOutlineRounded
-                          className={styles.favorite}
-                          color="action"
-                        />
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          })}
+                      </TableCell>
+                      <TableCell>
+                        {item.isFavorite ? (
+                          <StarRateRounded
+                            className={styles.favorite}
+                            sx={{ color: 'gold' }}
+                          />
+                        ) : (
+                          <StarOutlineRounded
+                            className={styles.favorite}
+                            color="action"
+                          />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -145,7 +139,7 @@ const ProductTable = ({ products, categories, inputs, setInputs, setId, setClick
         </div>
       )}
     </>
-  )
+  );
 };
 
 export default ProductTable;

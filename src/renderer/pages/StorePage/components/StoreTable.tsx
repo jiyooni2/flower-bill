@@ -10,6 +10,7 @@ import { Store } from 'main/store/entities/store.entity';
 import React from 'react';
 import styles from '../StorePage.module.scss';
 import { Inputs } from '../types';
+import useAddHyphen from 'renderer/hooks/useAddHyphen';
 
 type IProps = {
   stores: Store[];
@@ -19,6 +20,8 @@ type IProps = {
 };
 
 const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: IProps) => {
+  const addHypen = useAddHyphen();
+
   const changeDataHandler = (event: React.MouseEvent<unknown>, data: Store) => {
     stores?.forEach((item) => {
       if (item.name === data.name) {
@@ -58,13 +61,13 @@ const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: IProps) => {
               }}
             >
               <TableCell component="th" align="left" sx={{ width: '27%' }}>
-                사업자번호
+                번호
               </TableCell>
               <TableCell component="th" align="left" sx={{ width: '27%' }}>
                 상호
               </TableCell>
               <TableCell component="th" align="left" sx={{ width: '25%' }}>
-                사업자명
+                성명
               </TableCell>
               <TableCell component="th" align="left" sx={{ width: '35%' }}>
                 소재지
@@ -81,12 +84,12 @@ const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: IProps) => {
                   onClick={(event) => changeDataHandler(event, store)}
                   sx={{
                     '& th': {
-                      fontSize: '14px',
+                      fontSize: '12px',
                     },
                   }}
                 >
-                  <TableCell component="th" scope="row">
-                    {store.businessNumber}
+                  <TableCell component="th">
+                    {addHypen(`${store.businessNumber}`)}
                   </TableCell>
                   <TableCell component="th" align="left">
                     {store.name}
