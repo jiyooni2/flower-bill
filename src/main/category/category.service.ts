@@ -84,6 +84,8 @@ export class CategoryService {
     businessId,
   }: DeleteCategoryInput): Promise<DeleteCategoryOutput> {
     try {
+      await authService.checkBusinessAuth(token, businessId);
+
       const category = await this.categoryRepository.findOne({ where: { id } });
       if (!category) {
         return { ok: false, error: '존재하지 않는 카테고리입니다.' };
