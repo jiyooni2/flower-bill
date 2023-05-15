@@ -14,7 +14,7 @@ export class Business extends CoreEntity {
   businessOwnerName: string;
 
   @Column({ nullable: true })
-  address: string;
+  address?: string;
 
   @ManyToOne((type) => Owner)
   @JoinColumn({ name: 'ownerId' })
@@ -32,12 +32,11 @@ export class Business extends CoreEntity {
   sector?: string;
 
   @Column({ nullable: true })
-  accountNumber: string;
+  accountNumber?: string;
 
   @Column({ nullable: true })
-  accountBank: string;
-  
-  @Column({ nullable: true })
-  accountOwner: string;
+  accountBank?: string;
 
+  @Column({ nullable: true })
+  accountOwner?: string;
 }
