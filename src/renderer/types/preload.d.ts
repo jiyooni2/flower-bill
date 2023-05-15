@@ -11,6 +11,7 @@ declare global {
         ): (() => void) | undefined;
         once(channel: Channels, func: (...args: any) => void): void;
         sendSyncMessage(channel: Channels, args: any): void;
+        isListenerAttached(channel: Channels): boolean;
       };
     };
   }

@@ -43,15 +43,23 @@ export type Channels =
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
     sendMessage(channel: Channels, args: unknown[]) {
+      console.log(`call ${channel} event`);
       ipcRenderer.send(channel, args);
     },
     on(channel: Channels, func: (...args: unknown[]) => void) {
+      console.log(`add ${channel} listener`);
+
+      for (const eventName of ipcRenderer.eventNames()) {
+        console.log(eventName, ipcRenderer.listenerCount(eventName));
+      }
+
       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
         func(...args);
       ipcRenderer.on(channel, subscription);
 
       return () => {
         ipcRenderer.removeListener(channel, subscription);
+        console.log(`remove ${channel} listener`);
       };
     },
     once(channel: Channels, func: (...args: unknown[]) => void) {
@@ -59,6 +67,12 @@ contextBridge.exposeInMainWorld('electron', {
     },
     sendSyncMessage(channel: Channels, args: unknown[]) {
       ipcRenderer.sendSync(channel, args);
+    },
+    isListenerAttached(channel: Channels) {
+      const eventListeners = ipcRenderer
+        .eventNames()
+        .filter((name) => name === channel);
+      return eventListeners.length >= 1;
     },
   },
 });
