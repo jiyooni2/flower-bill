@@ -5,6 +5,7 @@ import { CreateCategoryInput } from './dtos/create-category.dto';
 import { categoryService } from '../main';
 import { GetCategoryInput } from './dtos/get-category.dto';
 import { authService } from './../main';
+import { DeleteCategoryInput } from './dtos/delete-category.dto';
 
 ipcMain.on(
   'create-category',
@@ -39,5 +40,14 @@ ipcMain.on(
     await authService.checkAuth(updateCategoryInput.token);
     const result = await categoryService.updateCategory(updateCategoryInput);
     event.reply('update-category', result);
+  }
+);
+
+ipcMain.on(
+  'delete-category',
+  async (event, deleteCategoryInput: DeleteCategoryInput) => {
+    await authService.checkAuth(deleteCategoryInput.token);
+    const result = await categoryService.deleteCategory(deleteCategoryInput);
+    event.reply('delete-category', result);
   }
 );

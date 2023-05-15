@@ -8,7 +8,12 @@ import {
 } from './dtos/get-categories.dto';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
-import { AppDataSource, productService, authService } from './../main';
+import {
+  AppDataSource,
+  productService,
+  authService,
+  categoryService,
+} from './../main';
 import {
   DeleteCategoryInput,
   DeleteCategoryOutput,
@@ -75,6 +80,8 @@ export class CategoryService {
 
   async deleteCategory({
     id,
+    token,
+    businessId,
   }: DeleteCategoryInput): Promise<DeleteCategoryOutput> {
     try {
       const category = await this.categoryRepository.findOne({ where: { id } });
@@ -82,11 +89,39 @@ export class CategoryService {
         return { ok: false, error: '존재하지 않는 카테고리입니다.' };
       }
 
-      if (category.level === 3) {
-        //카테고리를 참조하는 상품이 아직 존재하는 경우, 삭제 불가?
-        //참조하는 상품까지 삭제?
-      } else {
-        //상위 카테고리의 경우 자식 카테고리는 어떻게 처리할 것 인지?
+      const { ok, products } = await productService.getProductByCategory({
+        categoryId: id,
+        page: 0,
+        token,
+        businessId,
+      });
+
+      if (!ok) {
+        return { ok: false, error: '카테고리 정보를 가져오는데 실패했습니다.' };
+      }
+
+      if (products.length !== 0) {
+        return {
+          ok: false,
+          error:
+            '카테고리에 속해있는 상품이 존재합니다. 카테고리에 속하는 상품을 모두 제거해주신 뒤 재시도 해주세요.',
+        };
+      }
+
+      if (category.level !== 3) {
+        const childCategories = await this.categoryRepository.find({
+          where: {
+            parentCategoryId: category.id,
+            businessId,
+          },
+        });
+
+        if (childCategories.length !== 0) {
+          return {
+            ok: false,
+            error: '하위에 속해있는 카테고리를 모두 삭제 후 재시도 해주세요.',
+          };
+        }
       }
 
       await this.categoryRepository.delete({ id });
