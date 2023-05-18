@@ -1,15 +1,4 @@
-import { Delete } from '@mui/icons-material';
-import { Button } from '@mui/material';
-import {
-  CreateCategoryInput,
-  CreateCategoryOutput,
-} from 'main/category/dtos/create-category.dto';
-import { DeleteCategoryOutput } from 'main/category/dtos/delete-category.dto';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-import {
-  UpdateCategoryInput,
-  UpdateCategoryOutput,
-} from 'main/category/dtos/update-category.dto';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import InfoModal from 'renderer/components/InfoModal/InfoModal';
@@ -18,28 +7,10 @@ import {
   categoriesState,
   tokenState,
 } from 'renderer/recoil/states';
-
-type IProps = {
-  setCategoryName: React.Dispatch<React.SetStateAction<string>>;
-  setCategoryId: React.Dispatch<React.SetStateAction<string>>;
-  setLevelName: React.Dispatch<React.SetStateAction<string>>;
-  setParentCategoryName: React.Dispatch<React.SetStateAction<string>>;
-  categoryName: string;
-  parentCategoryId: number;
-  clicked: boolean;
-  parentCategoryName: string;
-  categoryId: string;
-  alert: {
-    success: string;
-    error: string;
-  };
-  setAlert: React.Dispatch<
-    React.SetStateAction<{
-      success: string;
-      error: string;
-    }>
-  >;
-};
+import { ButtonsProps } from './Button.interface';
+import CreateButton from './CreateButton';
+import DeleteButton from './DeleteButton';
+import UpdateButton from './UpdateButton';
 
 const Buttons = ({
   categoryName,
@@ -52,7 +23,7 @@ const Buttons = ({
   clicked,
   alert,
   setAlert,
-}: IProps) => {
+}: ButtonsProps) => {
   const [categories, setCategories] = useRecoilState(categoriesState);
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
@@ -77,7 +48,6 @@ const Buttons = ({
     );
   }, []);
 
-
   useEffect(() => {
     const idx = categories.findIndex((el) => el.id === Number(categoryId));
     if (categories[idx]?.name === categoryName || categoryName === '') {
@@ -87,156 +57,6 @@ const Buttons = ({
     }
   }, [categoryName]);
 
-  const newCategoryHandler = () => {
-    if (!categoryName) {
-      setAlert({ success: '', error: '카테고리명이 입력되지 않았습니다.' });
-      return;
-    }
-
-    if (
-      categories.findIndex(
-        (el) =>
-          el.name === categoryName && el.parentCategoryId === parentCategoryId
-      ) > -1
-    ) {
-      setAlert({
-        success: '',
-        error: '동일한 부모 카테고리를 가진 카테고리가 있습니다.',
-      });
-      return;
-    }
-
-    if (!alert.error) {
-      const newData: CreateCategoryInput = {
-        token: token,
-        businessId: business.id,
-        name: categoryName,
-        parentCategoryId: parentCategoryId,
-      };
-      window.electron.ipcRenderer.sendMessage('create-category', newData);
-
-      window.electron.ipcRenderer.on(
-        'create-category',
-        ({ ok, error }: CreateCategoryOutput) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-categories', {
-              token,
-              businessId: business.id,
-            });
-            window.electron.ipcRenderer.on(
-              'get-categories',
-              ({ ok, error, categories }: GetCategoriesOutput) => {
-                if (ok) {
-                  setAlert({
-                    success: '카테고리가 생성되었습니다.',
-                    error: '',
-                  });
-                  setCategories(categories);
-                } else {
-                  console.error(error);
-                }
-              }
-            );
-          } else if (error) {
-            console.log(error);
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      );
-    }
-    setCategoryId('');
-    setCategoryName('');
-    setLevelName('');
-    setParentCategoryName('');
-  };
-
-  const updateHandler = () => {
-    const updateData: UpdateCategoryInput = {
-      name: categoryName,
-      id: parseInt(categoryId),
-      businessId: business.id,
-      token,
-    };
-
-    window.electron.ipcRenderer.sendMessage('update-category', updateData);
-
-    window.electron.ipcRenderer.on(
-      'update-category',
-      ({ ok, error }: UpdateCategoryOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-categories', {
-            token,
-            businessId: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-categories',
-            ({ ok, error, categories }: GetCategoriesOutput) => {
-              if (ok) {
-                setAlert({
-                  success: '카테고리가 수정되었습니다.',
-                  error: '',
-                });
-                setCategories(categories);
-                setCategoryId('');
-                setCategoryName('');
-                setLevelName('');
-              } else {
-                console.error(error);
-              }
-            }
-          );
-        } else if (error) {
-          console.log(error);
-          setAlert({ success: '', error: `네트워크 ${error}` });
-        }
-      }
-    );
-  };
-
-  console.log(categoryId)
-
-  const deleteHandler = () => {
-    window.electron.ipcRenderer.sendMessage('delete-category', {
-      businessId: business.id,
-      id: categoryId,
-      token,
-    });
-
-    window.electron.ipcRenderer.on(
-      'delete-category',
-      ({ ok, error }: DeleteCategoryOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-categories', {
-            token,
-            businessId: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-categories',
-            ({ ok, error, categories }: GetCategoriesOutput) => {
-              if (ok) {
-                setAlert({
-                  success: '카테고리가 삭제되었습니다.',
-                  error: '',
-                });
-                setCategories(categories);
-                setCategoryId('');
-                setCategoryName('');
-                setLevelName('');
-              } else {
-                console.error(error);
-              }
-            }
-          );
-        } else if (error) {
-          console.log(error);
-          if (error.startsWith('카테고리에 속해있는')) {
-            setAlert({success: '', error: error.split('. ')[1]})
-          }
-        }
-      }
-    );
-  };
-
   return (
     <>
       <InfoModal
@@ -244,38 +64,38 @@ const Buttons = ({
         setIsOpen={setIsOpen}
         text="이 기능은 현재 개발중입니다."
       />
-      {clicked ? (
-        <Button
-          variant="contained"
-          size="small"
-          sx={{ marginLeft: '30px' }}
-          color="error"
-          onClick={() => deleteHandler()}
-        >
-          <Delete sx={{ fontSize: '23px' }} />
-        </Button>
-      ) : (
-        <div></div>
-      )}
+      <DeleteButton
+        clicked={clicked}
+        categoryId={categoryId}
+        setAlert={setAlert}
+        setCategoryId={setCategoryId}
+        setCategoryName={setCategoryName}
+        setCategories={setCategories}
+        setLevelName={setLevelName}
+      />
       {!clicked ? (
-        <Button
-          variant="contained"
-          size="small"
-          sx={{ marginRight: '10px', marginTop: '-30px' }}
-          onClick={newCategoryHandler}
-        >
-          생성
-        </Button>
+        <CreateButton
+          setAlert={setAlert}
+          setCategoryId={setCategoryId}
+          setCategoryName={setCategoryName}
+          setCategories={setCategories}
+          setLevelName={setLevelName}
+          setParentCategoryName={setParentCategoryName}
+          alert={alert}
+          categoryName={categoryName}
+          parentCategoryId={parentCategoryId}
+        />
       ) : (
-        <Button
-          variant="contained"
-          size="small"
-          sx={{ marginRight: '10px', backgroundColor: 'coral' }}
-          onClick={updateHandler}
-          disabled={disable}
-        >
-          수정
-        </Button>
+        <UpdateButton
+          setAlert={setAlert}
+          categoryName={categoryName}
+          categoryId={categoryId}
+          setCategories={setCategories}
+          setCategoryId={setCategoryId}
+          setCategoryName={setCategoryName}
+          setLevelName={setLevelName}
+          disable={disable}
+        />
       )}
     </>
   );
