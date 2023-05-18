@@ -4,24 +4,18 @@ import {
   CreateCategoryInput,
   CreateCategoryOutput,
 } from 'main/category/dtos/create-category.dto';
-import {
-  DeleteCategoryInput,
-  DeleteCategoryOutput,
-} from 'main/category/dtos/delete-category.dto';
+import { DeleteCategoryOutput } from 'main/category/dtos/delete-category.dto';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import {
   UpdateCategoryInput,
   UpdateCategoryOutput,
 } from 'main/category/dtos/update-category.dto';
-import { Category } from 'main/category/entities/category.entity';
-import { CategoryResult } from 'main/common/dtos/category-result.dto';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import InfoModal from 'renderer/components/InfoModal/InfoModal';
 import {
   businessState,
   categoriesState,
-  productsState,
   tokenState,
 } from 'renderer/recoil/states';
 
@@ -64,10 +58,6 @@ const Buttons = ({
   const business = useRecoilValue(businessState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [disable, setDisable] = useState<boolean>(false);
-  const products = useRecoilValue(productsState);
-  const [categoryResult, setCategoryResult] = useState<CategoryResult[]>(null);
-
-  useEffect(() => setCategoryResult(categories), [categories]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -81,11 +71,7 @@ const Buttons = ({
           setCategories(categories);
         } else {
           console.error(error);
-          if (error.startsWith('존재')) {
-            setAlert({ success: '', error: error });
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
+          setAlert({ success: '', error: error });
         }
       }
     );
@@ -207,8 +193,49 @@ const Buttons = ({
     );
   };
 
+  console.log(categoryId)
 
+  const deleteHandler = () => {
+    window.electron.ipcRenderer.sendMessage('delete-category', {
+      businessId: business.id,
+      id: categoryId,
+      token,
+    });
 
+    window.electron.ipcRenderer.on(
+      'delete-category',
+      ({ ok, error }: DeleteCategoryOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-categories', {
+            token,
+            businessId: business.id,
+          });
+          window.electron.ipcRenderer.on(
+            'get-categories',
+            ({ ok, error, categories }: GetCategoriesOutput) => {
+              if (ok) {
+                setAlert({
+                  success: '카테고리가 삭제되었습니다.',
+                  error: '',
+                });
+                setCategories(categories);
+                setCategoryId('');
+                setCategoryName('');
+                setLevelName('');
+              } else {
+                console.error(error);
+              }
+            }
+          );
+        } else if (error) {
+          console.log(error);
+          if (error.startsWith('카테고리에 속해있는')) {
+            setAlert({success: '', error: error.split('. ')[1]})
+          }
+        }
+      }
+    );
+  };
 
   return (
     <>
