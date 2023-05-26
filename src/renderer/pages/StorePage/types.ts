@@ -13,4 +13,5 @@ export type Inputs = {
   address: string;
   name: string;
   clicked: boolean;
+  page: number;
 }

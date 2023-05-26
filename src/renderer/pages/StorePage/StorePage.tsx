@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import styles from './StorePage.module.scss';
-import { Typography } from '@mui/material';
+import { Pagination, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, storesState, tokenState } from 'renderer/recoil/states';
 import { Store } from 'main/store/entities/store.entity';
@@ -22,6 +22,7 @@ const StorePage = () => {
     address: '',
     name: '',
     clicked: false,
+    page: 1,
   })
   const [clickedStore, setClickedStore] = useState<Store>({
     id: 0,
@@ -50,7 +51,7 @@ const StorePage = () => {
   const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter' && event.nativeEvent.isComposing === false) {
       window.electron.ipcRenderer.sendMessage('search-store', {
-        keyword: name,
+        keyword: inputs.name,
         businessId: business.id,
         token,
       });
@@ -80,6 +81,19 @@ const StorePage = () => {
     });
   };
 
+  const handlePage = (event: ChangeEvent<unknown>, value: number) => {
+    setInputs({ ...inputs, page: value });
+  };
+
+    let LAST_PAGE = 1;
+    if (stores != undefined) {
+      LAST_PAGE =
+        stores?.length % 9 === 0
+          ? Math.round(stores?.length / 9)
+          : Math.floor(stores?.length / 9) + 1;
+    } else if (stores == null) {
+      LAST_PAGE = 1;
+    }
 
   return (
     <>
@@ -95,7 +109,20 @@ const StorePage = () => {
               className={styles.searchInput}
             />
             <div className={styles.userList}>
-              <StoreTable stores={stores} setInputs={setInputs} setClickedStore={setClickedStore} inputs={inputs} />
+              <StoreTable
+                stores={stores}
+                setInputs={setInputs}
+                setClickedStore={setClickedStore}
+                inputs={inputs}
+              />
+            </div>
+            <div className={styles.pagination}>
+              <Pagination
+                count={LAST_PAGE}
+                size="small"
+                color="standard"
+                onChange={handlePage}
+              />
             </div>
           </div>
           <div>
@@ -120,7 +147,8 @@ const StorePage = () => {
                 <Buttons
                   clickedStore={clickedStore}
                   setClickedStore={setClickedStore}
-                  inputs={inputs} setInputs={setInputs}
+                  inputs={inputs}
+                  setInputs={setInputs}
                 />
               </div>
             </div>

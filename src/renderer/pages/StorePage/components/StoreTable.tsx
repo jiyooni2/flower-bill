@@ -77,35 +77,37 @@ const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: IProps) => {
           <TableBody>
             {stores != undefined &&
               stores.length > 0 &&
-              stores?.map((store) => (
-                <TableRow
-                  key={store.businessNumber}
-                  className={styles.dataRow}
-                  onClick={(event) => changeDataHandler(event, store)}
-                  sx={{
-                    '& th': {
-                      fontSize: '12px',
-                    },
-                  }}
-                >
-                  <TableCell component="th">
-                    {addHypen(`${store.businessNumber}`)}
-                  </TableCell>
-                  <TableCell component="th" align="left">
-                    {store.name}
-                  </TableCell>
-                  <TableCell component="th" align="left">
-                    {store.owner}
-                  </TableCell>
-                  <TableCell
-                    component="th"
-                    align="left"
-                    className={styles.cutText}
+              stores
+                ?.slice((inputs.page - 1) * 9, inputs.page * 9)
+                .map((store) => (
+                  <TableRow
+                    key={store.businessNumber}
+                    className={styles.dataRow}
+                    onClick={(event) => changeDataHandler(event, store)}
+                    sx={{
+                      '& th': {
+                        fontSize: '12px',
+                      },
+                    }}
                   >
-                    {store.address}
-                  </TableCell>
-                </TableRow>
-              ))}
+                    <TableCell component="th">
+                      {addHypen(`${store.businessNumber}`)}
+                    </TableCell>
+                    <TableCell component="th" align="left">
+                      {store.name}
+                    </TableCell>
+                    <TableCell component="th" align="left">
+                      {store.owner}
+                    </TableCell>
+                    <TableCell
+                      component="th"
+                      align="left"
+                      className={styles.cutText}
+                    >
+                      {store.address}
+                    </TableCell>
+                  </TableRow>
+                ))}
           </TableBody>
         </Table>
       </TableContainer>

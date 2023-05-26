@@ -27,8 +27,9 @@
     .userList {
       margin-top: 18px;
       margin-right: 10px;
-      height: 85.5vh;
+      height: 75vh;
       background-color: rgb(232, 232, 232);
+      margin-bottom: 20px;
     }
   }
 }
@@ -160,4 +161,10 @@ button {
   overflow: hidden;
   white-space: nowrap;
   max-width: 30px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-right: 10px;
 }
