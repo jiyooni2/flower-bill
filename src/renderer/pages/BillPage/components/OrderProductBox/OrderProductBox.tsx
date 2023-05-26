@@ -96,9 +96,11 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
             marginTop: '3px',
             display: 'flex',
             justifyContent: 'left',
+            marginRight: "25px"
           }}
+          className={styles.cutText}
         >
-          {orderProduct != undefined && orderProduct.product?.name || ''}
+          {(orderProduct != undefined && orderProduct.product?.name) || ''}
         </div>
         <div
           style={{
@@ -117,7 +119,12 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
         </div>
         <div
           className={styles.count}
-          style={{ width: '30%', display: 'flex', justifyContent: 'center', marginLeft: '10px' }}
+          style={{
+            width: '30%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginLeft: '10px',
+          }}
         >
           <span
             className={styles.decrease}

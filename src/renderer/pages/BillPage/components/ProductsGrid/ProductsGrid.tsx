@@ -113,7 +113,7 @@ const ProductsGrid = () => {
           />
         </div>
           <ProductCategory page={page} />
-        <div style={{ margin: '20px', height: '300px' }}>
+        <div style={{ margin: '20px', height: '50vh' }}>
           {products && (
             <Grid
               container
