@@ -15,7 +15,7 @@ import {
 } from 'renderer/recoil/states';
 import { BodyProps } from './UpdatePage.interface';
 
-const Body = ({ setAlert, page }: BodyProps) => {
+const Body = ({ setAlert, page, date }: BodyProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [bills, setBills] = useRecoilState(billListState);
@@ -97,46 +97,59 @@ const Body = ({ setAlert, page }: BodyProps) => {
     );
   };
 
+  // bills.map((el) => {
+
+  // });
+
   return (
     <TableBody>
       {bills != undefined &&
-        bills.slice((page - 1) * 8, page * 8).map((bill) => {
-          return (
-            <TableRow hover role="checkbox" tabIndex={-1} key={bill.id}>
-              <TableCell>
-                <Link
-                  to={'/detail-bills'}
-                  style={{
-                    marginBottom: '-20px',
-                    fontSize: '13px',
-                    color: '#0971f1',
-                    fontWeight: '500',
-                  }}
-                  onClick={() => detailHandler(bill.id)}
-                >
-                  자세히 보기
-                </Link>
-              </TableCell>
-              <TableCell>{convertTime(bill.createdAt)}</TableCell>
-              <TableCell>{convertTime(bill.updatedAt)}</TableCell>
-              <TableCell>{bill.business?.name}</TableCell>
-              <TableCell>
-                {bill.store ? bill.store.name : `(undefined)`}
-              </TableCell>
-              <TableCell>
-                <Delete
-                  sx={{
-                    fontSizee: '16px',
-                    cursor: 'pointer',
-                    marginBottom: '-10px',
-                    color: 'crimson',
-                  }}
-                  onClick={() => deleteHandler(bill.id)}
-                />
-              </TableCell>
-            </TableRow>
-          );
-        })}
+        bills
+          .filter((el) =>
+            date !== null
+              ? new Date(el.createdAt)?.getFullYear() === date?.getFullYear() &&
+                new Date(el.createdAt)?.getMonth() === date?.getMonth() &&
+                new Date(el.createdAt)?.getDate() === date?.getDate()
+              : el === el
+          )
+          .slice((page - 1) * 8, page * 8)
+          .map((bill) => {
+            return (
+              <TableRow hover role="checkbox" tabIndex={-1} key={bill.id}>
+                <TableCell>
+                  <Link
+                    to={'/detail-bills'}
+                    style={{
+                      marginBottom: '-20px',
+                      fontSize: '13px',
+                      color: '#0971f1',
+                      fontWeight: '500',
+                    }}
+                    onClick={() => detailHandler(bill.id)}
+                  >
+                    자세히 보기
+                  </Link>
+                </TableCell>
+                <TableCell>{convertTime(bill.createdAt)}</TableCell>
+                <TableCell>{convertTime(bill.updatedAt)}</TableCell>
+                <TableCell>{bill.business?.name}</TableCell>
+                <TableCell>
+                  {bill.store ? bill.store.name : `(undefined)`}
+                </TableCell>
+                <TableCell>
+                  <Delete
+                    sx={{
+                      fontSizee: '16px',
+                      cursor: 'pointer',
+                      marginBottom: '-10px',
+                      color: 'crimson',
+                    }}
+                    onClick={() => deleteHandler(bill.id)}
+                  />
+                </TableCell>
+              </TableRow>
+            );
+          })}
     </TableBody>
   );
 };

@@ -19,12 +19,14 @@ import {
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import Body from './UpdateBillPage/TableBody';
+import DateBox from './DatePicker';
 
 const BillsPage = () => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [bills, setBills] = useRecoilState(billListState);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState<number>(1);
+  const [date, setDate] = useState<Date>(null);
   const [alert, setAlert] = useState({ success: '', error: '' });
 
   useEffect(() => {
@@ -79,15 +81,9 @@ const BillsPage = () => {
     <>
       <div className={styles.container}>
         <div style={{ marginTop: '-1.5%', marginBottom: '25px' }}>
-          <input
-            type="search"
-            // value={name}
-            // onChange={filter}
-            placeholder="판매처 검색"
-            className={styles.searchInput}
-          />
+          <DateBox setDate={setDate} date={date} />
         </div>
-        <Paper sx={{ width: '100%', height: '72vh', marginBottom: '30px' }}>
+        <Paper className={styles.paper}>
           <TableContainer>
             <Table stickyHeader size="small" aria-label="sticky table">
               <TableHead>
@@ -100,11 +96,17 @@ const BillsPage = () => {
                   <TableCell></TableCell>
                 </TableRow>
               </TableHead>
-              <Body setAlert={setAlert} page={page} />
+              <Body setAlert={setAlert} page={page} date={date} />
             </Table>
           </TableContainer>
         </Paper>
-        <Pagination count={LAST_PAGE} page={page} onChange={handleChangePage} />
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Pagination
+            count={LAST_PAGE}
+            page={page}
+            onChange={handleChangePage}
+          />
+        </div>
       </div>
     </>
   );

@@ -6,6 +6,7 @@ export interface BodyProps {
     }>
   >;
   page: number;
+  date: Date;
 }
 
 export interface ButtonProps {
