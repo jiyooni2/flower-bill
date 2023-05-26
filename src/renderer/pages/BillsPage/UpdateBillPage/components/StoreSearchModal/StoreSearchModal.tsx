@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
 import { SearchStoreInput, SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 import { businessState, storeState, tokenState } from 'renderer/recoil/states';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { Store } from 'main/store/entities/store.entity';
 import Modal from 'renderer/components/Modal/Modal';
 import SearchIcon from '@mui/icons-material/Search';
@@ -19,7 +19,7 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
   const [keyword, setKeyword] = useState<string>('');
   const [storeList, setStoreList] = useState<Store[]>([]);
-  const [store, setStore] = useRecoilState(storeState);
+  const setStore = useSetRecoilState(storeState);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-stores', {

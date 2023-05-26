@@ -5,16 +5,22 @@ import { GetBillOutput } from 'main/bill/dtos/get-bill.dto';
 import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
 import { Bill } from 'main/bill/entities/bill.entity';
 import { Link } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { billListState, billState, businessState, orderProductsState, tokenState } from 'renderer/recoil/states';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  billListState,
+  billState,
+  businessState,
+  orderProductsState,
+  tokenState,
+} from 'renderer/recoil/states';
 import { BodyProps } from './UpdatePage.interface';
 
 const Body = ({ setAlert, page }: BodyProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [bills, setBills] = useRecoilState(billListState);
-  const [bill, setBill] = useRecoilState(billState);
-  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
+  const setBill = useSetRecoilState(billState);
+  const setOrderProducts = useSetRecoilState(orderProductsState);
 
   const convertTime = (created: Date) => {
     const iso = created.toISOString().split('T');

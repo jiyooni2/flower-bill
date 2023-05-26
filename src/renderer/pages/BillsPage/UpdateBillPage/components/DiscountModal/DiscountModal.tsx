@@ -3,8 +3,7 @@ import MiniModal from './MiniModal';
 import { useRecoilState } from 'recoil';
 import { orderProductsState } from 'renderer/recoil/states';
 import styles from './DiscountModal.module.scss';
-import { ChangeEvent, useEffect, useRef } from 'react';
-import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
+import { useEffect, useRef } from 'react';
 
 interface IProps {
   isOpen: boolean;

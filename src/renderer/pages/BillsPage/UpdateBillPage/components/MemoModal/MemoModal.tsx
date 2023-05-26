@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material';
 import styles from './MemoModal.module.scss';
 import Button from '@mui/material/Button';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { billState, memoState } from 'renderer/recoil/states';
 import Modal from './Modal';
 import { useEffect } from 'react';
@@ -13,7 +13,7 @@ interface IProps {
 
 const MemoModal = ({ isOpen, setIsOpen }: IProps) => {
   const [memo, setMemo] = useRecoilState(memoState);
-  const [currentBill, setCurrentBill] = useRecoilState(billState);
+  const currentBill = useRecoilValue(billState);
 
   useEffect(() => {
     setMemo(currentBill.memo)

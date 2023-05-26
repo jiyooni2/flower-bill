@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   productsState,
   orderProductsState,
@@ -27,7 +27,7 @@ import UpdateBillSum from './UpdateBillSum';
 import styles from './UpdateBillPage.module.scss'
 
 const UpdateBillPage = () => {
-  const [products, setProducts] = useRecoilState(productsState);
+  const setProducts = useSetRecoilState(productsState);
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const orderProducts = useRecoilValue(orderProductsState);

@@ -1,9 +1,8 @@
 import styles from './BillModal.module.scss';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   billListState,
   billState,
-  businessState,
   memoState,
   orderProductsState,
   storeState,
@@ -27,7 +26,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
   const memo = useRecoilValue(memoState)
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
-  const [bills, setBills] = useRecoilState(billListState)
+  const setBills = useSetRecoilState(billListState);
   const bill = useRecoilValue(billState)
   const store = useRecoilValue(storeState);
   const [alert, setAlert] = useState({ success: '', error: '' });
