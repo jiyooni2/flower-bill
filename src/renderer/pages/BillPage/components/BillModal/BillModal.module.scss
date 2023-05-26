@@ -1,24 +1,24 @@
 .title {
-    border-collapse: collapse;
-    border: 1px solid black;
-    border-bottom: 0px;
-  }
+  border-collapse: collapse;
+  border: 1px solid black;
+  border-bottom: 0px;
+}
 
-  .ownerData {
-    border-collapse: collapse;
-    border-right: 1px solid black;
-    border-left: 1px solid black;
+.ownerData {
+  border-collapse: collapse;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
 
-    .for {
-      width: 15%;
-      font-size: 16px;
-    }
-  }
-  .owner {
+  .for {
+    width: 15%;
     font-size: 16px;
-    font-weight: bold;
-    color: black;
   }
+}
+.owner {
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
+}
 
 .sumDiv {
   border: 1px solid black;
@@ -55,11 +55,16 @@
 .item {
   font-size: 12px;
   padding-left: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 90px;
 }
 
 .article {
   font-size: 12px;
   text-align: center;
+  width: 18%;
 }
 
 .price {
@@ -67,6 +72,10 @@
   color: #4b4b4b;
   text-align: right;
   padding-right: 7px;
+  width: 30%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .sum {
@@ -74,6 +83,10 @@
   color: #4b4b4b;
   text-align: right;
   padding-right: 7px;
+  width: 30%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .date {
@@ -108,7 +121,6 @@
 @page {
   margin: 3mm;
 }
-
 
 .closeBtn {
   border: none;

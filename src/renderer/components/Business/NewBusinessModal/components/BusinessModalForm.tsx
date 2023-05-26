@@ -1,8 +1,14 @@
-import { Input, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import {
+  Input,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+} from '@mui/material';
 import { data } from '../bank';
 import ReplyIcon from '@mui/icons-material/Reply';
-import useAddHyphen from "renderer/hooks/useAddHyphen";
-import { useRef, useState } from "react";
+import useAddHyphen from 'renderer/hooks/useAddHyphen';
+import { useRef, useState } from 'react';
 import { Inputs } from '../types';
 
 type IProps = {
@@ -18,7 +24,13 @@ const BusinessModalForm = ({ inputs, setInputs }: IProps) => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setInputs({ ...inputs, [name]: value });
+    if (name === 'businessNumber') {
+      if (/^[0-9]/.test(value)) {
+        setInputs({ ...inputs, businessNumber: value });
+      }
+    } else {
+      setInputs({ ...inputs, [name]: value });
+    }
   };
 
   const bankChangeHandler = (event: SelectChangeEvent) => {
@@ -39,11 +51,10 @@ const BusinessModalForm = ({ inputs, setInputs }: IProps) => {
           onChange={handleChange}
           helperText={' '}
           placeholder='"-"를 제외하고 작성해주시기 바랍니다.'
-          value={addHypen(inputs.businessNumber)}
+          value={addHypen(inputs.businessNumber) || inputs.businessNumber}
           inputProps={{
             maxLength: 12,
             inputMode: 'numeric',
-            pattern: '[0-9]*',
           }}
         />
       </div>
