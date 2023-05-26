@@ -1,7 +1,6 @@
 import { Card, CardContent, Typography } from "@mui/material";
 import { Bill } from "main/bill/entities/bill.entity";
 
-
 type IProps = {
   bill: Bill;
   updated: boolean;

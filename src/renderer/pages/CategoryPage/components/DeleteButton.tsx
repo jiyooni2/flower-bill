@@ -5,7 +5,7 @@ import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
-import { DeleteButtonProps } from './DeleteButton.interface';
+import { DeleteButtonProps } from './CategoryPage.interface';
 
 const DeleteButton = ({
   clicked,

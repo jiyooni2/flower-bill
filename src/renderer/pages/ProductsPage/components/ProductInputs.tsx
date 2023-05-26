@@ -12,22 +12,13 @@ import {
 } from 'main/product/dtos/update-product.dto';
 import { Product } from 'main/product/entities/product.entity';
 import { useEffect, useState } from 'react';
-import { SetterOrUpdater, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import useAddComma from 'renderer/hooks/useAddComma';
 import { businessState, tokenState } from 'renderer/recoil/states';
 import styles from '.././ProductsPage.module.scss';
-import { Input } from '../types';
 import CategoryModal from './CategoryModal/CategoryModal';
 import { toast } from 'react-toastify';
-
-type IProps = {
-  inputs: Input;
-  setInputs: React.Dispatch<Input>;
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  setCategoryId: SetterOrUpdater<number>;
-  id: number;
-  clicked: boolean;
-};
+import { FormProps } from '../ProductsPage.interface';
 
 const ProductInputs = ({
   inputs,
@@ -36,7 +27,7 @@ const ProductInputs = ({
   setProducts,
   setCategoryId,
   clicked,
-}: IProps) => {
+}: FormProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -203,7 +194,7 @@ const ProductInputs = ({
           if (error.startsWith('최하위') || error.startsWith('없는')) {
             setAlert({ success: '', error: error });
           } else {
-          setAlert({ success: '', error: `네트워크 ${error}` });
+            setAlert({ success: '', error: `네트워크 ${error}` });
           }
         }
       }
@@ -220,7 +211,6 @@ const ProductInputs = ({
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         setCategoryId={setCategoryId}
-        categoryId={id}
       />
       <div className={styles.infoContent}>
         <Typography

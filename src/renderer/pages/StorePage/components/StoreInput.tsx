@@ -1,13 +1,10 @@
-import { Inputs } from '../types';
+import { FormProps } from '../StorePage.interface';
 import styles from '../StorePage.module.scss';
 import useAddHyphen from 'renderer/hooks/useAddHyphen';
 
-type IProps = {
-  setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
-  inputs: Inputs;
-};
 
-const StoreInput = ({ setInputs, inputs }: IProps) => {
+
+const StoreInput = ({ setInputs, inputs }: FormProps) => {
   const addHyphen = useAddHyphen();
 
   const changeStoreDataHandler = (

@@ -11,7 +11,7 @@ import {
   categoriesState,
   tokenState,
 } from 'renderer/recoil/states';
-import { CreateButtonProps } from './CreateButton.interface';
+import { CreateButtonProps } from './CategoryPage.interface';
 
 const CreateButton = ({
   setAlert,

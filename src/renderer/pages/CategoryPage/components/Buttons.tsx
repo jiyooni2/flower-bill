@@ -7,7 +7,7 @@ import {
   categoriesState,
   tokenState,
 } from 'renderer/recoil/states';
-import { ButtonsProps } from './Button.interface';
+import { ButtonsProps } from './CategoryPage.interface';
 import CreateButton from './CreateButton';
 import DeleteButton from './DeleteButton';
 import UpdateButton from './UpdateButton';

@@ -6,7 +6,7 @@ import {
 } from 'main/category/dtos/update-category.dto';
 import { useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
-import { UpdateButtonProps } from './UpdateButton.interface';
+import { UpdateButtonProps } from './CategoryPage.interface';
 
 const UpdateButton = ({
   setAlert,

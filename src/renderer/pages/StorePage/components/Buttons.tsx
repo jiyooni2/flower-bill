@@ -7,23 +7,16 @@ import React, { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, storesState, tokenState } from 'renderer/recoil/states';
 import styles from '../StorePage.module.scss';
-import { Inputs } from '../types';
 import { toast } from 'react-toastify';
 import { UpdateStoreInput, UpdateStoreOutput } from 'main/store/dtos/update-store.dto';
-
-type IProps = {
-  clickedStore: Store;
-  inputs: Inputs;
-  setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
-  setClickedStore: React.Dispatch<React.SetStateAction<Store>>;
-};
+import { ButtonProps } from '../StorePage.interface';
 
 const Buttons = ({
   clickedStore,
   setClickedStore,
   inputs,
   setInputs,
-}: IProps) => {
+}: ButtonProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [stores, setStores] = useRecoilState(storesState);

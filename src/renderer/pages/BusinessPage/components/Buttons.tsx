@@ -1,12 +1,11 @@
 import { Button } from '@mui/material';
 import styles from '../BusinessPage.module.scss';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   businessesState,
   businessState,
   tokenState,
 } from 'renderer/recoil/states';
-import { Inputs } from '../types';
 import { Business } from 'main/business/entities/business.entity';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import {
@@ -16,6 +15,7 @@ import {
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import DeleteModal from './DeleteModal/DeleteModal';
+import { Inputs } from '../BusinessPage.interface';
 
 type IProps = {
   inputs: Inputs;
@@ -23,8 +23,8 @@ type IProps = {
 
 const Buttons = ({ inputs }: IProps) => {
   const token = useRecoilValue(tokenState);
-  const [business, setBusiness] = useRecoilState(businessState);
-  const [businesses, setBusinesses] = useRecoilState(businessesState);
+  const business = useRecoilValue(businessState);
+  const setBusinesses = useSetRecoilState(businessesState);
   const [alert, setAlert] = useState({ success: '', error: '' });
   const [disabled, setDisabled] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);

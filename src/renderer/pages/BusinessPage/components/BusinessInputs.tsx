@@ -1,4 +1,3 @@
-import { Inputs } from '../types';
 import React, { useEffect, useState } from 'react';
 import Buttons from './Buttons';
 import { useRecoilValue } from 'recoil';
@@ -7,6 +6,7 @@ import styles from './BusinessInput.module.scss';
 import useAddHyphen from '../../../hooks/useAddHyphen';
 import { Input, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { data } from 'renderer/components/Business/NewBusinessModal/bank';
+import { Inputs } from '../BusinessPage.interface';
 
 const BusinessInputs = () => {
   const addHypen = useAddHyphen();
@@ -145,10 +145,6 @@ const BusinessInputs = () => {
             />
           </div>
         </div>
-        {/*
-
-
-         */}
       </div>
       <Buttons inputs={inputs} />
     </div>

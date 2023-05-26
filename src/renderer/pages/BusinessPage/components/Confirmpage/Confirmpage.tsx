@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './ConfirmPage.module.scss'
 import { useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
+import { useRecoilValue } from 'recoil';
+import { businessState, tokenState } from 'renderer/recoil/states';
 import { CheckPasswordInput, CheckPasswordOutput } from 'main/auth/dtos/check-password.dto';
 
 
 const ConfirmPage = () => {
   const token = useRecoilValue(tokenState);
-  const [business, setBusiness] = useRecoilState(businessState);
+  const business = useRecoilValue(businessState);
   const navigate = useNavigate();
   const [errors, setErrors] = useState<string>('');
   const [password, setPassword] = useState<string>('');

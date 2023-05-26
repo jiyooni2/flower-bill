@@ -7,15 +7,15 @@ import { Store } from 'main/store/entities/store.entity';
 import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
 import { SearchStoreOutput } from 'main/store/dtos/search-store.dto';
 import StoreInput from './components/StoreInput';
-import { Inputs } from './types';
 import Buttons from './components/Buttons';
 import StoreTable from './components/StoreTable';
+import { InputProps } from './StorePage.interface';
 
 const StorePage = () => {
   const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const [stores, setStores] = useRecoilState(storesState);
-  const [inputs, setInputs] = useState<Inputs>({
+  const [inputs, setInputs] = useState<InputProps>({
     storeNumber: '',
     storeName: '',
     owner: '',
@@ -23,7 +23,7 @@ const StorePage = () => {
     name: '',
     clicked: false,
     page: 1,
-  })
+  });
   const [clickedStore, setClickedStore] = useState<Store>({
     id: 0,
     business: null,

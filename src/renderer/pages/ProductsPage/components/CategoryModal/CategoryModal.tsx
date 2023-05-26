@@ -7,17 +7,9 @@ import { Category } from 'main/category/entities/category.entity';
 import styles from './CategoryModal.module.scss'
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { ModalProps } from '../../ProductsPage.interface';
 
-
-interface IProps {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setCategoryId: React.Dispatch<React.SetStateAction<number>>;
-  categoryId: number;
-}
-
-
-const CategoryModal = ({ isOpen, setIsOpen, setCategoryId, categoryId }: IProps) => {
+const CategoryModal = ({ isOpen, setIsOpen, setCategoryId }: ModalProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [categories, setCategories] = useRecoilState(categoriesState)

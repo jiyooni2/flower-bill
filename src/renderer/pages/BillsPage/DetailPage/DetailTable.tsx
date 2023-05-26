@@ -1,8 +1,5 @@
 import { Table, TableContainer,TableHead,TableRow,TableCell,TableBody } from "@mui/material";
 import { OrderProduct } from "main/orderProduct/entities/orderProduct.entity";
-import { useRecoilValue } from "recoil";
-import { categoriesState } from "renderer/recoil/states";
-
 
 type IProps = {
   orderProducts: OrderProduct[];

@@ -11,19 +11,11 @@ import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
+import { DeleteModalProps } from '../../BusinessPage.interface';
 
-type IProps = {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setAlert: React.Dispatch<
-    React.SetStateAction<{
-      success: string;
-      error: string;
-    }>
-  >;
-};
 
-const DeleteModal = ({ isOpen, setIsOpen, setAlert }: IProps) => {
+
+const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
   const token = useRecoilValue(tokenState);
   const [business, setBusiness] = useRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
@@ -65,7 +57,8 @@ const DeleteModal = ({ isOpen, setIsOpen, setAlert }: IProps) => {
       <DialogTitle>삭제하시겠습니까?</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          해당 사업자와 관련된 모든 데이터 및 개인정보가 삭제되며 복구가 불가능합니다.
+          해당 사업자와 관련된 모든 데이터 및 개인정보가 삭제되며 복구가
+          불가능합니다.
           <br />
           정말 삭제하시겠습니까?
         </DialogContentText>

@@ -1,23 +1,18 @@
 import { StarOutlineRounded, StarRateRounded } from "@mui/icons-material";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { Category } from "main/category/entities/category.entity";
 import { Product } from "main/product/entities/product.entity";
-import { SetterOrUpdater } from "recoil";
 import styles from '../ProductsPage.module.scss';
-import { Input } from "../types";
 import useAddComma from "renderer/hooks/useAddComma";
+import { TableProps } from "../ProductsPage.interface";
 
-
-type IProps = {
-  products: Product[];
-  categories: Category[];
-  inputs: Input;
-  setInputs: React.Dispatch<React.SetStateAction<Input>>;
-  setId: SetterOrUpdater<number>;
-  setClicked: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const ProductTable = ({ products, categories, inputs, setInputs, setId, setClicked }: IProps) => {
+const ProductTable = ({
+  products,
+  categories,
+  inputs,
+  setInputs,
+  setId,
+  setClicked,
+}: TableProps) => {
   const addComma = useAddComma();
 
   const changeDataHandler = (
@@ -27,14 +22,21 @@ const ProductTable = ({ products, categories, inputs, setInputs, setId, setClick
     if (products != undefined) {
       products.forEach((item) => {
         if (item?.name === data.name) {
-          setInputs({...inputs, id: item.id, name: item?.name, price: item.price.toString(), favorite: item.isFavorite, categoryName: item.category?.name, clicked: true})
+          setInputs({
+            ...inputs,
+            id: item.id,
+            name: item?.name,
+            price: item.price.toString(),
+            favorite: item.isFavorite,
+            categoryName: item.category?.name,
+            clicked: true,
+          });
           setId(item.categoryId);
           setClicked(true);
         }
       });
     }
   };
-
 
   return (
     <>

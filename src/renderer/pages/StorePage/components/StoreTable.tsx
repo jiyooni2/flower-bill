@@ -9,19 +9,10 @@ import {
 import { Store } from 'main/store/entities/store.entity';
 import React from 'react';
 import styles from '../StorePage.module.scss';
-import { Inputs } from '../types';
-import useAddHyphen from 'renderer/hooks/useAddHyphen';
+import { TableProps } from '../StorePage.interface';
 
-type IProps = {
-  stores: Store[];
-  inputs: Inputs;
-  setInputs: React.Dispatch<React.SetStateAction<Inputs>>;
-  setClickedStore: React.Dispatch<React.SetStateAction<Store>>;
-};
 
-const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: IProps) => {
-  const addHypen = useAddHyphen();
-
+const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: TableProps) => {
   const changeDataHandler = (event: React.MouseEvent<unknown>, data: Store) => {
     stores?.forEach((item) => {
       if (item.name === data.name) {
@@ -86,12 +77,12 @@ const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: IProps) => {
                     onClick={(event) => changeDataHandler(event, store)}
                     sx={{
                       '& th': {
-                        fontSize: '12px',
+                        fontSize: '13px',
                       },
                     }}
                   >
                     <TableCell component="th">
-                      {addHypen(`${store.businessNumber}`)}
+                      {store.businessNumber}
                     </TableCell>
                     <TableCell component="th" align="left">
                       {store.name}
