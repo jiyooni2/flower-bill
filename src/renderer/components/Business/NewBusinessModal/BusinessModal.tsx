@@ -4,7 +4,7 @@ import {
 } from 'main/business/dtos/create-business.dto';
 import Modal from './Modal';
 import { Button, Typography } from '@mui/material';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   businessState,
   businessesState,
@@ -23,7 +23,7 @@ interface IProps {
 
 const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
-  const [business, setBusiness] = useRecoilState(businessState);
+  const setBusiness = useSetRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
   const [alert, setAlert] = useState({ success: '', error: '' });
   const [inputs, setInputs] = useState<Inputs>({

@@ -14,7 +14,7 @@ import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductInput, SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import ProductTable from './components/ProductTable';
 import ProductInputs from './components/ProductInputs';
-import { Error, Input } from './types';
+import { Error, Input } from './ProductsPage.interface';
 
 
 const ProductsPage = () => {

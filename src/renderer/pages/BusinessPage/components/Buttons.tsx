@@ -34,7 +34,7 @@ const Buttons = ({ inputs }: IProps) => {
       business.businessNumber !== Number(inputs.businessNumber) ||
       business.address !== inputs.address ||
       business.businessOwnerName !== inputs.businessOwnerName ||
-      business.name !== inputs.name
+      business?.name !== inputs.name
     ) {
       setDisabled(false);
     } else {
