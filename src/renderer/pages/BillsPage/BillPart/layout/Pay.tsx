@@ -40,7 +40,7 @@ const Pay = ({ orderProducts, sum }: IProps) => {
       >
         <Ordered orderProducts={orderProducts} />
       </table>
-      <table style={{ width: '100%' }}>
+      <table style={{ width: '100%'}}>
         <tbody>
           <tr
             style={{ display: 'flex', justifyContent: 'space-between' }}

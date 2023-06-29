@@ -5,8 +5,6 @@ import { orderProductsState } from 'renderer/recoil/states';
 import { useRecoilState } from 'recoil';
 import { useState, useEffect } from 'react';
 
-
-
 interface IProps {
   orderProduct: OrderProduct;
 }
@@ -75,17 +73,27 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
   return (
     <div className={styles.container}>
       <div className={styles.contents}>
-        <div style={{ width: '7%', position: 'relative', marginRight: '15px', marginTop: '-10px' }}>
+        <div
+          style={{
+            width: '7%',
+            position: 'relative',
+            marginRight: '15px',
+            marginTop: '-10px',
+          }}
+        >
           <button className={styles.deleteButton} onClick={onDeleteClick}>
             x
           </button>
         </div>
         <div style={{ width: '40%', marginTop: '3px' }}>
-          {orderProduct.product?.name}
+          {orderProduct.product?.name.length > 15
+            ? orderProduct.product?.name.slice(0, 10) + '...'
+            : orderProduct.product?.name}
         </div>
         <div style={{ marginTop: '3px', width: '30%' }}>
           <span className={styles.cutText}>
-            {(orderProduct.count * orderProduct.orderPrice).toLocaleString('ko-KR')}원
+            {(orderProduct.count * orderProduct.orderPrice)}
+            원
           </span>
         </div>
         <div className={styles.count} style={{ width: '30%' }}>

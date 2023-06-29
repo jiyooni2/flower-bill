@@ -1,9 +1,9 @@
-import { OrderProduct } from "main/orderProduct/entities/orderProduct.entity";
-import styles from '../BillPartPage.module.scss'
+import { OrderProduct } from 'main/orderProduct/entities/orderProduct.entity';
+import styles from '../BillPartPage.module.scss';
 
 type IProps = {
-  orderProducts: OrderProduct[]
-}
+  orderProducts: OrderProduct[];
+};
 
 const Ordered = ({ orderProducts }: IProps) => {
   return (
@@ -21,19 +21,21 @@ const Ordered = ({ orderProducts }: IProps) => {
           return (
             <tbody key={orderProduct.productId}>
               <tr>
-                <td className={styles.item}>{orderProduct.product?.name}</td>
+                <td className={styles.item}>
+                  {orderProduct.product?.name.length > 15
+                    ? orderProduct.product?.name.slice(0, 8) + '...'
+                    : orderProduct.product?.name}
+                </td>
                 <td className={styles.article}>{orderProduct.count}</td>
                 <td className={styles.price}>
                   {orderProduct.orderPrice
                     .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
-                  원
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 </td>
                 <td className={styles.sum}>
                   {(orderProduct.orderPrice * orderProduct.count)
                     .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
-                  원
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 </td>
               </tr>
             </tbody>

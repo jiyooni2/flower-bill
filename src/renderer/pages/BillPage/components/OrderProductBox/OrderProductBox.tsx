@@ -100,7 +100,7 @@ const OrderProductBox = ({ orderProduct }: IProps) => {
           }}
           className={styles.cutText}
         >
-          {(orderProduct != undefined && orderProduct.product?.name) || ''}
+          {(orderProduct != undefined && (orderProduct.product?.name).slice(0, 20)) || ''}
         </div>
         <div
           style={{

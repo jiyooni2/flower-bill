@@ -33,9 +33,10 @@ const BillPartPage = ({bill, orderProducts}: IProps) => {
           padding: '15px',
           marginLeft: '10px',
           marginBottom: '20px',
+          overflow: 'auto'
         }}
       >
-        <div style={{ width: '6.2cm', height: '490px', marginTop: '35px' }}>
+        <div style={{ width: '6.2cm', height: '490px', marginTop: '35px'}}>
           <Title />
           <SubTitle bill={bill} />
           <table
