@@ -1,7 +1,18 @@
-import { Input, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  Input,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
-import { SearchStoreInput, SearchStoreOutput } from 'main/store/dtos/search-store.dto';
+import {
+  SearchStoreInput,
+  SearchStoreOutput,
+} from 'main/store/dtos/search-store.dto';
 import { businessState, storeState, tokenState } from 'renderer/recoil/states';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { Store } from 'main/store/entities/store.entity';
@@ -15,7 +26,7 @@ interface IProps {
 }
 
 const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
-  const business = useRecoilValue(businessState)
+  const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const [keyword, setKeyword] = useState<string>('');
   const [storeList, setStoreList] = useState<Store[]>([]);
@@ -26,10 +37,14 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on('get-stores',
-    (args: GetStoresOutput) => {
-      setStoreList(args.stores as Store[]);
-    });
+    const getStoreRemover = window.electron.ipcRenderer.on(
+      'get-stores',
+      (args: GetStoresOutput) => {
+        setStoreList(args.stores as Store[]);
+        getStoreRemover();
+      }
+    );
+
   }, []);
 
 
@@ -45,11 +60,12 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
 
     window.electron.ipcRenderer.sendMessage('search-store', searchData);
 
-    window.electron.ipcRenderer.on(
+    const searchStoreRemover = window.electron.ipcRenderer.on(
       'search-store',
       ({ ok, error, stores }: SearchStoreOutput) => {
         if (ok) {
           setStoreList(stores);
+          searchStoreRemover();
         } else {
           console.error(error);
         }
@@ -62,12 +78,22 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
     setIsOpen(false);
   };
 
-
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
       <div style={{ marginBottom: '15px' }}>
-        <SearchIcon sx={{ color: 'gray', fontSize: '15px', marginTop: '15px', marginRight: '5px' }} />
-        <Input onChange={handleChange} value={keyword} placeholder='판매처 검색하기' />
+        <SearchIcon
+          sx={{
+            color: 'gray',
+            fontSize: '15px',
+            marginTop: '15px',
+            marginRight: '5px',
+          }}
+        />
+        <Input
+          onChange={handleChange}
+          value={keyword}
+          placeholder="판매처 검색하기"
+        />
       </div>
       <div style={{ height: '370px' }}>
         <TableContainer sx={{ overflow: 'hidden', height: '95%' }}>

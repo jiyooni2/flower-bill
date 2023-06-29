@@ -7,10 +7,10 @@ import {
   categoriesState,
   tokenState,
 } from 'renderer/recoil/states';
-import { ButtonsProps } from './CategoryPage.interface';
 import CreateButton from './CreateButton';
 import DeleteButton from './DeleteButton';
 import UpdateButton from './UpdateButton';
+import { ButtonsProps } from '../CategoryPage.interface';
 
 const Buttons = ({
   categoryName,
@@ -35,11 +35,12 @@ const Buttons = ({
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on(
+    const getCategoriesRemover = window.electron.ipcRenderer.on(
       'get-categories',
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
+          getCategoriesRemover();
         } else {
           console.error(error);
           setAlert({ success: '', error: error });

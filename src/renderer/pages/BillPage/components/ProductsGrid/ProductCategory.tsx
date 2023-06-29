@@ -12,7 +12,7 @@ import {
   GetProductByCategoryOutput,
 } from 'main/product/dtos/get-product-by-category.dto';
 import { useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   businessState,
   categoriesState,
@@ -29,7 +29,7 @@ const ProductCategory = ({ page }: IProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
   const [categories, setCategories] = useRecoilState(categoriesState);
-  const [products, setProducts] = useRecoilState(productsState);
+  const setProducts = useSetRecoilState(productsState);
   const [mainId, setMainId] = useState<number>(0);
   const [mainName, setMainName] = useState<string>('');
   const [subId, setSubId] = useState<number>(0);
@@ -41,11 +41,12 @@ const ProductCategory = ({ page }: IProps) => {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on(
+    const getCategoryRemover = window.electron.ipcRenderer.on(
       'get-categories',
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
+          getCategoryRemover();
         } else if (error) {
           console.error(error);
         }
@@ -75,11 +76,12 @@ const ProductCategory = ({ page }: IProps) => {
     };
 
     window.electron.ipcRenderer.sendMessage('get-product-by-category', data);
-    window.electron.ipcRenderer.on(
+    const getProductByCategoryRemover = window.electron.ipcRenderer.on(
       'get-product-by-category',
       ({ ok, error, products }: GetProductByCategoryOutput) => {
         if (ok) {
           setProducts(products);
+          getProductByCategoryRemover();
         } else if (error) {
           console.error(error);
         }

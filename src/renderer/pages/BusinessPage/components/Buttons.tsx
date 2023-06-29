@@ -78,7 +78,7 @@ const Buttons = ({ inputs }: IProps) => {
       ...newData,
     });
 
-    window.electron.ipcRenderer.on(
+    const updateBusinessRemover = window.electron.ipcRenderer.on(
       'update-business',
       ({ ok, error }: UpdateBusinessOutPut) => {
         if (ok) {
@@ -87,12 +87,14 @@ const Buttons = ({ inputs }: IProps) => {
             token,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getBusinessesRemover = window.electron.ipcRenderer.on(
             'get-businesses',
             (args: GetBusinessesOutput) => {
               setBusinesses(args.businesses as Business[]);
+              getBusinessesRemover();
             }
           );
+          updateBusinessRemover();
         }
         if (error) {
           console.log(error);

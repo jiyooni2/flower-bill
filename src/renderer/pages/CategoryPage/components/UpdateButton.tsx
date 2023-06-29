@@ -6,7 +6,7 @@ import {
 } from 'main/category/dtos/update-category.dto';
 import { useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
-import { UpdateButtonProps } from './CategoryPage.interface';
+import { UpdateButtonProps } from '../CategoryPage.interface';
 
 const UpdateButton = ({
   setAlert,
@@ -31,7 +31,7 @@ const UpdateButton = ({
 
     window.electron.ipcRenderer.sendMessage('update-category', updateData);
 
-    window.electron.ipcRenderer.on(
+    const updateCategoryRemover = window.electron.ipcRenderer.on(
       'update-category',
       ({ ok, error }: UpdateCategoryOutput) => {
         if (ok) {
@@ -39,7 +39,7 @@ const UpdateButton = ({
             token,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getCategoriesRemover = window.electron.ipcRenderer.on(
             'get-categories',
             ({ ok, error, categories }: GetCategoriesOutput) => {
               if (ok) {
@@ -51,11 +51,13 @@ const UpdateButton = ({
                 setCategoryId('');
                 setCategoryName('');
                 setLevelName('');
+                getCategoriesRemover();
               } else {
                 console.error(error);
               }
             }
           );
+          updateCategoryRemover();
         } else if (error) {
           console.log(error);
           setAlert({ success: '', error: `네트워크 ${error}` });

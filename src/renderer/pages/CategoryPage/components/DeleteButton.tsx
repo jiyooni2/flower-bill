@@ -2,10 +2,9 @@ import { Delete } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { DeleteCategoryOutput } from 'main/category/dtos/delete-category.dto';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
-import { DeleteButtonProps } from './CategoryPage.interface';
+import { DeleteButtonProps } from '../CategoryPage.interface';
 
 const DeleteButton = ({
   clicked,
@@ -26,7 +25,7 @@ const DeleteButton = ({
       token,
     });
 
-    window.electron.ipcRenderer.on(
+    const deleteCategoryRemover = window.electron.ipcRenderer.on(
       'delete-category',
       ({ ok, error }: DeleteCategoryOutput) => {
         if (ok) {
@@ -34,7 +33,7 @@ const DeleteButton = ({
             token,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getCategoriesRemover = window.electron.ipcRenderer.on(
             'get-categories',
             ({ ok, error, categories }: GetCategoriesOutput) => {
               if (ok) {
@@ -46,11 +45,13 @@ const DeleteButton = ({
                 setCategoryId('');
                 setCategoryName('');
                 setLevelName('');
+                getCategoriesRemover();
               } else {
                 console.error(error);
               }
             }
           );
+          deleteCategoryRemover();
         } else if (error) {
           console.log(error);
           if (error.startsWith('카테고리에 속해있는')) {

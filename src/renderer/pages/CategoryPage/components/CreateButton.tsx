@@ -4,14 +4,13 @@ import {
   CreateCategoryOutput,
 } from 'main/category/dtos/create-category.dto';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-import React from 'react';
 import { useRecoilValue } from 'recoil';
 import {
   businessState,
   categoriesState,
   tokenState,
 } from 'renderer/recoil/states';
-import { CreateButtonProps } from './CategoryPage.interface';
+import { CreateButtonProps } from '../CategoryPage.interface';
 
 const CreateButton = ({
   setAlert,
@@ -65,7 +64,7 @@ const CreateButton = ({
               token,
               businessId: business.id,
             });
-            window.electron.ipcRenderer.on(
+            const getCategoriesRemover = window.electron.ipcRenderer.on(
               'get-categories',
               ({ ok, error, categories }: GetCategoriesOutput) => {
                 if (ok) {
@@ -74,6 +73,7 @@ const CreateButton = ({
                     error: '',
                   });
                   setCategories(categories);
+                  getCategoriesRemover();
                 } else {
                   console.error(error);
                 }

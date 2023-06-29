@@ -31,11 +31,12 @@ const ConfirmPage = () => {
       businessId: business.id,
     });
 
-    window.electron.ipcRenderer.on(
+    const checkPasswordRemover = window.electron.ipcRenderer.on(
       'check-password',
       ({ ok, error }: CheckPasswordOutput) => {
         if (ok) {
-          navigate('/seller')
+          navigate('/seller');
+          checkPasswordRemover();
         }
         if (error) {
           console.log(error);

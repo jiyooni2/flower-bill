@@ -80,7 +80,7 @@ const ProductInputs = ({
         businessId: business.id,
       });
 
-      window.electron.ipcRenderer.on(
+      const deleteProductRemover = window.electron.ipcRenderer.on(
         'delete-product',
         ({ ok, error }: DeleteProductOutput) => {
           if (ok) {
@@ -89,13 +89,15 @@ const ProductInputs = ({
               token,
               businessId: business.id,
             });
-            window.electron.ipcRenderer.on(
+            const getProductsRemover1 = window.electron.ipcRenderer.on(
               'get-products',
               (args: GetProductsOutput) => {
                 setProducts(args.products as Product[]);
+                getProductsRemover1();
               }
             );
             clearInputs();
+            deleteProductRemover();
           }
           if (error) {
             console.error(error);
@@ -123,7 +125,7 @@ const ProductInputs = ({
 
     window.electron.ipcRenderer.sendMessage('update-product', newData);
 
-    window.electron.ipcRenderer.on(
+    const updateProductRemover = window.electron.ipcRenderer.on(
       'update-product',
       ({ ok, error }: UpdateProductOutput) => {
         if (ok) {
@@ -132,12 +134,13 @@ const ProductInputs = ({
             token,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getProductsRemover2 = window.electron.ipcRenderer.on(
             'get-products',
             (args: GetProductsOutput) => {
               setProducts(args.products as Product[]);
             }
           );
+          getProductsRemover2();
           clearInputs();
         }
         if (error) {
@@ -150,6 +153,7 @@ const ProductInputs = ({
         }
       }
     );
+    updateProductRemover();
     setInputs({ ...inputs, favorite: false });
   };
 
@@ -167,7 +171,7 @@ const ProductInputs = ({
       token,
     };
     window.electron.ipcRenderer.sendMessage('create-product', newData);
-    window.electron.ipcRenderer.on(
+    const createProductRemover = window.electron.ipcRenderer.on(
       'create-product',
       ({ ok, error }: CreateProductOutput) => {
         if (ok) {
@@ -176,19 +180,21 @@ const ProductInputs = ({
             page: inputs.page - 1,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getProductsRemover3 = window.electron.ipcRenderer.on(
             'get-products',
             ({ ok, error, products }: GetProductsOutput) => {
               if (ok) {
                 setAlert({ success: '상품이 생성되었습니다.', error: '' });
                 setProducts(products);
                 clearInputs();
+                getProductsRemover3();
               }
               if (error) {
                 setAlert({ success: '', error: `네트워크 ${error}` });
               }
             }
           );
+          createProductRemover();
         }
         if (error) {
           if (error.startsWith('최하위') || error.startsWith('없는')) {

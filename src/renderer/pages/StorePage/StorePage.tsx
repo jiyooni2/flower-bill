@@ -41,11 +41,12 @@ const StorePage = () => {
     });
     window.electron.ipcRenderer.on('get-stores', (args: GetStoresOutput) => {
       setStores(args.stores as Store[]);
+      console.log(stores.length);
     });
   }, []);
 
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputs({...inputs, name: e.target.value})
+    setInputs({ ...inputs, name: e.target.value });
   };
 
   const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
@@ -56,11 +57,12 @@ const StorePage = () => {
         token,
       });
 
-      window.electron.ipcRenderer.on(
+      const searchStoreRemover = window.electron.ipcRenderer.on(
         'search-store',
         ({ ok, error, stores }: SearchStoreOutput) => {
           if (ok) {
             setStores(stores);
+            searchStoreRemover();
           } else {
             console.error(error);
           }
@@ -70,7 +72,14 @@ const StorePage = () => {
   };
 
   const clearInputs = () => {
-    setInputs({...inputs, clicked: false, storeNumber: '', storeName: '', owner: '', address: ''})
+    setInputs({
+      ...inputs,
+      clicked: false,
+      storeNumber: '',
+      storeName: '',
+      owner: '',
+      address: '',
+    });
     setClickedStore({
       business: null,
       businessId: null,
@@ -85,15 +94,13 @@ const StorePage = () => {
     setInputs({ ...inputs, page: value });
   };
 
-    let LAST_PAGE = 1;
-    if (stores != undefined) {
-      LAST_PAGE =
-        stores?.length % 9 === 0
-          ? Math.round(stores?.length / 9)
-          : Math.floor(stores?.length / 9) + 1;
-    } else if (stores == null) {
-      LAST_PAGE = 1;
-    }
+  let LAST_PAGE = 1;
+  if (stores != undefined) {
+    LAST_PAGE =
+      stores.length % 10 === 0
+        ? Math.round(stores.length / 10)
+        : Math.round(stores.length / 10) + 1;
+  }
 
   return (
     <>

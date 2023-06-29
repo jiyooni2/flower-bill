@@ -43,10 +43,11 @@ const UpdateBillPage = () => {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on(
+    const getProductsRemover = window.electron.ipcRenderer.on(
       'get-products',
       (args: GetProductsOutput) => {
         setProducts(args.products as Product[]);
+        getProductsRemover();
       }
     );
   }, []);

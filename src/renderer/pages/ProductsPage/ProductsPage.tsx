@@ -14,7 +14,7 @@ import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductInput, SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import ProductTable from './components/ProductTable';
 import ProductInputs from './components/ProductInputs';
-import { Error, Input } from './ProductsPage.interface';
+import { Input } from './ProductsPage.interface';
 
 
 const ProductsPage = () => {
@@ -34,11 +34,6 @@ const ProductsPage = () => {
     favorite: false,
     page: 1,
   })
-  const [errors, setErrors] = useState<Error>({
-    name: '',
-    price: '',
-    category: '',
-  });
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -65,11 +60,12 @@ const ProductsPage = () => {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on(
+    const getProductsRemover1 = window.electron.ipcRenderer.on(
       'get-products',
       ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
           setProducts(products);
+          getProductsRemover1();
         }
         if (error) {
           console.error(error);
@@ -94,11 +90,12 @@ const ProductsPage = () => {
         };
 
         window.electron.ipcRenderer.sendMessage('search-product', searchData);
-        window.electron.ipcRenderer.on(
+        const searchProductRemover = window.electron.ipcRenderer.on(
           'search-product',
           ({ ok, error, products }: SearchProductOutput) => {
             if (ok) {
               setProducts(products);
+              searchProductRemover();
             } else {
               console.log(error);
             }
@@ -109,10 +106,11 @@ const ProductsPage = () => {
           token,
           businessId: business.id,
         });
-        window.electron.ipcRenderer.on(
+        const getProductsRemover2 = window.electron.ipcRenderer.on(
           'get-products',
           (args: GetProductsOutput) => {
             setProducts(args.products as Product[]);
+            getProductsRemover2();
           }
         );
       }
@@ -124,7 +122,6 @@ const ProductsPage = () => {
   const clearInputs = () => {
     setInputs({...inputs, name: '', price: '', clicked: false})
     setCategoryId(0);
-    setErrors({ name: '', price: '', category: '' });
   };
 
 

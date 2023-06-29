@@ -90,7 +90,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       };
 
       window.electron.ipcRenderer.sendMessage('create-business', newBusiness);
-      window.electron.ipcRenderer.on(
+      const createBusinessRemover = window.electron.ipcRenderer.on(
         'create-business',
         ({ ok, error }: CreateBusinessOutput) => {
           if (ok) {
@@ -100,12 +100,13 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
               businessId: 1,
             });
 
-            window.electron.ipcRenderer.on(
+            const getBusinessesRemover = window.electron.ipcRenderer.on(
               'get-businesses',
               ({ ok, error, businesses }: GetBusinessesOutput) => {
                 if (ok) {
                   setBusinesses(businesses);
                   setAlert({ success: '사업자가 생성되었습니다.', error: '' });
+                  getBusinessesRemover();
                 } else {
                   console.error(error);
                   if (error.startsWith('없는')) {
@@ -116,6 +117,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
                 }
               }
             );
+            createBusinessRemover();
           } else if (error) {
             console.error(error);
             if (error.startsWith('없는')) {

@@ -12,10 +12,12 @@ import { Business } from 'main/business/entities/business.entity';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
 import { DeleteModalProps } from '../../BusinessPage.interface';
+import { useNavigate } from 'react-router-dom';
 
 
 
 const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
+  const navigate = useNavigate();
   const token = useRecoilValue(tokenState);
   const [business, setBusiness] = useRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
@@ -26,7 +28,7 @@ const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
       businessId: business.id,
     });
 
-    window.electron.ipcRenderer.on(
+    const deleteBusinessRemover = window.electron.ipcRenderer.on(
       'delete-business',
       ({ ok, error }: DeleteBusinessOutput) => {
         if (ok) {
@@ -34,14 +36,18 @@ const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
             token,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getBusinessesRemover = window.electron.ipcRenderer.on(
             'get-businesses',
             (args: GetBusinessesOutput) => {
               setBusinesses(args.businesses as Business[]);
               setBusiness(businesses[0]);
               setAlert({ success: '사업자가 삭제되었습니다.', error: '' });
+              getBusinessesRemover();
+              setIsOpen(false);
+              navigate('/')
             }
           );
+          deleteBusinessRemover();
         }
         if (error) {
           console.log(error);

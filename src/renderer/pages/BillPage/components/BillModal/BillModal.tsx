@@ -70,7 +70,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     };
 
     window.electron.ipcRenderer.sendMessage('create-bill', newBill);
-    window.electron.ipcRenderer.on(
+    const createBillRemover = window.electron.ipcRenderer.on(
       'create-bill',
       ({ ok, error }: GetBillOutput) => {
         if (ok) {
@@ -84,6 +84,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             setAlert({ success: '계산서가 생성되었습니다.', error: '' });
             movePage('/bills');
           }
+          createBillRemover();
         } else if (error) {
           console.error(error);
           if (error.startsWith('존재')) {

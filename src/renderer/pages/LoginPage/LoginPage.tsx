@@ -3,7 +3,7 @@ import { Button, TextField } from '@mui/material';
 import SignUpForm from './components/SignUpForm';
 import './components/AuthForm.scss';
 import { LoginOutput } from 'main/auth/dtos/login.dto';
-import { useRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { loginState, tokenState } from 'renderer/recoil/states';
 import FindPasswordModal from './components/FindPasswordModal/FindPasswordModal'
 
@@ -12,8 +12,8 @@ const LoginPage = () => {
   const [isPasswordOpen, setIsPasswordOpen] = useState<boolean>(false);
   const [ownerId, setOwnerId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isLoggedIn, setIsLoggedIn] = useRecoilState(loginState);
-  const [token, setToken] = useRecoilState(tokenState);
+  const setIsLoggedIn = useSetRecoilState(loginState);
+  const setToken = useSetRecoilState(tokenState);
   const [errors, setErrors] = useState({
     id: '',
     password: '',

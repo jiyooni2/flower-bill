@@ -1,16 +1,25 @@
-import { Input, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+import {
+  Input,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
-import { SearchStoreInput, SearchStoreOutput } from 'main/store/dtos/search-store.dto';
-import { businessState, storeState, storesState, tokenState } from 'renderer/recoil/states';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  SearchStoreInput,
+  SearchStoreOutput,
+} from 'main/store/dtos/search-store.dto';
+import { businessState, storeState, tokenState } from 'renderer/recoil/states';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { Store } from 'main/store/entities/store.entity';
 import Modal from 'renderer/components/Modal/Modal';
-import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import SearchIcon from '@mui/icons-material/Search';
 import { GetStoresOutput } from 'main/store/dtos/get-stores.dto';
 import { Link } from 'react-router-dom';
-import styles from './StoreSearchModal.module.scss'
 
 interface IProps {
   isOpen: boolean;
@@ -18,24 +27,26 @@ interface IProps {
 }
 
 const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
-  const business = useRecoilValue(businessState)
+  const business = useRecoilValue(businessState);
   const token = useRecoilValue(tokenState);
   const [keyword, setKeyword] = useState<string>('');
   const [storeList, setStoreList] = useState<Store[]>([]);
-  const [store, setStore] = useRecoilState(storeState);
-  const [search, setSearch] = useState<boolean>(true)
+  const setStore = useSetRecoilState(storeState);
+  const [search, setSearch] = useState<boolean>(true);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-stores', {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on('get-stores',
-    (args: GetStoresOutput) => {
-      setStoreList(args.stores as Store[]);
-    });
+    const getStoreRemover1 = window.electron.ipcRenderer.on(
+      'get-stores',
+      (args: GetStoresOutput) => {
+        setStoreList(args.stores as Store[]);
+        getStoreRemover1();
+      }
+    );
   }, []);
-
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(event.target.value);
@@ -44,17 +55,18 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
   const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter' && event.nativeEvent.isComposing === false) {
       if (keyword == '') {
-          window.electron.ipcRenderer.sendMessage('get-stores', {
-            token,
-            businessId: business.id,
-          });
-          window.electron.ipcRenderer.on(
-            'get-stores',
-            (args: GetStoresOutput) => {
-              setStoreList(args.stores as Store[]);
-            }
-          );
-        }
+        window.electron.ipcRenderer.sendMessage('get-stores', {
+          token,
+          businessId: business.id,
+        });
+        const getStoreRemover2 = window.electron.ipcRenderer.on(
+          'get-stores',
+          (args: GetStoresOutput) => {
+            setStoreList(args.stores as Store[]);
+            getStoreRemover2();
+          }
+        );
+      }
 
       const searchData: SearchStoreInput = {
         token,
@@ -65,13 +77,17 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
 
       window.electron.ipcRenderer.sendMessage('search-store', searchData);
 
-      window.electron.ipcRenderer.on(
+      const searchStoreRemover = window.electron.ipcRenderer.on(
         'search-store',
         ({ ok, error, stores }: SearchStoreOutput) => {
           if (ok) {
             setStoreList(stores);
-            if (stores.length != undefined && stores.length == 0) setSearch(false)
-            else setSearch(true)
+            if (stores.length != undefined && stores.length == 0) {
+              setSearch(false);
+            } else {
+              setSearch(true);
+            }
+            searchStoreRemover();
           } else {
             console.error(error);
           }
@@ -145,22 +161,23 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {storeList != undefined && storeList?.map((row) => (
-                <TableRow key={row?.name || row.id} sx={{}}>
-                  <TableCell component="th" scope="row">
-                    <Button
-                      sx={{ marginTop: '-5px', marginBottom: '-5px' }}
-                      onClick={() => onStoreClick(row)}
-                    >
-                      선택
-                    </Button>
-                  </TableCell>
-                  <TableCell>{row?.name || ''}</TableCell>
-                  <TableCell>{row.owner}</TableCell>
-                  <TableCell>{row.businessNumber}</TableCell>
-                  <TableCell>{row.address}</TableCell>
-                </TableRow>
-              ))}
+              {storeList != undefined &&
+                storeList?.map((row) => (
+                  <TableRow key={row?.name || row.id} sx={{}}>
+                    <TableCell component="th" scope="row">
+                      <Button
+                        sx={{ marginTop: '-5px', marginBottom: '-5px' }}
+                        onClick={() => onStoreClick(row)}
+                      >
+                        선택
+                      </Button>
+                    </TableCell>
+                    <TableCell>{row?.name || ''}</TableCell>
+                    <TableCell>{row.owner}</TableCell>
+                    <TableCell>{row.businessNumber}</TableCell>
+                    <TableCell>{row.address}</TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>

@@ -69,7 +69,7 @@ const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: TableProps) 
             {stores != undefined &&
               stores.length > 0 &&
               stores
-                ?.slice((inputs.page - 1) * 9, inputs.page * 9)
+                .slice((inputs.page - 1) * 10, inputs.page * 10)
                 .map((store) => (
                   <TableRow
                     key={store.businessNumber}
@@ -81,9 +81,7 @@ const StoreTable = ({ stores, inputs, setInputs, setClickedStore }: TableProps) 
                       },
                     }}
                   >
-                    <TableCell component="th">
-                      {store.businessNumber}
-                    </TableCell>
+                    <TableCell component="th">{store.businessNumber}</TableCell>
                     <TableCell component="th" align="left">
                       {store.name}
                     </TableCell>

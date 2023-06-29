@@ -3,12 +3,12 @@ import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Selec
 import ProductBox from '../ProductBox/ProductBox';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { billState, businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
+import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import { GetProductByCategoryInput, GetProductByCategoryOutput } from 'main/product/dtos/get-product-by-category.dto';
-import { BillResult } from 'main/common/dtos/bill-result.dto';
+// import { BillResult } from 'main/common/dtos/bill-result.dto';
 import { Link } from 'react-router-dom';
 import { ArrowForward } from '@mui/icons-material';
 
@@ -25,26 +25,26 @@ const ProductsGrid = () => {
   const [subId, setSubId] = useState<number>(0);
   const [subName, setSubName] = useState<string>('');
   const [groupName, setGroupName] = useState<string>('');
-  const currentBill = useRecoilValue(billState);
-  const [orderProduct, setOrderProduct] = useState<BillResult>()
+  // const currentBill = useRecoilValue(billState);
+  // const [orderProduct, setOrderProduct] = useState<BillResult>()
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
       token,
       business: business.id,
     });
-    window.electron.ipcRenderer.on(
+    const getCategoriesRemover = window.electron.ipcRenderer.on(
       'get-categories',
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
+          getCategoriesRemover();
         } else if (error) {
           console.error(error);
         }
       }
     );
-
-    setOrderProduct(currentBill);
+    // setOrderProduct(currentBill);
   }, [])
 
   const handlePage = (event: ChangeEvent<unknown>, value: number) => {
@@ -71,11 +71,12 @@ const ProductsGrid = () => {
           token,
           business: business.id,
         });
-        window.electron.ipcRenderer.on(
+        const getProductsRemover1 = window.electron.ipcRenderer.on(
           'get-products',
           ({ ok, error, products }: GetProductsOutput) => {
             if (ok) {
               setProducts(products);
+              getProductsRemover1();
             } else if (error) {
               console.error(error);
             }
@@ -88,12 +89,12 @@ const ProductsGrid = () => {
           token,
           businessId: business.id,
         });
-        window.electron.ipcRenderer.on(
+        const searchProductRemover = window.electron.ipcRenderer.on(
           'search-product',
           ({ ok, error, products }: SearchProductOutput) => {
             if (ok) {
-              console.log(products)
               setProducts(products);
+              searchProductRemover();
             } else if (error) {
               console.error(error);
             }
@@ -126,11 +127,12 @@ const ProductsGrid = () => {
     };
 
     window.electron.ipcRenderer.sendMessage('get-product-by-category', data);
-    window.electron.ipcRenderer.on(
+    const getProductByRemover = window.electron.ipcRenderer.on(
       'get-product-by-category',
       ({ ok, error, products }: GetProductByCategoryOutput) => {
         if (ok) {
           setProducts(products);
+          getProductByRemover();
         } else if (error) {
           console.error(error);
         }

@@ -50,12 +50,13 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
       businessId: business.id,
     });
 
-    window.electron.ipcRenderer.on(
+    const getBillRemover1 = window.electron.ipcRenderer.on(
       'get-bill',
       ({ ok, error, bill }: GetBillOutput) => {
         if (ok) {
           setOrderProducts(bill.orderProducts);
           setBill(bill);
+          getBillRemover1();
         } else {
           console.log(error);
         }
@@ -70,7 +71,7 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
       businessId: business.id,
     });
 
-    window.electron.ipcRenderer.on(
+    const deleteBillRemover = window.electron.ipcRenderer.on(
       'delete-bill',
       ({ ok, error }: DeleteBillOutput) => {
         if (ok) {
@@ -79,13 +80,15 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
             businessId: business.id,
             page: page,
           });
-          window.electron.ipcRenderer.on(
+          const getBillsRemover1 = window.electron.ipcRenderer.on(
             'get-bills',
             (args: GetBillsOutput) => {
               setBills(args.bills as Bill[]);
+              getBillsRemover1();
             }
           );
           setAlert({ success: '계산서가 삭제되었습니다.', error: '' });
+          deleteBillRemover();
         } else {
           if (error.startsWith('존재')) {
             setAlert({ success: '', error: error });
@@ -96,10 +99,6 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
       }
     );
   };
-
-  // bills.map((el) => {
-
-  // });
 
   return (
     <TableBody>

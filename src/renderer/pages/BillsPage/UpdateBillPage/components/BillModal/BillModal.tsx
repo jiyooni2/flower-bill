@@ -80,24 +80,25 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     };
 
     window.electron.ipcRenderer.sendMessage('update-bill', newBill);
-    window.electron.ipcRenderer.on(
+    const updateBillRemover = window.electron.ipcRenderer.on(
       'update-bill',
       ({ ok, error }: UpdateBillOutput) => {
         if (ok) {
           window.electron.ipcRenderer.sendMessage('get-bills', newBill);
-          window.electron.ipcRenderer.on(
+          const getBillsRemover = window.electron.ipcRenderer.on(
             'get-bills',
             ({ ok, error, bills }: GetBillsOutput) => {
               if (ok) {
                 setBills(bills);
                 setAlert({ success: '계산서가 수정되었습니다.', error: ''})
+                getBillsRemover();
               } else if (error) {
                 console.log(error);
                 setAlert({ success: '', error: `네트워크 ${error}`})
               }
             }
           );
-          console.log('done')
+          updateBillRemover();
         } else if (error) {
           console.log(error);
           if (error.startsWith('없는')) {

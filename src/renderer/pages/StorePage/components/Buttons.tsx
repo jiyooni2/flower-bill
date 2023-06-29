@@ -74,7 +74,7 @@ const Buttons = ({
       token,
     };
     window.electron.ipcRenderer.sendMessage('update-store', updateData);
-    window.electron.ipcRenderer.on(
+    const updateStoreRemover = window.electron.ipcRenderer.on(
       'update-store',
       ({ ok, error }: UpdateStoreOutput) => {
         if (ok) {
@@ -83,15 +83,16 @@ const Buttons = ({
             token,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getStoresRemover1 = window.electron.ipcRenderer.on(
             'get-stores',
             (args: GetStoresOutput) => {
               setStores(args.stores as Store[]);
+              getStoresRemover1();
             }
           );
           clear();
-        }
-        if (error) {
+          updateStoreRemover();
+        } else if (error) {
           if (error.startsWith('없는') || error.startsWith('해당 스토어')) {
             setAlert({ success: '', error: error });
           } else {
@@ -127,7 +128,7 @@ const Buttons = ({
       businessId: business.id,
     });
 
-    window.electron.ipcRenderer.on(
+    const createStoreRemover = window.electron.ipcRenderer.on(
       'create-store',
       ({ ok, error }: CreateStoreOutput) => {
         if (ok) {
@@ -136,13 +137,15 @@ const Buttons = ({
             token,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getStoresRemover2 = window.electron.ipcRenderer.on(
             'get-stores',
             (args: GetStoresOutput) => {
               setStores(args.stores as Store[]);
+              getStoresRemover2();
             }
           );
           clear();
+          createStoreRemover();
         }
         if (error) {
           setAlert({ success: '', error: `네트워크 ${error}` });
@@ -158,7 +161,7 @@ const Buttons = ({
       id: clickedStore.id,
     });
 
-    window.electron.ipcRenderer.on(
+    const deleteStoreRemover = window.electron.ipcRenderer.on(
       'delete-store',
       ({ ok, error }: DeleteStoreOutput) => {
         if (ok) {
@@ -167,15 +170,16 @@ const Buttons = ({
             token,
             businessId: business.id,
           });
-          window.electron.ipcRenderer.on(
+          const getStoresRemover3 = window.electron.ipcRenderer.on(
             'get-stores',
             (args: GetStoresOutput) => {
               setStores(args.stores as Store[]);
+              getStoresRemover3();
             }
           );
           clear();
-        }
-        if (error) {
+          deleteStoreRemover();
+        } else if (error) {
           console.log(error);
           if (error.startsWith('없는') || error.startsWith('해당 스토어')) {
             setAlert({ success: '', error: error });

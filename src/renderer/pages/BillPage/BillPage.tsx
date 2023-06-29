@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button';
-import { ChangeEvent, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   orderProductsState,
   businessState,
@@ -18,13 +18,16 @@ import Buttons from './layout/Buttons';
 
 const BillPage = () => {
   const business = useRecoilValue(businessState)
-  const orderProducts = useRecoilValue(orderProductsState);
+  const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
   const [isSearchStoreOpen, setIsSearchStoreOpen] = useState<boolean>(false);
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [isDiscountOpen, setIsDiscountOpen] = useState<boolean>(false);
   const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
 
+  useEffect(() => {
+    setOrderProducts([])
+  }, [])
 
   const handlePage = (event:ChangeEvent<unknown>, value: number) => {
     setPage(value);

@@ -22,11 +22,12 @@ const ProductsGrid = () => {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on(
+    const getProductsRemover1 = window.electron.ipcRenderer.on(
       'get-products',
       ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
           setProducts(products);
+          getProductsRemover1();
         }
         if (error) {
           console.error(error);
@@ -58,11 +59,12 @@ const ProductsGrid = () => {
           token,
           business: business.id,
         });
-        window.electron.ipcRenderer.on(
+        const getProductsRemover2 = window.electron.ipcRenderer.on(
           'get-products',
           ({ ok, error, products }: GetProductsOutput) => {
             if (ok) {
               setProducts(products);
+              getProductsRemover2();
             } else if (error) {
               console.error(error);
             }
@@ -75,11 +77,12 @@ const ProductsGrid = () => {
           token,
           businessId: business.id,
         });
-        window.electron.ipcRenderer.on(
+        const searchProductRemover = window.electron.ipcRenderer.on(
           'search-product',
           ({ ok, error, products }: SearchProductOutput) => {
             if (ok) {
               setProducts(products);
+              searchProductRemover();
             } else if (error) {
               console.error(error);
             }
