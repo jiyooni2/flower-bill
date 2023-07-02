@@ -8,7 +8,10 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { businessState, storesState, tokenState } from 'renderer/recoil/states';
 import styles from '../StorePage.module.scss';
 import { toast } from 'react-toastify';
-import { UpdateStoreInput, UpdateStoreOutput } from 'main/store/dtos/update-store.dto';
+import {
+  UpdateStoreInput,
+  UpdateStoreOutput,
+} from 'main/store/dtos/update-store.dto';
 import { ButtonProps } from '../StorePage.interface';
 
 const Buttons = ({
@@ -87,11 +90,9 @@ const Buttons = ({
             'get-stores',
             (args: GetStoresOutput) => {
               setStores(args.stores as Store[]);
-              getStoresRemover1();
             }
           );
           clear();
-          updateStoreRemover();
         } else if (error) {
           if (error.startsWith('없는') || error.startsWith('해당 스토어')) {
             setAlert({ success: '', error: error });
@@ -141,11 +142,9 @@ const Buttons = ({
             'get-stores',
             (args: GetStoresOutput) => {
               setStores(args.stores as Store[]);
-              getStoresRemover2();
             }
           );
           clear();
-          createStoreRemover();
         }
         if (error) {
           setAlert({ success: '', error: `네트워크 ${error}` });
@@ -174,11 +173,9 @@ const Buttons = ({
             'get-stores',
             (args: GetStoresOutput) => {
               setStores(args.stores as Store[]);
-              getStoresRemover3();
             }
           );
           clear();
-          deleteStoreRemover();
         } else if (error) {
           console.log(error);
           if (error.startsWith('없는') || error.startsWith('해당 스토어')) {

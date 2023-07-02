@@ -51,13 +51,11 @@ const UpdateButton = ({
                 setCategoryId('');
                 setCategoryName('');
                 setLevelName('');
-                getCategoriesRemover();
               } else {
                 console.error(error);
               }
             }
           );
-          updateCategoryRemover();
         } else if (error) {
           console.log(error);
           setAlert({ success: '', error: `네트워크 ${error}` });

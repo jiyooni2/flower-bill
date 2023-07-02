@@ -41,12 +41,9 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
       'get-stores',
       (args: GetStoresOutput) => {
         setStoreList(args.stores as Store[]);
-        getStoreRemover();
       }
     );
-
   }, []);
-
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(event.target.value);
@@ -65,7 +62,6 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
       ({ ok, error, stores }: SearchStoreOutput) => {
         if (ok) {
           setStoreList(stores);
-          searchStoreRemover();
         } else {
           console.error(error);
         }

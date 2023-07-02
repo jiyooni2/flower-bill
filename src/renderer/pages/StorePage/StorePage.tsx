@@ -62,7 +62,6 @@ const StorePage = () => {
         ({ ok, error, stores }: SearchStoreOutput) => {
           if (ok) {
             setStores(stores);
-            searchStoreRemover();
           } else {
             console.error(error);
           }

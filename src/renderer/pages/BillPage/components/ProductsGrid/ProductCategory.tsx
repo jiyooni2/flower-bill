@@ -46,7 +46,6 @@ const ProductCategory = ({ page }: IProps) => {
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
-          getCategoryRemover();
         } else if (error) {
           console.error(error);
         }
@@ -81,7 +80,6 @@ const ProductCategory = ({ page }: IProps) => {
       ({ ok, error, products }: GetProductByCategoryOutput) => {
         if (ok) {
           setProducts(products);
-          getProductByCategoryRemover();
         } else if (error) {
           console.error(error);
         }

@@ -43,7 +43,6 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
       'get-stores',
       (args: GetStoresOutput) => {
         setStoreList(args.stores as Store[]);
-        getStoreRemover1();
       }
     );
   }, []);
@@ -63,7 +62,6 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
           'get-stores',
           (args: GetStoresOutput) => {
             setStoreList(args.stores as Store[]);
-            getStoreRemover2();
           }
         );
       }
@@ -87,7 +85,6 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
             } else {
               setSearch(true);
             }
-            searchStoreRemover();
           } else {
             console.error(error);
           }
@@ -100,7 +97,6 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
     setStore(store);
     setIsOpen(false);
   };
-
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>

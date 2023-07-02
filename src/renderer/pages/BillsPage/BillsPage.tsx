@@ -57,10 +57,12 @@ const BillsPage = () => {
       businessId: business.id,
       page: page,
     });
-    const getBillsRemover = window.electron.ipcRenderer.on('get-bills', (args: GetBillsOutput) => {
-      setBills(args.bills as Bill[]);
-      getBillsRemover();
-    });
+    const getBillsRemover = window.electron.ipcRenderer.on(
+      'get-bills',
+      (args: GetBillsOutput) => {
+        setBills(args.bills as Bill[]);
+      }
+    );
   }, []);
 
   const handleChangePage = (event: ChangeEvent<unknown>, value: number) => {

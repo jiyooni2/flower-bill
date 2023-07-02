@@ -11,11 +11,13 @@ import { Product } from 'main/product/entities/product.entity';
 import styles from './ProductsPage.module.scss';
 import { Category } from 'main/category/entities/category.entity';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
-import { SearchProductInput, SearchProductOutput } from 'main/product/dtos/search-product.dto';
+import {
+  SearchProductInput,
+  SearchProductOutput,
+} from 'main/product/dtos/search-product.dto';
 import ProductTable from './components/ProductTable';
 import ProductInputs from './components/ProductInputs';
 import { Input } from './ProductsPage.interface';
-
 
 const ProductsPage = () => {
   const token = useRecoilValue(tokenState);
@@ -33,7 +35,7 @@ const ProductsPage = () => {
     categoryName: '',
     favorite: false,
     page: 1,
-  })
+  });
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-categories', {
@@ -49,11 +51,10 @@ const ProductsPage = () => {
 
     categories?.map((cat) => {
       if (cat.id == categoryId) {
-        return setInputs({...inputs, categoryName: cat?.name})
+        return setInputs({ ...inputs, categoryName: cat?.name });
       }
     });
-  }, [categoryId])
-
+  }, [categoryId]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
@@ -65,7 +66,6 @@ const ProductsPage = () => {
       ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
           setProducts(products);
-          getProductsRemover1();
         }
         if (error) {
           console.error(error);
@@ -74,9 +74,8 @@ const ProductsPage = () => {
     );
   }, []);
 
-
   const filter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs({...inputs, keyword: e.target.value})
+    setInputs({ ...inputs, keyword: e.target.value });
   };
 
   const keyHandler = (event: React.KeyboardEvent<HTMLElement>) => {
@@ -95,7 +94,6 @@ const ProductsPage = () => {
           ({ ok, error, products }: SearchProductOutput) => {
             if (ok) {
               setProducts(products);
-              searchProductRemover();
             } else {
               console.log(error);
             }
@@ -110,7 +108,6 @@ const ProductsPage = () => {
           'get-products',
           (args: GetProductsOutput) => {
             setProducts(args.products as Product[]);
-            getProductsRemover2();
           }
         );
       }
@@ -118,24 +115,23 @@ const ProductsPage = () => {
     clearInputs();
   };
 
-
   const clearInputs = () => {
-    setInputs({...inputs, name: '', price: '', clicked: false})
+    setInputs({ ...inputs, name: '', price: '', clicked: false });
     setCategoryId(0);
   };
 
-
   let LAST_PAGE = 1;
   if (products != undefined) {
-    LAST_PAGE = products?.length % 9 === 0
-      ? Math.round(products?.length / 9)
-      : Math.floor(products?.length / 9) + 1;
+    LAST_PAGE =
+      products?.length % 9 === 0
+        ? Math.round(products?.length / 9)
+        : Math.floor(products?.length / 9) + 1;
   } else if (products == null) {
     LAST_PAGE = 1;
   }
 
   const handlePage = (event: ChangeEvent<unknown>, value: number) => {
-    setInputs({...inputs, page: value})
+    setInputs({ ...inputs, page: value });
   };
 
   return (

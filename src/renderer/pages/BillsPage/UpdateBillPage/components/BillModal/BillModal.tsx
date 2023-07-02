@@ -12,7 +12,10 @@ import Modal from './Modal';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@mui/material';
 import { CreateOrderProductInput } from 'main/orderProduct/dtos/create-orderProduct.dto';
-import { UpdateBillInput, UpdateBillOutput } from 'main/bill/dtos/update-bill.dto';
+import {
+  UpdateBillInput,
+  UpdateBillOutput,
+} from 'main/bill/dtos/update-bill.dto';
 import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -24,10 +27,10 @@ interface IProps {
 
 const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const token = useRecoilValue(tokenState);
-  const memo = useRecoilValue(memoState)
+  const memo = useRecoilValue(memoState);
   const [orderProducts, setOrderProducts] = useRecoilState(orderProductsState);
   const setBills = useSetRecoilState(billListState);
-  const bill = useRecoilValue(billState)
+  const bill = useRecoilValue(billState);
   const store = useRecoilValue(storeState);
   const [alert, setAlert] = useState({ success: '', error: '' });
   const printRef = useRef();
@@ -55,7 +58,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     }
   }, [alert]);
 
-
   const updateBillhandler = () => {
     const orderProductInputs: CreateOrderProductInput[] = [];
 
@@ -66,10 +68,10 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
         productId: item.product.id,
         orderPrice: item.orderPrice,
       });
-      console.log(orderProductInputs)
+      console.log(orderProductInputs);
     });
 
-    const storeId = store.id != 0 ? store.id : bill.storeId
+    const storeId = store.id != 0 ? store.id : bill.storeId;
     const newBill: UpdateBillInput = {
       businessId: bill.businessId,
       id: bill.id,
@@ -90,21 +92,19 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             ({ ok, error, bills }: GetBillsOutput) => {
               if (ok) {
                 setBills(bills);
-                setAlert({ success: '계산서가 수정되었습니다.', error: ''})
-                getBillsRemover();
+                setAlert({ success: '계산서가 수정되었습니다.', error: '' });
               } else if (error) {
                 console.log(error);
-                setAlert({ success: '', error: `네트워크 ${error}`})
+                setAlert({ success: '', error: `네트워크 ${error}` });
               }
             }
           );
-          updateBillRemover();
         } else if (error) {
           console.log(error);
           if (error.startsWith('없는')) {
-            setAlert({ success: '', error: error})
+            setAlert({ success: '', error: error });
           } else {
-            setAlert({ success: '', error: `네트워크 ${error}`})
+            setAlert({ success: '', error: `네트워크 ${error}` });
           }
         }
       }
@@ -112,13 +112,13 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
 
     setOrderProducts([]);
     setIsOpen(false);
-    navigate('/bills')
+    navigate('/bills');
   };
 
   let sum = 0;
   orderProducts?.map((items) => {
-      sum += items.orderPrice * items.count;
-    });
+    sum += items.orderPrice * items.count;
+  });
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -163,7 +163,10 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                     </span>
                   </td>
                   <td className={styles.name}>
-                    {bill.store ? bill.store.business?.businessOwnerName : '(undefined)'} 님
+                    {bill.store
+                      ? bill.store.business?.businessOwnerName
+                      : '(undefined)'}{' '}
+                    님
                   </td>
                   <td className={styles.for}>&ensp;귀하</td>
                 </tr>
@@ -285,12 +288,14 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                       <td className={styles.price}>
                         {orderProduct.orderPrice
                           .toString()
-                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} 원
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+                        원
                       </td>
                       <td className={styles.sum}>
                         {(orderProduct.orderPrice * orderProduct.count)
                           .toString()
-                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} 원
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+                        원
                       </td>
                     </tr>
                   </tbody>

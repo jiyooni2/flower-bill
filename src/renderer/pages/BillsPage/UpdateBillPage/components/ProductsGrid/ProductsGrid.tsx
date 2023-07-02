@@ -1,23 +1,40 @@
 import styles from './ProductsGrid.module.scss';
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Pagination, Select, SelectChangeEvent } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material';
 import ProductBox from '../ProductBox/ProductBox';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, productsState, tokenState } from 'renderer/recoil/states';
+import {
+  businessState,
+  categoriesState,
+  productsState,
+  tokenState,
+} from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
-import { GetProductByCategoryInput, GetProductByCategoryOutput } from 'main/product/dtos/get-product-by-category.dto';
+import {
+  GetProductByCategoryInput,
+  GetProductByCategoryOutput,
+} from 'main/product/dtos/get-product-by-category.dto';
 // import { BillResult } from 'main/common/dtos/bill-result.dto';
 import { Link } from 'react-router-dom';
 import { ArrowForward } from '@mui/icons-material';
 
-
 const ProductsGrid = () => {
-  const [categories, setCategories] = useRecoilState(categoriesState)
+  const [categories, setCategories] = useRecoilState(categoriesState);
   const [products, setProducts] = useRecoilState(productsState);
   const token = useRecoilValue(tokenState);
-  const business = useRecoilValue(businessState)
+  const business = useRecoilValue(businessState);
   const [searchWord, setSearchWord] = useState('');
   const [page, setPage] = useState<number>(1);
   const [mainId, setMainId] = useState<number>(0);
@@ -38,14 +55,13 @@ const ProductsGrid = () => {
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
-          getCategoriesRemover();
         } else if (error) {
           console.error(error);
         }
       }
     );
     // setOrderProduct(currentBill);
-  }, [])
+  }, []);
 
   const handlePage = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -76,7 +92,6 @@ const ProductsGrid = () => {
           ({ ok, error, products }: GetProductsOutput) => {
             if (ok) {
               setProducts(products);
-              getProductsRemover1();
             } else if (error) {
               console.error(error);
             }
@@ -94,7 +109,6 @@ const ProductsGrid = () => {
           ({ ok, error, products }: SearchProductOutput) => {
             if (ok) {
               setProducts(products);
-              searchProductRemover();
             } else if (error) {
               console.error(error);
             }
@@ -110,12 +124,11 @@ const ProductsGrid = () => {
     else if (dataName === 'group') setGroupName(e.target.value as string);
   };
 
-
   const categoryChangeHandler = (id: number, dataName: string) => {
     if (dataName === 'main') {
       setMainId(id);
       setGroupName('none');
-    } else if (dataName === 'sub'){
+    } else if (dataName === 'sub') {
       setSubId(id);
     }
 
@@ -132,7 +145,6 @@ const ProductsGrid = () => {
       ({ ok, error, products }: GetProductByCategoryOutput) => {
         if (ok) {
           setProducts(products);
-          getProductByRemover();
         } else if (error) {
           console.error(error);
         }
@@ -307,8 +319,7 @@ const ProductsGrid = () => {
                 }}
               >
                 <Button variant="text" color="success">
-                  상품 추가하러 가기{' '}
-                  <ArrowForward sx={{ fontSize: '15px' }} />
+                  상품 추가하러 가기 <ArrowForward sx={{ fontSize: '15px' }} />
                 </Button>
               </Link>
             </div>

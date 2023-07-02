@@ -106,7 +106,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
                 if (ok) {
                   setBusinesses(businesses);
                   setAlert({ success: '사업자가 생성되었습니다.', error: '' });
-                  getBusinessesRemover();
                 } else {
                   console.error(error);
                   if (error.startsWith('없는')) {
@@ -117,7 +116,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
                 }
               }
             );
-            createBusinessRemover();
           } else if (error) {
             console.error(error);
             if (error.startsWith('없는')) {
@@ -128,6 +126,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
           }
         }
       );
+
       setInputs({
         businessNumber: '',
         name: '',

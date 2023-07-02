@@ -93,11 +93,9 @@ const ProductInputs = ({
               'get-products',
               (args: GetProductsOutput) => {
                 setProducts(args.products as Product[]);
-                getProductsRemover1();
               }
             );
             clearInputs();
-            deleteProductRemover();
           }
           if (error) {
             console.error(error);
@@ -140,7 +138,6 @@ const ProductInputs = ({
               setProducts(args.products as Product[]);
             }
           );
-          getProductsRemover2();
           clearInputs();
         }
         if (error) {
@@ -153,7 +150,6 @@ const ProductInputs = ({
         }
       }
     );
-    updateProductRemover();
     setInputs({ ...inputs, favorite: false });
   };
 
@@ -187,14 +183,12 @@ const ProductInputs = ({
                 setAlert({ success: '상품이 생성되었습니다.', error: '' });
                 setProducts(products);
                 clearInputs();
-                getProductsRemover3();
               }
               if (error) {
                 setAlert({ success: '', error: `네트워크 ${error}` });
               }
             }
           );
-          createProductRemover();
         }
         if (error) {
           if (error.startsWith('최하위') || error.startsWith('없는')) {

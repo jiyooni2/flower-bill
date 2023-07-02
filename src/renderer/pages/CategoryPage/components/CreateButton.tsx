@@ -36,8 +36,7 @@ const CreateButton = ({
     if (
       categories.findIndex(
         (el) =>
-          el.name === categoryName &&
-          el.parentCategoryId === parentCategoryId
+          el.name === categoryName && el.parentCategoryId === parentCategoryId
       ) > -1
     ) {
       setAlert({
@@ -73,7 +72,6 @@ const CreateButton = ({
                     error: '',
                   });
                   setCategories(categories);
-                  getCategoriesRemover();
                 } else {
                   console.error(error);
                 }

@@ -1,9 +1,13 @@
 import styles from './ProductsGrid.module.scss';
- import { Button, Grid, Pagination } from '@mui/material';
- import ProductBox from '../ProductBox/ProductBox';
- import { ChangeEvent, useEffect, useState } from 'react';
- import { useRecoilState, useRecoilValue } from 'recoil';
- import { businessState, productsState, tokenState } from 'renderer/recoil/states';
+import { Button, Grid, Pagination } from '@mui/material';
+import ProductBox from '../ProductBox/ProductBox';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  businessState,
+  productsState,
+  tokenState,
+} from 'renderer/recoil/states';
 import { SearchProductOutput } from 'main/product/dtos/search-product.dto';
 import { GetProductsOutput } from 'main/product/dtos/get-products.dto';
 import { Link } from 'react-router-dom';
@@ -12,12 +16,11 @@ import ProductCategory from './ProductCategory';
 const ProductsGrid = () => {
   const [products, setProducts] = useRecoilState(productsState);
   const token = useRecoilValue(tokenState);
-  const business = useRecoilValue(businessState)
+  const business = useRecoilValue(businessState);
   const [searchWord, setSearchWord] = useState('');
   const [page, setPage] = useState<number>(1);
 
-
-   useEffect(() => {
+  useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
       token,
       businessId: business.id,
@@ -27,7 +30,6 @@ const ProductsGrid = () => {
       ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
           setProducts(products);
-          getProductsRemover1();
         }
         if (error) {
           console.error(error);
@@ -36,16 +38,17 @@ const ProductsGrid = () => {
     );
   }, []);
 
-   const handlePage = (event: ChangeEvent<unknown>, value: string) => {
-     const pageNow = parseInt(value);
-     setPage(pageNow);
-   };
+  const handlePage = (event: ChangeEvent<unknown>, value: string) => {
+    const pageNow = parseInt(value);
+    setPage(pageNow);
+  };
 
   let LAST_PAGE = 0;
   if (products != undefined || products) {
-    LAST_PAGE = products.length % 9 === 0
-      ? Math.round(products.length / 9)
-      : Math.floor(products.length / 9) + 1;
+    LAST_PAGE =
+      products.length % 9 === 0
+        ? Math.round(products.length / 9)
+        : Math.floor(products.length / 9) + 1;
   } else if (products == null) {
     LAST_PAGE = 0;
   }
@@ -64,7 +67,6 @@ const ProductsGrid = () => {
           ({ ok, error, products }: GetProductsOutput) => {
             if (ok) {
               setProducts(products);
-              getProductsRemover2();
             } else if (error) {
               console.error(error);
             }
@@ -82,7 +84,6 @@ const ProductsGrid = () => {
           ({ ok, error, products }: SearchProductOutput) => {
             if (ok) {
               setProducts(products);
-              searchProductRemover();
             } else if (error) {
               console.error(error);
             }
@@ -115,7 +116,7 @@ const ProductsGrid = () => {
             onKeyDown={searchHandler}
           />
         </div>
-          <ProductCategory page={page} />
+        <ProductCategory page={page} />
         <div style={{ margin: '20px', height: '50vh' }}>
           {products && (
             <Grid

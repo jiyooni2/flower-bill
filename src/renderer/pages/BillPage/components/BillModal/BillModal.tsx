@@ -84,13 +84,12 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
             setAlert({ success: '계산서가 생성되었습니다.', error: '' });
             movePage('/bills');
           }
-          createBillRemover();
         } else if (error) {
           console.error(error);
           if (error.startsWith('존재')) {
-            setAlert({ success: '', error: error})
+            setAlert({ success: '', error: error });
           } else {
-            setAlert({ success: '', error: `네트워크 ${error}`})
+            setAlert({ success: '', error: `네트워크 ${error}` });
           }
         }
       }

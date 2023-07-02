@@ -45,13 +45,11 @@ const DeleteButton = ({
                 setCategoryId('');
                 setCategoryName('');
                 setLevelName('');
-                getCategoriesRemover();
               } else {
                 console.error(error);
               }
             }
           );
-          deleteCategoryRemover();
         } else if (error) {
           console.log(error);
           if (error.startsWith('카테고리에 속해있는')) {

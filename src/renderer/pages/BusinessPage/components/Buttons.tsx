@@ -91,10 +91,8 @@ const Buttons = ({ inputs }: IProps) => {
             'get-businesses',
             (args: GetBusinessesOutput) => {
               setBusinesses(args.businesses as Business[]);
-              getBusinessesRemover();
             }
           );
-          updateBusinessRemover();
         }
         if (error) {
           console.log(error);

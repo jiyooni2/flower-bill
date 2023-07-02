@@ -10,11 +10,13 @@ import { DeleteBusinessOutput } from 'main/business/dtos/delete-business.dto';
 import { GetBusinessesOutput } from 'main/business/dtos/get-businesses.dto';
 import { Business } from 'main/business/entities/business.entity';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, businessesState, tokenState } from 'renderer/recoil/states';
+import {
+  businessState,
+  businessesState,
+  tokenState,
+} from 'renderer/recoil/states';
 import { DeleteModalProps } from '../../BusinessPage.interface';
 import { useNavigate } from 'react-router-dom';
-
-
 
 const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
   const navigate = useNavigate();
@@ -42,12 +44,10 @@ const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
               setBusinesses(args.businesses as Business[]);
               setBusiness(businesses[0]);
               setAlert({ success: '사업자가 삭제되었습니다.', error: '' });
-              getBusinessesRemover();
               setIsOpen(false);
-              navigate('/')
+              navigate('/');
             }
           );
-          deleteBusinessRemover();
         }
         if (error) {
           console.log(error);

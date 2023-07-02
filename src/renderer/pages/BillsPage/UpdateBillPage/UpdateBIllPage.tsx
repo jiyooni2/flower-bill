@@ -24,7 +24,7 @@ import DiscountModal from 'renderer/pages/BillPage/components/DiscountModal/Disc
 import MemoModal from './components/MemoModal/MemoModal';
 import Buttons from './Buttons';
 import UpdateBillSum from './UpdateBillSum';
-import styles from './UpdateBillPage.module.scss'
+import styles from './UpdateBillPage.module.scss';
 
 const UpdateBillPage = () => {
   const setProducts = useSetRecoilState(productsState);
@@ -37,7 +37,6 @@ const UpdateBillPage = () => {
   const [isBillOpen, setIsBillOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
 
-
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-products', {
       token,
@@ -47,7 +46,6 @@ const UpdateBillPage = () => {
       'get-products',
       (args: GetProductsOutput) => {
         setProducts(args.products as Product[]);
-        getProductsRemover();
       }
     );
   }, []);
@@ -58,9 +56,10 @@ const UpdateBillPage = () => {
 
   let LAST_PAGE = 1;
   if (orderProducts != undefined) {
-    LAST_PAGE = orderProducts.length % 4 === 0
-      ? Math.round(orderProducts.length / 4)
-      : Math.floor(orderProducts.length / 4) + 1;
+    LAST_PAGE =
+      orderProducts.length % 4 === 0
+        ? Math.round(orderProducts.length / 4)
+        : Math.floor(orderProducts.length / 4) + 1;
   } else if (orderProducts == null) {
     LAST_PAGE = 1;
   }

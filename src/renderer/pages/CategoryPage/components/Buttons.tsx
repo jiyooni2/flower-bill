@@ -40,7 +40,6 @@ const Buttons = ({
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
-          getCategoriesRemover();
         } else {
           console.error(error);
           setAlert({ success: '', error: error });

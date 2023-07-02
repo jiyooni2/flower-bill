@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import styles from './ConfirmPage.module.scss'
+import styles from './ConfirmPage.module.scss';
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
-import { CheckPasswordInput, CheckPasswordOutput } from 'main/auth/dtos/check-password.dto';
-
+import {
+  CheckPasswordInput,
+  CheckPasswordOutput,
+} from 'main/auth/dtos/check-password.dto';
 
 const ConfirmPage = () => {
   const token = useRecoilValue(tokenState);
@@ -14,11 +16,11 @@ const ConfirmPage = () => {
   const [password, setPassword] = useState<string>('');
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value)
+    setPassword(e.target.value);
     if (e.target.value.length >= 0) {
-      setErrors('')
+      setErrors('');
     }
-  }
+  };
 
   const clickHandler = () => {
     const check: CheckPasswordInput = {
@@ -36,7 +38,6 @@ const ConfirmPage = () => {
       ({ ok, error }: CheckPasswordOutput) => {
         if (ok) {
           navigate('/seller');
-          checkPasswordRemover();
         }
         if (error) {
           console.log(error);
@@ -54,7 +55,11 @@ const ConfirmPage = () => {
 
   return (
     <div style={{ width: '100%' }}>
-      <div className={errors.length == 0 ? styles.container : styles.errorContainer}>
+      <div
+        className={
+          errors.length == 0 ? styles.container : styles.errorContainer
+        }
+      >
         <p className={styles.label}>비밀번호를 입력하세요.</p>
         <p className={styles.pwContainer}>
           <input

@@ -67,17 +67,16 @@ const FindPasswordModal = ({ isOpen, setIsOpen }: IProps) => {
         findPasswordCode: inputs.code,
         newPassword: inputs.password,
       });
-      console.log(inputs)
+      console.log(inputs);
       const changePasswordRemover = window.electron.ipcRenderer.on(
         'change-password',
-        ({ok, error}: ChangePasswordOutput) => {
+        ({ ok, error }: ChangePasswordOutput) => {
           if (ok) {
             setSuccessed(true);
             setInputs({ ownerId: '', code: '', password: '' });
             setIsOpen(false);
-            changePasswordRemover();
           } else if (error) {
-            setAlert({...alert, success: '에러가 발생하였습니다.'})
+            setAlert({ ...alert, success: '에러가 발생하였습니다.' });
           }
         }
       );

@@ -56,7 +56,6 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
         if (ok) {
           setOrderProducts(bill.orderProducts);
           setBill(bill);
-          getBillRemover1();
         } else {
           console.log(error);
         }
@@ -84,11 +83,9 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
             'get-bills',
             (args: GetBillsOutput) => {
               setBills(args.bills as Bill[]);
-              getBillsRemover1();
             }
           );
           setAlert({ success: '계산서가 삭제되었습니다.', error: '' });
-          deleteBillRemover();
         } else {
           if (error.startsWith('존재')) {
             setAlert({ success: '', error: error });
