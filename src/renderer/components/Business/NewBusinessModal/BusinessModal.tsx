@@ -50,6 +50,40 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       bankNumber: '',
       bankOwner: '',
     });
+
+    const createBusinessRemover = window.electron.ipcRenderer.on(
+      'create-business',
+      ({ ok, error }: CreateBusinessOutput) => {
+        if (ok) {
+          setBusiness(businesses[-1]);
+          window.electron.ipcRenderer.sendMessage('get-businesses', {
+            token,
+            businessId: 1,
+          });
+        } else if (error) {
+          setAlert({ success: '', error });
+          console.error(error);
+        }
+      }
+    );
+
+    const getBusinessesRemover = window.electron.ipcRenderer.on(
+      'get-businesses',
+      ({ ok, error, businesses }: GetBusinessesOutput) => {
+        if (ok) {
+          setBusinesses(businesses);
+          setAlert({ success: '사업자가 생성되었습니다.', error: '' });
+        } else {
+          console.error(error);
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    return () => {
+      createBusinessRemover();
+      getBusinessesRemover();
+    };
   }, []);
 
   useEffect(() => {
@@ -90,42 +124,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       };
 
       window.electron.ipcRenderer.sendMessage('create-business', newBusiness);
-      const createBusinessRemover = window.electron.ipcRenderer.on(
-        'create-business',
-        ({ ok, error }: CreateBusinessOutput) => {
-          if (ok) {
-            setBusiness(businesses[-1]);
-            window.electron.ipcRenderer.sendMessage('get-businesses', {
-              token,
-              businessId: 1,
-            });
-
-            const getBusinessesRemover = window.electron.ipcRenderer.on(
-              'get-businesses',
-              ({ ok, error, businesses }: GetBusinessesOutput) => {
-                if (ok) {
-                  setBusinesses(businesses);
-                  setAlert({ success: '사업자가 생성되었습니다.', error: '' });
-                } else {
-                  console.error(error);
-                  if (error.startsWith('없는')) {
-                    setAlert({ success: '', error: error });
-                  } else {
-                    setAlert({ success: '', error: `네트워크 ${error}` });
-                  }
-                }
-              }
-            );
-          } else if (error) {
-            console.error(error);
-            if (error.startsWith('없는')) {
-              setAlert({ success: '', error: error });
-            } else {
-              setAlert({ success: '', error: `네트워크 ${error}` });
-            }
-          }
-        }
-      );
 
       setInputs({
         businessNumber: '',
