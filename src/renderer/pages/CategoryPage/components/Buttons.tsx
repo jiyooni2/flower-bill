@@ -46,6 +46,10 @@ const Buttons = ({
         }
       }
     );
+
+    return () => {
+      getCategoriesRemover();
+    };
   }, []);
 
   useEffect(() => {

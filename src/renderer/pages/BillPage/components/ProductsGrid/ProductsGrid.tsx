@@ -25,7 +25,7 @@ const ProductsGrid = () => {
       token,
       businessId: business.id,
     });
-    const getProductsRemover1 = window.electron.ipcRenderer.on(
+    const getProductsRemover = window.electron.ipcRenderer.on(
       'get-products',
       ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
@@ -36,6 +36,22 @@ const ProductsGrid = () => {
         }
       }
     );
+
+    const searchProductRemover = window.electron.ipcRenderer.on(
+      'search-product',
+      ({ ok, error, products }: SearchProductOutput) => {
+        if (ok) {
+          setProducts(products);
+        } else if (error) {
+          console.error(error);
+        }
+      }
+    );
+
+    return () => {
+      getProductsRemover();
+      searchProductRemover();
+    };
   }, []);
 
   const handlePage = (event: ChangeEvent<unknown>, value: string) => {
@@ -62,16 +78,6 @@ const ProductsGrid = () => {
           token,
           business: business.id,
         });
-        const getProductsRemover2 = window.electron.ipcRenderer.on(
-          'get-products',
-          ({ ok, error, products }: GetProductsOutput) => {
-            if (ok) {
-              setProducts(products);
-            } else if (error) {
-              console.error(error);
-            }
-          }
-        );
       } else {
         window.electron.ipcRenderer.sendMessage('search-product', {
           keyword: searchWord,
@@ -79,16 +85,6 @@ const ProductsGrid = () => {
           token,
           businessId: business.id,
         });
-        const searchProductRemover = window.electron.ipcRenderer.on(
-          'search-product',
-          ({ ok, error, products }: SearchProductOutput) => {
-            if (ok) {
-              setProducts(products);
-            } else if (error) {
-              console.error(error);
-            }
-          }
-        );
       }
     }
   };

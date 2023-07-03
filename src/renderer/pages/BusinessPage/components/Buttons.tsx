@@ -30,6 +30,37 @@ const Buttons = ({ inputs }: IProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    const getBusinessesRemover = window.electron.ipcRenderer.on(
+      'get-businesses',
+      ({ businesses }: GetBusinessesOutput) => {
+        setBusinesses(businesses);
+      }
+    );
+
+    const updateBusinessRemover = window.electron.ipcRenderer.on(
+      'update-business',
+      ({ ok, error }: UpdateBusinessOutPut) => {
+        if (ok) {
+          setAlert({ success: '사업자가 수정되었습니다.', error: '' });
+          window.electron.ipcRenderer.sendMessage('get-businesses', {
+            token,
+            businessId: business.id,
+          });
+        }
+        if (error) {
+          console.log(error);
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    return () => {
+      getBusinessesRemover();
+      updateBusinessRemover();
+    };
+  }, []);
+
+  useEffect(() => {
     if (
       business.businessNumber !== Number(inputs.businessNumber) ||
       business.address !== inputs.address ||
@@ -77,29 +108,6 @@ const Buttons = ({ inputs }: IProps) => {
     window.electron.ipcRenderer.sendMessage('update-business', {
       ...newData,
     });
-
-    const updateBusinessRemover = window.electron.ipcRenderer.on(
-      'update-business',
-      ({ ok, error }: UpdateBusinessOutPut) => {
-        if (ok) {
-          setAlert({ success: '사업자가 수정되었습니다.', error: '' });
-          window.electron.ipcRenderer.sendMessage('get-businesses', {
-            token,
-            businessId: business.id,
-          });
-          const getBusinessesRemover = window.electron.ipcRenderer.on(
-            'get-businesses',
-            (args: GetBusinessesOutput) => {
-              setBusinesses(args.businesses as Business[]);
-            }
-          );
-        }
-        if (error) {
-          console.log(error);
-          setAlert({ success: '', error: `네트워크 ${error}` });
-        }
-      }
-    );
   };
 
   return (

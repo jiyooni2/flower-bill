@@ -5,6 +5,7 @@ import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
 import { DeleteButtonProps } from '../CategoryPage.interface';
+import { useEffect } from 'react';
 
 const DeleteButton = ({
   clicked,
@@ -18,12 +19,24 @@ const DeleteButton = ({
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
 
-  const deleteHandler = () => {
-    window.electron.ipcRenderer.sendMessage('delete-category', {
-      businessId: business.id,
-      id: categoryId,
-      token,
-    });
+  useEffect(() => {
+    const getCategoriesRemover = window.electron.ipcRenderer.on(
+      'get-categories',
+      ({ ok, error, categories }: GetCategoriesOutput) => {
+        if (ok) {
+          setAlert({
+            success: '카테고리가 삭제되었습니다.',
+            error: '',
+          });
+          setCategories(categories);
+          setCategoryId('');
+          setCategoryName('');
+          setLevelName('');
+        } else {
+          console.error(error);
+        }
+      }
+    );
 
     const deleteCategoryRemover = window.electron.ipcRenderer.on(
       'delete-category',
@@ -33,31 +46,25 @@ const DeleteButton = ({
             token,
             businessId: business.id,
           });
-          const getCategoriesRemover = window.electron.ipcRenderer.on(
-            'get-categories',
-            ({ ok, error, categories }: GetCategoriesOutput) => {
-              if (ok) {
-                setAlert({
-                  success: '카테고리가 삭제되었습니다.',
-                  error: '',
-                });
-                setCategories(categories);
-                setCategoryId('');
-                setCategoryName('');
-                setLevelName('');
-              } else {
-                console.error(error);
-              }
-            }
-          );
         } else if (error) {
-          console.log(error);
-          if (error.startsWith('카테고리에 속해있는')) {
-            setAlert({ success: '', error: error.split('. ')[1] });
-          }
+          console.error(error);
+          setAlert({ success: '', error });
         }
       }
     );
+
+    return () => {
+      getCategoriesRemover();
+      deleteCategoryRemover();
+    };
+  }, []);
+
+  const deleteHandler = () => {
+    window.electron.ipcRenderer.sendMessage('delete-category', {
+      businessId: business.id,
+      id: categoryId,
+      token,
+    });
   };
 
   return (

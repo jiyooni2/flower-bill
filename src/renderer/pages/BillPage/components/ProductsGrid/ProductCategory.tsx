@@ -51,6 +51,22 @@ const ProductCategory = ({ page }: IProps) => {
         }
       }
     );
+
+    const getProductByCategoryRemover = window.electron.ipcRenderer.on(
+      'get-product-by-category',
+      ({ ok, error, products }: GetProductByCategoryOutput) => {
+        if (ok) {
+          setProducts(products);
+        } else if (error) {
+          console.error(error);
+        }
+      }
+    );
+
+    return () => {
+      getCategoryRemover();
+      getProductByCategoryRemover();
+    };
   }, []);
 
   const changeHandler = (e: SelectChangeEvent<string>, dataName: string) => {
@@ -75,16 +91,6 @@ const ProductCategory = ({ page }: IProps) => {
     };
 
     window.electron.ipcRenderer.sendMessage('get-product-by-category', data);
-    const getProductByCategoryRemover = window.electron.ipcRenderer.on(
-      'get-product-by-category',
-      ({ ok, error, products }: GetProductByCategoryOutput) => {
-        if (ok) {
-          setProducts(products);
-        } else if (error) {
-          console.error(error);
-        }
-      }
-    );
   };
 
   return (

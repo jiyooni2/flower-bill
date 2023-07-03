@@ -7,6 +7,7 @@ import {
 import { useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
 import { UpdateButtonProps } from '../CategoryPage.interface';
+import { useEffect } from 'react';
 
 const UpdateButton = ({
   setAlert,
@@ -21,15 +22,24 @@ const UpdateButton = ({
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
 
-  const updateHandler = () => {
-    const updateData: UpdateCategoryInput = {
-      name: categoryName,
-      id: parseInt(categoryId),
-      businessId: business.id,
-      token,
-    };
-
-    window.electron.ipcRenderer.sendMessage('update-category', updateData);
+  useEffect(() => {
+    const getCategoriesRemover = window.electron.ipcRenderer.on(
+      'get-categories',
+      ({ ok, error, categories }: GetCategoriesOutput) => {
+        if (ok) {
+          setAlert({
+            success: '카테고리가 수정되었습니다.',
+            error: '',
+          });
+          setCategories(categories);
+          setCategoryId('');
+          setCategoryName('');
+          setLevelName('');
+        } else {
+          console.error(error);
+        }
+      }
+    );
 
     const updateCategoryRemover = window.electron.ipcRenderer.on(
       'update-category',
@@ -39,29 +49,28 @@ const UpdateButton = ({
             token,
             businessId: business.id,
           });
-          const getCategoriesRemover = window.electron.ipcRenderer.on(
-            'get-categories',
-            ({ ok, error, categories }: GetCategoriesOutput) => {
-              if (ok) {
-                setAlert({
-                  success: '카테고리가 수정되었습니다.',
-                  error: '',
-                });
-                setCategories(categories);
-                setCategoryId('');
-                setCategoryName('');
-                setLevelName('');
-              } else {
-                console.error(error);
-              }
-            }
-          );
         } else if (error) {
           console.log(error);
-          setAlert({ success: '', error: `네트워크 ${error}` });
+          setAlert({ success: '', error });
         }
       }
     );
+
+    return () => {
+      getCategoriesRemover();
+      updateCategoryRemover();
+    };
+  }, []);
+
+  const updateHandler = () => {
+    const updateData: UpdateCategoryInput = {
+      name: categoryName,
+      id: parseInt(categoryId),
+      businessId: business.id,
+      token,
+    };
+
+    window.electron.ipcRenderer.sendMessage('update-category', updateData);
   };
 
   return (

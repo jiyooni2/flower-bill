@@ -16,7 +16,7 @@ import {
   UpdateBillInput,
   UpdateBillOutput,
 } from 'main/bill/dtos/update-bill.dto';
-import { GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
+import { GetBillsInput, GetBillsOutput } from 'main/bill/dtos/get-bills.dto';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -35,6 +35,38 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const [alert, setAlert] = useState({ success: '', error: '' });
   const printRef = useRef();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const updateBillRemover = window.electron.ipcRenderer.on(
+      'update-bill',
+      ({ ok, error }: UpdateBillOutput) => {
+        if (ok) {
+          // window.electron.ipcRenderer.sendMessage('get-bills', newBill);
+        } else if (error) {
+          console.log(error);
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    const getBillsRemover = window.electron.ipcRenderer.on(
+      'get-bills',
+      ({ ok, error, bills }: GetBillsOutput) => {
+        if (ok) {
+          setBills(bills);
+          setAlert({ success: '계산서가 수정되었습니다.', error: '' });
+        } else if (error) {
+          console.log(error);
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    return () => {
+      updateBillRemover();
+      getBillsRemover();
+    };
+  }, []);
 
   useEffect(() => {
     if (alert.error && !alert.success) {
@@ -82,33 +114,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     };
 
     window.electron.ipcRenderer.sendMessage('update-bill', newBill);
-    const updateBillRemover = window.electron.ipcRenderer.on(
-      'update-bill',
-      ({ ok, error }: UpdateBillOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-bills', newBill);
-          const getBillsRemover = window.electron.ipcRenderer.on(
-            'get-bills',
-            ({ ok, error, bills }: GetBillsOutput) => {
-              if (ok) {
-                setBills(bills);
-                setAlert({ success: '계산서가 수정되었습니다.', error: '' });
-              } else if (error) {
-                console.log(error);
-                setAlert({ success: '', error: `네트워크 ${error}` });
-              }
-            }
-          );
-        } else if (error) {
-          console.log(error);
-          if (error.startsWith('없는')) {
-            setAlert({ success: '', error: error });
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      }
-    );
 
     setOrderProducts([]);
     setIsOpen(false);

@@ -33,10 +33,6 @@ const ProductInputs = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [alert, setAlert] = useState({ success: '', error: '' });
   const addComma = useAddComma();
-  let createProductRemover = () => {};
-  let updateProductRemover = () => {};
-  let deleteProductRemover = () => {};
-  let getProductsRemover = () => {};
 
   useEffect(() => {
     if (alert.error && !alert.success) {
@@ -61,7 +57,7 @@ const ProductInputs = ({
   }, [alert]);
 
   useEffect(() => {
-    createProductRemover = window.electron.ipcRenderer.on(
+    const createProductRemover = window.electron.ipcRenderer.on(
       'create-product',
       ({ ok, error }: CreateProductOutput) => {
         if (ok) {
@@ -82,14 +78,14 @@ const ProductInputs = ({
       }
     );
 
-    getProductsRemover = window.electron.ipcRenderer.on(
+    const getProductsRemover = window.electron.ipcRenderer.on(
       'get-products',
       (args: GetProductsOutput) => {
         setProducts(args.products as Product[]);
       }
     );
 
-    deleteProductRemover = window.electron.ipcRenderer.on(
+    const deleteProductRemover = window.electron.ipcRenderer.on(
       'delete-product',
       ({ ok, error }: DeleteProductOutput) => {
         if (ok) {
@@ -111,7 +107,7 @@ const ProductInputs = ({
       }
     );
 
-    updateProductRemover = window.electron.ipcRenderer.on(
+    const updateProductRemover = window.electron.ipcRenderer.on(
       'update-product',
       ({ ok, error }: UpdateProductOutput) => {
         if (ok) {

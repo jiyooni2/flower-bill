@@ -44,10 +44,14 @@ const UpdateBillPage = () => {
     });
     const getProductsRemover = window.electron.ipcRenderer.on(
       'get-products',
-      (args: GetProductsOutput) => {
-        setProducts(args.products as Product[]);
+      ({ products }: GetProductsOutput) => {
+        setProducts(products);
       }
     );
+
+    return () => {
+      getProductsRemover();
+    };
   }, []);
 
   const handlePage = (event: ChangeEvent<unknown>, value: number) => {

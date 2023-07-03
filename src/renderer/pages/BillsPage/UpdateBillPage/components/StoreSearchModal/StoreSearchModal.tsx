@@ -39,10 +39,26 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
     });
     const getStoreRemover = window.electron.ipcRenderer.on(
       'get-stores',
-      (args: GetStoresOutput) => {
-        setStoreList(args.stores as Store[]);
+      ({ stores }: GetStoresOutput) => {
+        setStoreList(stores);
       }
     );
+
+    const searchStoreRemover = window.electron.ipcRenderer.on(
+      'search-store',
+      ({ ok, error, stores }: SearchStoreOutput) => {
+        if (ok) {
+          setStoreList(stores);
+        } else {
+          console.error(error);
+        }
+      }
+    );
+
+    return () => {
+      getStoreRemover();
+      searchStoreRemover();
+    };
   }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,17 +72,6 @@ const StoreSearchModal = ({ isOpen, setIsOpen }: IProps) => {
     };
 
     window.electron.ipcRenderer.sendMessage('search-store', searchData);
-
-    const searchStoreRemover = window.electron.ipcRenderer.on(
-      'search-store',
-      ({ ok, error, stores }: SearchStoreOutput) => {
-        if (ok) {
-          setStoreList(stores);
-        } else {
-          console.error(error);
-        }
-      }
-    );
   };
 
   const onStoreClick = (store: Store) => {

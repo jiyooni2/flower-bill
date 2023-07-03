@@ -1,18 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { businessState, categoriesState, tokenState } from 'renderer/recoil/states';
+import {
+  businessState,
+  categoriesState,
+  tokenState,
+} from 'renderer/recoil/states';
 import { GetCategoriesOutput } from 'main/category/dtos/get-categories.dto';
 import { Category } from 'main/category/entities/category.entity';
-import styles from './CategoryModal.module.scss'
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import styles from './CategoryModal.module.scss';
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography,
+} from '@mui/material';
 import { Link } from 'react-router-dom';
 import { ModalProps } from '../../ProductsPage.interface';
 
 const CategoryModal = ({ isOpen, setIsOpen, setCategoryId }: ModalProps) => {
   const token = useRecoilValue(tokenState);
   const business = useRecoilValue(businessState);
-  const [categories, setCategories] = useRecoilState(categoriesState)
+  const [categories, setCategories] = useRecoilState(categoriesState);
   const [mainId, setMainId] = useState<number>(0);
   const [mainName, setMainName] = useState<string>('');
   const [subId, setSubId] = useState<number>(0);
@@ -21,13 +34,21 @@ const CategoryModal = ({ isOpen, setIsOpen, setCategoryId }: ModalProps) => {
   const [groupName, setGroupName] = useState<string>('');
 
   useEffect(() => {
+    const getCategoriesRemover = window.electron.ipcRenderer.on(
+      'get-categories',
+      (args: GetCategoriesOutput) => {
+        setCategories(args.categories as Category[]);
+      }
+    );
+
     window.electron.ipcRenderer.sendMessage('get-categories', {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on('get-categories', (args: GetCategoriesOutput) => {
-      setCategories(args.categories as Category[]);
-    });
+
+    return () => {
+      getCategoriesRemover();
+    };
   }, []);
 
   const mainChangeHandler = (e: SelectChangeEvent<unknown>) => {
@@ -41,16 +62,15 @@ const CategoryModal = ({ isOpen, setIsOpen, setCategoryId }: ModalProps) => {
   };
 
   const clickHandler = () => {
-    if (groupName && groupName != 'none'){
-      setCategoryId(Number(groupId))
+    if (groupName && groupName != 'none') {
+      setCategoryId(Number(groupId));
     } else if (subName && subName != 'none') {
-      setCategoryId(subId)
+      setCategoryId(subId);
     } else {
-      setCategoryId(mainId)
+      setCategoryId(mainId);
     }
-    setIsOpen(false)
-  }
-
+    setIsOpen(false);
+  };
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>

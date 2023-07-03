@@ -26,6 +26,72 @@ const Buttons = ({
   const [alert, setAlert] = useState({ success: '', error: '' });
 
   useEffect(() => {
+    const getStoresRemover = window.electron.ipcRenderer.on(
+      'get-stores',
+      ({ stores }: GetStoresOutput) => {
+        setStores(stores);
+      }
+    );
+
+    const updateStoreRemover = window.electron.ipcRenderer.on(
+      'update-store',
+      ({ ok, error }: UpdateStoreOutput) => {
+        if (ok) {
+          setAlert({ success: '스토어가 수정되었습니다.', error: '' });
+          window.electron.ipcRenderer.sendMessage('get-stores', {
+            token,
+            businessId: business.id,
+          });
+          clear();
+        } else if (error) {
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    const createStoreRemover = window.electron.ipcRenderer.on(
+      'create-store',
+      ({ ok, error }: CreateStoreOutput) => {
+        if (ok) {
+          setAlert({ success: '스토어가 생성되었습니다.', error: '' });
+          window.electron.ipcRenderer.sendMessage('get-stores', {
+            token,
+            businessId: business.id,
+          });
+          clear();
+        }
+        if (error) {
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    const deleteStoreRemover = window.electron.ipcRenderer.on(
+      'delete-store',
+      ({ ok, error }: DeleteStoreOutput) => {
+        if (ok) {
+          setAlert({ success: '스토어가 삭제되었습니다.', error: '' });
+          window.electron.ipcRenderer.sendMessage('get-stores', {
+            token,
+            businessId: business.id,
+          });
+          clear();
+        } else if (error) {
+          console.log(error);
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    return () => {
+      getStoresRemover();
+      updateStoreRemover();
+      createStoreRemover();
+      deleteStoreRemover();
+    };
+  }, []);
+
+  useEffect(() => {
     if (alert.error && !alert.success) {
       if (alert.error.startsWith('네트워크')) {
         toast.error(alert.error.split('네트워크')[1], {
@@ -77,31 +143,6 @@ const Buttons = ({
       token,
     };
     window.electron.ipcRenderer.sendMessage('update-store', updateData);
-    const updateStoreRemover = window.electron.ipcRenderer.on(
-      'update-store',
-      ({ ok, error }: UpdateStoreOutput) => {
-        if (ok) {
-          setAlert({ success: '스토어가 수정되었습니다.', error: '' });
-          window.electron.ipcRenderer.sendMessage('get-stores', {
-            token,
-            businessId: business.id,
-          });
-          const getStoresRemover1 = window.electron.ipcRenderer.on(
-            'get-stores',
-            (args: GetStoresOutput) => {
-              setStores(args.stores as Store[]);
-            }
-          );
-          clear();
-        } else if (error) {
-          if (error.startsWith('없는') || error.startsWith('해당 스토어')) {
-            setAlert({ success: '', error: error });
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      }
-    );
   };
 
   const addDataHandler = () => {
@@ -128,29 +169,6 @@ const Buttons = ({
       token,
       businessId: business.id,
     });
-
-    const createStoreRemover = window.electron.ipcRenderer.on(
-      'create-store',
-      ({ ok, error }: CreateStoreOutput) => {
-        if (ok) {
-          setAlert({ success: '스토어가 생성되었습니다.', error: '' });
-          window.electron.ipcRenderer.sendMessage('get-stores', {
-            token,
-            businessId: business.id,
-          });
-          const getStoresRemover2 = window.electron.ipcRenderer.on(
-            'get-stores',
-            (args: GetStoresOutput) => {
-              setStores(args.stores as Store[]);
-            }
-          );
-          clear();
-        }
-        if (error) {
-          setAlert({ success: '', error: `네트워크 ${error}` });
-        }
-      }
-    );
   };
 
   const deleteDataHandler = () => {
@@ -159,33 +177,6 @@ const Buttons = ({
       businessId: business.id,
       id: clickedStore.id,
     });
-
-    const deleteStoreRemover = window.electron.ipcRenderer.on(
-      'delete-store',
-      ({ ok, error }: DeleteStoreOutput) => {
-        if (ok) {
-          setAlert({ success: '스토어가 삭제되었습니다.', error: '' });
-          window.electron.ipcRenderer.sendMessage('get-stores', {
-            token,
-            businessId: business.id,
-          });
-          const getStoresRemover3 = window.electron.ipcRenderer.on(
-            'get-stores',
-            (args: GetStoresOutput) => {
-              setStores(args.stores as Store[]);
-            }
-          );
-          clear();
-        } else if (error) {
-          console.log(error);
-          if (error.startsWith('없는') || error.startsWith('해당 스토어')) {
-            setAlert({ success: '', error: error });
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      }
-    );
   };
 
   return (

@@ -39,10 +39,30 @@ const StorePage = () => {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on('get-stores', (args: GetStoresOutput) => {
-      setStores(args.stores as Store[]);
-      console.log(stores.length);
-    });
+
+    const getStoresRemover = window.electron.ipcRenderer.on(
+      'get-stores',
+      (args: GetStoresOutput) => {
+        setStores(args.stores as Store[]);
+        console.log(stores.length);
+      }
+    );
+
+    const searchStoreRemover = window.electron.ipcRenderer.on(
+      'search-store',
+      ({ ok, error, stores }: SearchStoreOutput) => {
+        if (ok) {
+          setStores(stores);
+        } else {
+          console.error(error);
+        }
+      }
+    );
+
+    return () => {
+      getStoresRemover();
+      searchStoreRemover();
+    };
   }, []);
 
   const filter = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,17 +76,6 @@ const StorePage = () => {
         businessId: business.id,
         token,
       });
-
-      const searchStoreRemover = window.electron.ipcRenderer.on(
-        'search-store',
-        ({ ok, error, stores }: SearchStoreOutput) => {
-          if (ok) {
-            setStores(stores);
-          } else {
-            console.error(error);
-          }
-        }
-      );
     }
   };
 

@@ -24,6 +24,25 @@ const FindPasswordModal = ({ isOpen, setIsOpen }: IProps) => {
   const [alert, setAlert] = useState({ success: '', error: '' });
 
   useEffect(() => {
+    const changePasswordRemover = window.electron.ipcRenderer.on(
+      'change-password',
+      ({ ok, error }: ChangePasswordOutput) => {
+        if (ok) {
+          setSuccessed(true);
+          setInputs({ ownerId: '', code: '', password: '' });
+          setIsOpen(false);
+        } else if (error) {
+          setAlert({ ...alert, success: '에러가 발생하였습니다.' });
+        }
+      }
+    );
+
+    return () => {
+      changePasswordRemover();
+    };
+  }, []);
+
+  useEffect(() => {
     if (alert.error && !alert.success) {
       if (alert.error.startsWith('네트워크')) {
         toast.error(alert.error.split('네트워크')[1], {
@@ -68,18 +87,6 @@ const FindPasswordModal = ({ isOpen, setIsOpen }: IProps) => {
         newPassword: inputs.password,
       });
       console.log(inputs);
-      const changePasswordRemover = window.electron.ipcRenderer.on(
-        'change-password',
-        ({ ok, error }: ChangePasswordOutput) => {
-          if (ok) {
-            setSuccessed(true);
-            setInputs({ ownerId: '', code: '', password: '' });
-            setIsOpen(false);
-          } else if (error) {
-            setAlert({ ...alert, success: '에러가 발생하였습니다.' });
-          }
-        }
-      );
     }
   };
 

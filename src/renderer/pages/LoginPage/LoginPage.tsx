@@ -1,11 +1,11 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Button, TextField } from '@mui/material';
 import SignUpForm from './components/SignUpForm';
 import './components/AuthForm.scss';
 import { LoginOutput } from 'main/auth/dtos/login.dto';
 import { useSetRecoilState } from 'recoil';
 import { loginState, tokenState } from 'renderer/recoil/states';
-import FindPasswordModal from './components/FindPasswordModal/FindPasswordModal'
+import FindPasswordModal from './components/FindPasswordModal/FindPasswordModal';
 
 const LoginPage = () => {
   const [isSignUpPageOpen, setIsSignUpPageOpen] = useState<boolean>(false);
@@ -17,19 +17,47 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({
     id: '',
     password: '',
-  })
+  });
 
-  const handleChangeID = (e:ChangeEvent<HTMLTextAreaElement>) => {
+  useEffect(() => {
+    const loginRemover = window.electron.ipcRenderer.on(
+      'login',
+      ({ ok, token, error }: LoginOutput) => {
+        if (ok) {
+          setIsLoggedIn(true);
+          setToken(token);
+        } else {
+          console.error(error);
+          if (error.startsWith('없는')) {
+            setErrors({
+              id: '아이디를 확인해주세요.',
+              password: '비밀번호를 확인해주세요.',
+            });
+          } else if (error.startsWith('비밀번호를')) {
+            setErrors({ id: '', password: '비밀번호를 확인해주세요.' });
+          } else {
+            setErrors({ id: '', password: '' });
+          }
+        }
+      }
+    );
+
+    return () => {
+      loginRemover();
+    };
+  }, []);
+
+  const handleChangeID = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value == '' || e.target.value) {
-      setErrors({...errors, id : ''})
-      setOwnerId(e.target.value)
+      setErrors({ ...errors, id: '' });
+      setOwnerId(e.target.value);
     }
-  }
+  };
 
   const handleChangePW = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value == '' || e.target.value) {
       setErrors({ ...errors, password: '' });
-      setPassword(e.target.value)
+      setPassword(e.target.value);
     }
   };
 
@@ -40,28 +68,6 @@ const LoginPage = () => {
         ownerId,
         password,
       });
-
-      window.electron.ipcRenderer.on(
-        'login',
-        ({ ok, token, error }: LoginOutput) => {
-          if (ok) {
-            setIsLoggedIn(true);
-            setToken(token);
-          } else {
-            console.error(error);
-            if (error.startsWith('없는')) {
-              setErrors({
-                id: '아이디를 확인해주세요.',
-                password: '비밀번호를 확인해주세요.',
-              });
-            } else if (error.startsWith('비밀번호를')) {
-              setErrors({ id: '', password: '비밀번호를 확인해주세요.' });
-            } else {
-              setErrors({ id: '', password: '' });
-            }
-          }
-        }
-      );
     }
   };
 
@@ -70,7 +76,10 @@ const LoginPage = () => {
       {isSignUpPageOpen && (
         <SignUpForm isOpen={isSignUpPageOpen} setIsOpen={setIsSignUpPageOpen} />
       )}
-      <FindPasswordModal isOpen={isPasswordOpen} setIsOpen={setIsPasswordOpen} />
+      <FindPasswordModal
+        isOpen={isPasswordOpen}
+        setIsOpen={setIsPasswordOpen}
+      />
       <div className="content">
         <h1
           className="title"
@@ -113,7 +122,10 @@ const LoginPage = () => {
                 로그인
               </Button>
               <div style={{ color: 'gray' }}>
-                <span style={{ fontSize: '14px', cursor: 'pointer', }} onClick={() => setIsPasswordOpen(true)}>
+                <span
+                  style={{ fontSize: '14px', cursor: 'pointer' }}
+                  onClick={() => setIsPasswordOpen(true)}
+                >
                   비밀번호 찾기
                 </span>
                 <span

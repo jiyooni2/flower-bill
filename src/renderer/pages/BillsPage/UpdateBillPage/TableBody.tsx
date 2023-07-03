@@ -14,6 +14,7 @@ import {
   tokenState,
 } from 'renderer/recoil/states';
 import { BodyProps } from './UpdatePage.interface';
+import { useEffect } from 'react';
 
 const Body = ({ setAlert, page, date }: BodyProps) => {
   const token = useRecoilValue(tokenState);
@@ -21,6 +22,49 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
   const [bills, setBills] = useRecoilState(billListState);
   const setBill = useSetRecoilState(billState);
   const setOrderProducts = useSetRecoilState(orderProductsState);
+
+  useEffect(() => {
+    const getBillRemover = window.electron.ipcRenderer.on(
+      'get-bill',
+      ({ ok, error, bill }: GetBillOutput) => {
+        if (ok) {
+          setOrderProducts(bill.orderProducts);
+          setBill(bill);
+        } else {
+          console.log(error);
+        }
+      }
+    );
+
+    const deleteBillRemover = window.electron.ipcRenderer.on(
+      'delete-bill',
+      ({ ok, error }: DeleteBillOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-bills', {
+            token,
+            businessId: business.id,
+            page: page,
+          });
+          setAlert({ success: '계산서가 삭제되었습니다.', error: '' });
+        } else {
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    const getBillsRemover = window.electron.ipcRenderer.on(
+      'get-bills',
+      (args: GetBillsOutput) => {
+        setBills(args.bills as Bill[]);
+      }
+    );
+
+    return () => {
+      getBillRemover();
+      getBillsRemover();
+      deleteBillRemover();
+    };
+  }, []);
 
   const convertTime = (created: Date) => {
     const iso = created.toISOString().split('T');
@@ -49,18 +93,6 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
       id,
       businessId: business.id,
     });
-
-    const getBillRemover1 = window.electron.ipcRenderer.on(
-      'get-bill',
-      ({ ok, error, bill }: GetBillOutput) => {
-        if (ok) {
-          setOrderProducts(bill.orderProducts);
-          setBill(bill);
-        } else {
-          console.log(error);
-        }
-      }
-    );
   };
 
   const deleteHandler = (id: number) => {
@@ -69,32 +101,6 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
       id,
       businessId: business.id,
     });
-
-    const deleteBillRemover = window.electron.ipcRenderer.on(
-      'delete-bill',
-      ({ ok, error }: DeleteBillOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-bills', {
-            token,
-            businessId: business.id,
-            page: page,
-          });
-          const getBillsRemover1 = window.electron.ipcRenderer.on(
-            'get-bills',
-            (args: GetBillsOutput) => {
-              setBills(args.bills as Bill[]);
-            }
-          );
-          setAlert({ success: '계산서가 삭제되었습니다.', error: '' });
-        } else {
-          if (error.startsWith('존재')) {
-            setAlert({ success: '', error: error });
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      }
-    );
   };
 
   return (

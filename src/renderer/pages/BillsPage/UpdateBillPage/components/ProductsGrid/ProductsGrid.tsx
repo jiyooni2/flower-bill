@@ -61,6 +61,46 @@ const ProductsGrid = () => {
       }
     );
     // setOrderProduct(currentBill);
+
+    const getProductsRemover = window.electron.ipcRenderer.on(
+      'get-products',
+      ({ ok, error, products }: GetProductsOutput) => {
+        if (ok) {
+          setProducts(products);
+        } else if (error) {
+          console.error(error);
+        }
+      }
+    );
+
+    const searchProductRemover = window.electron.ipcRenderer.on(
+      'search-product',
+      ({ ok, error, products }: SearchProductOutput) => {
+        if (ok) {
+          setProducts(products);
+        } else if (error) {
+          console.error(error);
+        }
+      }
+    );
+
+    const getProductsByCategoryRemover = window.electron.ipcRenderer.on(
+      'get-product-by-category',
+      ({ ok, error, products }: GetProductByCategoryOutput) => {
+        if (ok) {
+          setProducts(products);
+        } else if (error) {
+          console.error(error);
+        }
+      }
+    );
+
+    return () => {
+      getCategoriesRemover();
+      getProductsRemover();
+      searchProductRemover();
+      getProductsByCategoryRemover();
+    };
   }, []);
 
   const handlePage = (event: ChangeEvent<unknown>, value: number) => {
@@ -87,16 +127,6 @@ const ProductsGrid = () => {
           token,
           business: business.id,
         });
-        const getProductsRemover1 = window.electron.ipcRenderer.on(
-          'get-products',
-          ({ ok, error, products }: GetProductsOutput) => {
-            if (ok) {
-              setProducts(products);
-            } else if (error) {
-              console.error(error);
-            }
-          }
-        );
       } else {
         window.electron.ipcRenderer.sendMessage('search-product', {
           keyword: searchWord,
@@ -104,16 +134,6 @@ const ProductsGrid = () => {
           token,
           businessId: business.id,
         });
-        const searchProductRemover = window.electron.ipcRenderer.on(
-          'search-product',
-          ({ ok, error, products }: SearchProductOutput) => {
-            if (ok) {
-              setProducts(products);
-            } else if (error) {
-              console.error(error);
-            }
-          }
-        );
       }
     }
   };
@@ -140,16 +160,6 @@ const ProductsGrid = () => {
     };
 
     window.electron.ipcRenderer.sendMessage('get-product-by-category', data);
-    const getProductByRemover = window.electron.ipcRenderer.on(
-      'get-product-by-category',
-      ({ ok, error, products }: GetProductByCategoryOutput) => {
-        if (ok) {
-          setProducts(products);
-        } else if (error) {
-          console.error(error);
-        }
-      }
-    );
   };
 
   return (

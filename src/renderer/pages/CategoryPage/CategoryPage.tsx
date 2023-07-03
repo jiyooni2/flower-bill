@@ -28,7 +28,7 @@ const CategoryPage = () => {
   const [parentCategoryName, setParentCategoryName] = useState<string>('');
   const [parentCategoryId, setParentCategoryId] = useState<number>(0);
   const [developOpen, setDevelopOpen] = useState<boolean>(false);
-  const [alert, setAlert] = useState({ success: '', error: ''})
+  const [alert, setAlert] = useState({ success: '', error: '' });
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -58,21 +58,21 @@ const CategoryPage = () => {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on(
+    const getCategoriesRemover = window.electron.ipcRenderer.on(
       'get-categories',
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
           setCategories(categories);
         } else {
           console.error(error);
-          if (error.startsWith('존재')) {
-            setAlert({ success: '', error: error})
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}`})
-          }
+          setAlert({ success: '', error });
         }
       }
     );
+
+    return () => {
+      getCategoriesRemover();
+    };
   }, []);
 
   const clickAddHandler = (item: Category, name: string) => {
@@ -123,7 +123,7 @@ const CategoryPage = () => {
       }
       setCategoryName(item.name);
     }
-    nameInputRef.current.focus()
+    nameInputRef.current.focus();
   };
 
   const addTreeItem = (item: Category, text: string) => {
@@ -295,7 +295,8 @@ const CategoryPage = () => {
                   <Buttons
                     categoryName={categoryName}
                     setCategoryName={setCategoryName}
-                    setCategoryId={setCategoryId} categoryId={categoryId}
+                    setCategoryId={setCategoryId}
+                    categoryId={categoryId}
                     setLevelName={setLevelName}
                     setParentCategoryName={setParentCategoryName}
                     parentCategoryId={parentCategoryId}

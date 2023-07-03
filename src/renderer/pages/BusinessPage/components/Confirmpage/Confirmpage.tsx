@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './ConfirmPage.module.scss';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { businessState, tokenState } from 'renderer/recoil/states';
 import {
@@ -14,6 +14,25 @@ const ConfirmPage = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
+  useEffect(() => {
+    const checkPasswordRemover = window.electron.ipcRenderer.on(
+      'check-password',
+      ({ ok, error }: CheckPasswordOutput) => {
+        if (ok) {
+          navigate('/seller');
+        }
+        if (error) {
+          console.log(error);
+          setErrors('비밀번호를 확인해주세요.');
+        }
+      }
+    );
+
+    return () => {
+      checkPasswordRemover();
+    };
+  });
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
@@ -32,19 +51,6 @@ const ConfirmPage = () => {
       ...check,
       businessId: business.id,
     });
-
-    const checkPasswordRemover = window.electron.ipcRenderer.on(
-      'check-password',
-      ({ ok, error }: CheckPasswordOutput) => {
-        if (ok) {
-          navigate('/seller');
-        }
-        if (error) {
-          console.log(error);
-          setErrors('비밀번호를 확인해주세요.');
-        }
-      }
-    );
   };
 
   const keyEnterHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {

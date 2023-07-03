@@ -17,6 +17,7 @@ import {
 } from 'renderer/recoil/states';
 import { DeleteModalProps } from '../../BusinessPage.interface';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
   const navigate = useNavigate();
@@ -24,11 +25,17 @@ const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
   const [business, setBusiness] = useRecoilState(businessState);
   const [businesses, setBusinesses] = useRecoilState(businessesState);
 
-  const deleteHandler = () => {
-    window.electron.ipcRenderer.sendMessage('delete-business', {
-      token,
-      businessId: business.id,
-    });
+  useEffect(() => {
+    const getBusinessesRemover = window.electron.ipcRenderer.on(
+      'get-businesses',
+      (args: GetBusinessesOutput) => {
+        setBusinesses(args.businesses as Business[]);
+        setBusiness(businesses[0]);
+        setAlert({ success: '사업자가 삭제되었습니다.', error: '' });
+        setIsOpen(false);
+        navigate('/');
+      }
+    );
 
     const deleteBusinessRemover = window.electron.ipcRenderer.on(
       'delete-business',
@@ -38,24 +45,26 @@ const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
             token,
             businessId: business.id,
           });
-          const getBusinessesRemover = window.electron.ipcRenderer.on(
-            'get-businesses',
-            (args: GetBusinessesOutput) => {
-              setBusinesses(args.businesses as Business[]);
-              setBusiness(businesses[0]);
-              setAlert({ success: '사업자가 삭제되었습니다.', error: '' });
-              setIsOpen(false);
-              navigate('/');
-            }
-          );
         }
         if (error) {
           console.log(error);
           setIsOpen(false);
-          setAlert({ success: '', error: `네트워크 ${error}` });
+          setAlert({ success: '', error });
         }
       }
     );
+
+    return () => {
+      getBusinessesRemover();
+      deleteBusinessRemover();
+    };
+  }, []);
+
+  const deleteHandler = () => {
+    window.electron.ipcRenderer.sendMessage('delete-business', {
+      token,
+      businessId: business.id,
+    });
   };
 
   return (

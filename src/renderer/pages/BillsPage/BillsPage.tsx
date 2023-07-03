@@ -63,6 +63,10 @@ const BillsPage = () => {
         setBills(args.bills as Bill[]);
       }
     );
+
+    return () => {
+      getBillsRemover();
+    };
   }, []);
 
   const handleChangePage = (event: ChangeEvent<unknown>, value: number) => {

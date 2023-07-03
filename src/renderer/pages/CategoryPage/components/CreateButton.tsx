@@ -11,6 +11,7 @@ import {
   tokenState,
 } from 'renderer/recoil/states';
 import { CreateButtonProps } from '../CategoryPage.interface';
+import { useEffect } from 'react';
 
 const CreateButton = ({
   setAlert,
@@ -26,6 +27,43 @@ const CreateButton = ({
   const token = useRecoilValue(tokenState);
   const categories = useRecoilValue(categoriesState);
   const business = useRecoilValue(businessState);
+
+  useEffect(() => {
+    const getCategoriesRemover = window.electron.ipcRenderer.on(
+      'get-categories',
+      ({ ok, error, categories }: GetCategoriesOutput) => {
+        if (ok) {
+          setAlert({
+            success: '카테고리가 생성되었습니다.',
+            error: '',
+          });
+          setCategories(categories);
+        } else {
+          console.error(error);
+        }
+      }
+    );
+
+    const createCategoryRemover = window.electron.ipcRenderer.on(
+      'create-category',
+      ({ ok, error }: CreateCategoryOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-categories', {
+            token,
+            businessId: business.id,
+          });
+        } else if (error) {
+          console.log(error);
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
+    return () => {
+      getCategoriesRemover();
+      createCategoryRemover();
+    };
+  }, []);
 
   const newCategoryHandler = () => {
     if (!categoryName) {
@@ -54,35 +92,6 @@ const CreateButton = ({
         parentCategoryId: parentCategoryId,
       };
       window.electron.ipcRenderer.sendMessage('create-category', newData);
-
-      window.electron.ipcRenderer.on(
-        'create-category',
-        ({ ok, error }: CreateCategoryOutput) => {
-          if (ok) {
-            window.electron.ipcRenderer.sendMessage('get-categories', {
-              token,
-              businessId: business.id,
-            });
-            const getCategoriesRemover = window.electron.ipcRenderer.on(
-              'get-categories',
-              ({ ok, error, categories }: GetCategoriesOutput) => {
-                if (ok) {
-                  setAlert({
-                    success: '카테고리가 생성되었습니다.',
-                    error: '',
-                  });
-                  setCategories(categories);
-                } else {
-                  console.error(error);
-                }
-              }
-            );
-          } else if (error) {
-            console.log(error);
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      );
     }
     setCategoryId('');
     setCategoryName('');
