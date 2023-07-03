@@ -63,6 +63,9 @@ const ProductInputs = ({
   useEffect(() => {
     return () => {
       createProductRemover();
+      updateProductRemover();
+      deleteProductRemover();
+      getProductsRemover();
     };
   });
 
