@@ -61,6 +61,78 @@ const ProductInputs = ({
   }, [alert]);
 
   useEffect(() => {
+    createProductRemover = window.electron.ipcRenderer.on(
+      'create-product',
+      ({ ok, error }: CreateProductOutput) => {
+        if (ok) {
+          window.electron.ipcRenderer.sendMessage('get-products', {
+            token,
+            page: inputs.page - 1,
+            businessId: business.id,
+          });
+          setAlert({ success: '상품이 생성되었습니다.', error: '' });
+          clearInputs();
+        } else {
+          if (error.startsWith('최하위') || error.startsWith('없는')) {
+            setAlert({ success: '', error: error });
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}` });
+          }
+        }
+      }
+    );
+
+    getProductsRemover = window.electron.ipcRenderer.on(
+      'get-products',
+      (args: GetProductsOutput) => {
+        setProducts(args.products as Product[]);
+      }
+    );
+
+    deleteProductRemover = window.electron.ipcRenderer.on(
+      'delete-product',
+      ({ ok, error }: DeleteProductOutput) => {
+        if (ok) {
+          setAlert({ error: '', success: '상품이 삭제되었습니다.' });
+          window.electron.ipcRenderer.sendMessage('get-products', {
+            token,
+            businessId: business.id,
+          });
+          clearInputs();
+        }
+        if (error) {
+          console.error(error);
+          if (error.startsWith('존재') || error.startsWith('해당 상품')) {
+            setAlert({ success: '', error: error });
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}` });
+          }
+        }
+      }
+    );
+
+    updateProductRemover = window.electron.ipcRenderer.on(
+      'update-product',
+      ({ ok, error }: UpdateProductOutput) => {
+        if (ok) {
+          setAlert({ success: '상품이 수정되었습니다.', error: '' });
+          window.electron.ipcRenderer.sendMessage('get-products', {
+            token,
+            businessId: business.id,
+          });
+          clearInputs();
+        }
+        if (error) {
+          console.error(error);
+          if (error.startsWith('존재') || error.startsWith('해당 상품')) {
+            setAlert({ success: '', error: error });
+          } else {
+            setAlert({ success: '', error: `네트워크 ${error}` });
+          }
+        }
+      }
+    );
+
     return () => {
       createProductRemover();
       updateProductRemover();
@@ -85,13 +157,6 @@ const ProductInputs = ({
     setInputs({ ...inputs, favorite: !inputs.favorite });
   };
 
-  getProductsRemover = window.electron.ipcRenderer.on(
-    'get-products',
-    (args: GetProductsOutput) => {
-      setProducts(args.products as Product[]);
-    }
-  );
-
   const deleteDataHandler = () => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       window.electron.ipcRenderer.sendMessage('delete-product', {
@@ -99,28 +164,6 @@ const ProductInputs = ({
         token,
         businessId: business.id,
       });
-
-      deleteProductRemover = window.electron.ipcRenderer.on(
-        'delete-product',
-        ({ ok, error }: DeleteProductOutput) => {
-          if (ok) {
-            setAlert({ error: '', success: '상품이 삭제되었습니다.' });
-            window.electron.ipcRenderer.sendMessage('get-products', {
-              token,
-              businessId: business.id,
-            });
-            clearInputs();
-          }
-          if (error) {
-            console.error(error);
-            if (error.startsWith('존재') || error.startsWith('해당 상품')) {
-              setAlert({ success: '', error: error });
-            } else {
-              setAlert({ success: '', error: `네트워크 ${error}` });
-            }
-          }
-        }
-      );
     }
   };
 
@@ -137,27 +180,6 @@ const ProductInputs = ({
 
     window.electron.ipcRenderer.sendMessage('update-product', newData);
 
-    updateProductRemover = window.electron.ipcRenderer.on(
-      'update-product',
-      ({ ok, error }: UpdateProductOutput) => {
-        if (ok) {
-          setAlert({ success: '상품이 수정되었습니다.', error: '' });
-          window.electron.ipcRenderer.sendMessage('get-products', {
-            token,
-            businessId: business.id,
-          });
-          clearInputs();
-        }
-        if (error) {
-          console.error(error);
-          if (error.startsWith('존재') || error.startsWith('해당 상품')) {
-            setAlert({ success: '', error: error });
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      }
-    );
     setInputs({ ...inputs, favorite: false });
   };
 
@@ -175,27 +197,6 @@ const ProductInputs = ({
       token,
     };
     window.electron.ipcRenderer.sendMessage('create-product', newData);
-
-    createProductRemover = window.electron.ipcRenderer.on(
-      'create-product',
-      ({ ok, error }: CreateProductOutput) => {
-        if (ok) {
-          window.electron.ipcRenderer.sendMessage('get-products', {
-            token,
-            page: inputs.page - 1,
-            businessId: business.id,
-          });
-          setAlert({ success: '상품이 생성되었습니다.', error: '' });
-          clearInputs();
-        } else {
-          if (error.startsWith('최하위') || error.startsWith('없는')) {
-            setAlert({ success: '', error: error });
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      }
-    );
   };
 
   const categoryClickHandler = () => {
