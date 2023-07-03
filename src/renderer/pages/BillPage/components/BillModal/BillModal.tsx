@@ -55,12 +55,27 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   }, [alert]);
 
   useEffect(() => {
+    createBillRemover = window.electron.ipcRenderer.on(
+      'create-bill',
+      ({ ok, error }: GetBillOutput) => {
+        if (ok) {
+          setAlert({ success: '계산서가 생성되었습니다.', error: '' });
+          setOrderProducts([]);
+          setMemo('');
+          setStore(null);
+        } else if (error) {
+          console.error(error);
+          setAlert({ success: '', error });
+        }
+      }
+    );
+
     return () => {
       createBillRemover();
     };
   }, []);
 
-  const handleClick = (condition: string) => {
+  const handleClick = () => {
     const orderProductInputs = orderProducts?.map((orderProduct) => ({
       businessId: business.id,
       count: orderProduct.count,
@@ -77,30 +92,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     };
 
     window.electron.ipcRenderer.sendMessage('create-bill', newBill);
-    createBillRemover = window.electron.ipcRenderer.on(
-      'create-bill',
-      ({ ok, error }: GetBillOutput) => {
-        if (ok) {
-          if (condition === 'none') {
-            setAlert({ success: '계산서가 생성되었습니다.', error: '' });
-          }
-          setOrderProducts([]);
-          setMemo('');
-          setStore(null);
-          if (condition === 'save') {
-            setAlert({ success: '계산서가 생성되었습니다.', error: '' });
-            movePage('/bills');
-          }
-        } else if (error) {
-          console.error(error);
-          if (error.startsWith('존재')) {
-            setAlert({ success: '', error: error });
-          } else {
-            setAlert({ success: '', error: `네트워크 ${error}` });
-          }
-        }
-      }
-    );
   };
 
   const afterPrint = () => {
@@ -130,17 +121,17 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 bottom: '-10px',
                 left: 0,
               }}
-              onClick={() => handleClick('save')}
+              onClick={() => handleClick()}
             >
               저장하기
             </Button>
             <ReactToPrint
-              onBeforePrint={() => handleClick('none')}
+              onBeforePrint={() => handleClick()}
               onAfterPrint={afterPrint}
               trigger={() => (
                 <Button
                   variant="contained"
-                  onClick={() => handleClick('none')}
+                  onClick={() => handleClick()}
                   style={{
                     height: '37px',
                     width: '100%',
