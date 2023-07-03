@@ -33,6 +33,10 @@ const ProductInputs = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [alert, setAlert] = useState({ success: '', error: '' });
   const addComma = useAddComma();
+  let createProductRemover = () => {};
+  let updateProductRemover = () => {};
+  let deleteProductRemover = () => {};
+  let getProductsRemover = () => {};
 
   useEffect(() => {
     if (alert.error && !alert.success) {
@@ -56,6 +60,12 @@ const ProductInputs = ({
     }
   }, [alert]);
 
+  useEffect(() => {
+    return () => {
+      createProductRemover();
+    };
+  });
+
   const clearInputs = () => {
     setInputs({ ...inputs, name: '', price: '', clicked: false });
     setCategoryId(0);
@@ -72,6 +82,13 @@ const ProductInputs = ({
     setInputs({ ...inputs, favorite: !inputs.favorite });
   };
 
+  getProductsRemover = window.electron.ipcRenderer.on(
+    'get-products',
+    (args: GetProductsOutput) => {
+      setProducts(args.products as Product[]);
+    }
+  );
+
   const deleteDataHandler = () => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       window.electron.ipcRenderer.sendMessage('delete-product', {
@@ -80,7 +97,7 @@ const ProductInputs = ({
         businessId: business.id,
       });
 
-      const deleteProductRemover = window.electron.ipcRenderer.on(
+      deleteProductRemover = window.electron.ipcRenderer.on(
         'delete-product',
         ({ ok, error }: DeleteProductOutput) => {
           if (ok) {
@@ -89,12 +106,6 @@ const ProductInputs = ({
               token,
               businessId: business.id,
             });
-            const getProductsRemover1 = window.electron.ipcRenderer.on(
-              'get-products',
-              (args: GetProductsOutput) => {
-                setProducts(args.products as Product[]);
-              }
-            );
             clearInputs();
           }
           if (error) {
@@ -123,7 +134,7 @@ const ProductInputs = ({
 
     window.electron.ipcRenderer.sendMessage('update-product', newData);
 
-    const updateProductRemover = window.electron.ipcRenderer.on(
+    updateProductRemover = window.electron.ipcRenderer.on(
       'update-product',
       ({ ok, error }: UpdateProductOutput) => {
         if (ok) {
@@ -132,12 +143,6 @@ const ProductInputs = ({
             token,
             businessId: business.id,
           });
-          const getProductsRemover2 = window.electron.ipcRenderer.on(
-            'get-products',
-            (args: GetProductsOutput) => {
-              setProducts(args.products as Product[]);
-            }
-          );
           clearInputs();
         }
         if (error) {
@@ -161,13 +166,14 @@ const ProductInputs = ({
 
     const newData: CreateProductInput = {
       name: inputs.name,
-      price: Number(inputs.price),
+      price: Number(inputs.price.replace(',', '')),
       categoryId: id,
       businessId: business.id,
       token,
     };
     window.electron.ipcRenderer.sendMessage('create-product', newData);
-    const createProductRemover = window.electron.ipcRenderer.on(
+
+    createProductRemover = window.electron.ipcRenderer.on(
       'create-product',
       ({ ok, error }: CreateProductOutput) => {
         if (ok) {
@@ -176,21 +182,9 @@ const ProductInputs = ({
             page: inputs.page - 1,
             businessId: business.id,
           });
-          const getProductsRemover3 = window.electron.ipcRenderer.on(
-            'get-products',
-            ({ ok, error, products }: GetProductsOutput) => {
-              if (ok) {
-                setAlert({ success: '상품이 생성되었습니다.', error: '' });
-                setProducts(products);
-                clearInputs();
-              }
-              if (error) {
-                setAlert({ success: '', error: `네트워크 ${error}` });
-              }
-            }
-          );
-        }
-        if (error) {
+          setAlert({ success: '상품이 생성되었습니다.', error: '' });
+          clearInputs();
+        } else {
           if (error.startsWith('최하위') || error.startsWith('없는')) {
             setAlert({ success: '', error: error });
           } else {

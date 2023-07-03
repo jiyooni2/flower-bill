@@ -30,6 +30,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
   const [alert, setAlert] = useState({ success: '', error: '' });
   const printRef = useRef();
   const movePage = useNavigate();
+  let createBillRemover = () => {};
 
   useEffect(() => {
     if (alert.error && !alert.success) {
@@ -53,6 +54,12 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     }
   }, [alert]);
 
+  useEffect(() => {
+    return () => {
+      createBillRemover();
+    };
+  }, []);
+
   const handleClick = (condition: string) => {
     const orderProductInputs = orderProducts?.map((orderProduct) => ({
       businessId: business.id,
@@ -70,7 +77,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
     };
 
     window.electron.ipcRenderer.sendMessage('create-bill', newBill);
-    const createBillRemover = window.electron.ipcRenderer.on(
+    createBillRemover = window.electron.ipcRenderer.on(
       'create-bill',
       ({ ok, error }: GetBillOutput) => {
         if (ok) {
