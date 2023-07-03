@@ -42,12 +42,6 @@ const ProductsPage = () => {
       token,
       businessId: business.id,
     });
-    window.electron.ipcRenderer.on(
-      'get-categories',
-      (args: GetCategoriesOutput) => {
-        setCategories(args.categories as Category[]);
-      }
-    );
 
     categories?.map((cat) => {
       if (cat.id == categoryId) {
@@ -57,21 +51,45 @@ const ProductsPage = () => {
   }, [categoryId]);
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-products', {
-      token,
-      businessId: business.id,
-    });
-    const getProductsRemover1 = window.electron.ipcRenderer.on(
+    const getProductsRemover = window.electron.ipcRenderer.on(
       'get-products',
       ({ ok, error, products }: GetProductsOutput) => {
         if (ok) {
           setProducts(products);
-        }
-        if (error) {
+        } else if (error) {
           console.error(error);
         }
       }
     );
+
+    const getCategoriesRemover = window.electron.ipcRenderer.on(
+      'get-categories',
+      (args: GetCategoriesOutput) => {
+        setCategories(args.categories as Category[]);
+      }
+    );
+
+    const searchProductRemover = window.electron.ipcRenderer.on(
+      'search-product',
+      ({ ok, error, products }: SearchProductOutput) => {
+        if (ok) {
+          setProducts(products);
+        } else {
+          console.log(error);
+        }
+      }
+    );
+
+    window.electron.ipcRenderer.sendMessage('get-products', {
+      token,
+      businessId: business.id,
+    });
+
+    return () => {
+      getProductsRemover();
+      getCategoriesRemover();
+      searchProductRemover();
+    };
   }, []);
 
   const filter = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,27 +107,11 @@ const ProductsPage = () => {
         };
 
         window.electron.ipcRenderer.sendMessage('search-product', searchData);
-        const searchProductRemover = window.electron.ipcRenderer.on(
-          'search-product',
-          ({ ok, error, products }: SearchProductOutput) => {
-            if (ok) {
-              setProducts(products);
-            } else {
-              console.log(error);
-            }
-          }
-        );
       } else {
         window.electron.ipcRenderer.sendMessage('get-products', {
           token,
           businessId: business.id,
         });
-        const getProductsRemover2 = window.electron.ipcRenderer.on(
-          'get-products',
-          (args: GetProductsOutput) => {
-            setProducts(args.products as Product[]);
-          }
-        );
       }
     }
     clearInputs();
