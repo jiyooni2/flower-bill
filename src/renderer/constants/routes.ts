@@ -2,7 +2,7 @@ const ROUTES = {
   HOME: '/',
   BILL: '/bill',
   BILLS: '/bills',
-  DETAIL: '/detail-bills',
+  DETAIL: '/detail-bills/:id',
   UPDATE: '/update-bills',
   STORE: '/store',
   PRODUCTS: '/products',

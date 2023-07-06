@@ -1,5 +1,5 @@
 import { Store } from '../../store/entities/store.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
 @Entity()

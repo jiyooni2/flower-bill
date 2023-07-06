@@ -120,7 +120,7 @@ const Body = ({ setAlert, page, date }: BodyProps) => {
               <TableRow hover role="checkbox" tabIndex={-1} key={bill.id}>
                 <TableCell>
                   <Link
-                    to={'/detail-bills'}
+                    to={`/detail-bills/${bill.id}`}
                     style={{
                       marginBottom: '-20px',
                       fontSize: '13px',
