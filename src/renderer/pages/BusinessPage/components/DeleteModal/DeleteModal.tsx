@@ -31,7 +31,6 @@ const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
       (args: GetBusinessesOutput) => {
         setBusinesses(args.businesses as Business[]);
         setBusiness(businesses[0]);
-        setAlert({ success: '사업자가 삭제되었습니다.', error: '' });
         setIsOpen(false);
         navigate('/');
       }
@@ -41,6 +40,7 @@ const DeleteModal = ({ isOpen, setIsOpen, setAlert }: DeleteModalProps) => {
       'delete-business',
       ({ ok, error }: DeleteBusinessOutput) => {
         if (ok) {
+          setAlert({ success: '사업자가 삭제되었습니다.', error: '' });
           window.electron.ipcRenderer.sendMessage('get-businesses', {
             token,
             businessId: business.id,

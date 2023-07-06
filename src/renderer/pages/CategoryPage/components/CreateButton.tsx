@@ -33,10 +33,6 @@ const CreateButton = ({
       'get-categories',
       ({ ok, error, categories }: GetCategoriesOutput) => {
         if (ok) {
-          setAlert({
-            success: '카테고리가 생성되었습니다.',
-            error: '',
-          });
           setCategories(categories);
         } else {
           console.error(error);
@@ -51,6 +47,10 @@ const CreateButton = ({
           window.electron.ipcRenderer.sendMessage('get-categories', {
             token,
             businessId: business.id,
+          });
+          setAlert({
+            success: '카테고리가 생성되었습니다.',
+            error: '',
           });
         } else if (error) {
           console.log(error);

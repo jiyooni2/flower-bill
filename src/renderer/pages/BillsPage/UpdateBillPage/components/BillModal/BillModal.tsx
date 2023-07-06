@@ -41,6 +41,7 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
       'update-bill',
       ({ ok, error }: UpdateBillOutput) => {
         if (ok) {
+          setAlert({ success: '계산서가 수정되었습니다.', error: '' });
           // window.electron.ipcRenderer.sendMessage('get-bills', newBill);
         } else if (error) {
           console.log(error);
@@ -54,7 +55,6 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
       ({ ok, error, bills }: GetBillsOutput) => {
         if (ok) {
           setBills(bills);
-          setAlert({ success: '계산서가 수정되었습니다.', error: '' });
         } else if (error) {
           console.log(error);
           setAlert({ success: '', error });

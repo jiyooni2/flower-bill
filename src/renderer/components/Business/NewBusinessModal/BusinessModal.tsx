@@ -60,6 +60,7 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
             token,
             businessId: 1,
           });
+          setAlert({ success: '사업자가 생성되었습니다.', error: '' });
         } else if (error) {
           setAlert({ success: '', error });
           console.error(error);
@@ -72,7 +73,6 @@ const BusinessModal = ({ isOpen, setIsOpen }: IProps) => {
       ({ ok, error, businesses }: GetBusinessesOutput) => {
         if (ok) {
           setBusinesses(businesses);
-          setAlert({ success: '사업자가 생성되었습니다.', error: '' });
         } else {
           console.error(error);
           setAlert({ success: '', error });

@@ -121,7 +121,10 @@ const BillModal = ({ isOpen, setIsOpen }: IProps) => {
                 bottom: '-10px',
                 left: 0,
               }}
-              onClick={() => handleClick()}
+              onClick={() => {
+                handleClick();
+                setIsOpen(false);
+              }}
             >
               저장하기
             </Button>
