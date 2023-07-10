@@ -52,17 +52,18 @@ const BillsPage = () => {
   }, [alert]);
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('get-bills', {
-      token,
-      businessId: business.id,
-      page: page,
-    });
     const getBillsRemover = window.electron.ipcRenderer.on(
       'get-bills',
       (args: GetBillsOutput) => {
         setBills(args.bills as Bill[]);
       }
     );
+
+    window.electron.ipcRenderer.sendMessage('get-bills', {
+      token,
+      businessId: business.id,
+      page: page - 1,
+    });
 
     return () => {
       getBillsRemover();

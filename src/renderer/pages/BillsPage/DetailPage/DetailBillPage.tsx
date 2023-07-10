@@ -71,7 +71,7 @@ const DetailBillPage = () => {
     <>
       {isLoading === false ? (
         <>
-          <BillModal isOpen={isOpen} setIsOpen={setIsOpen} />
+          <BillModal isOpen={isOpen} setIsOpen={setIsOpen} bill={bill} />
           <div
             style={{
               justifyContent: 'none',

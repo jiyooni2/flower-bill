@@ -167,7 +167,7 @@ const ProductInputs = ({
     const newData: UpdateProductInput = {
       id: inputs.id,
       name: inputs.name,
-      price: Number(inputs.price),
+      price: Number(inputs.price.replace(',', '')),
       categoryId: id,
       token,
       businessId: business.id,
