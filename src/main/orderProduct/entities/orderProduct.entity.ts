@@ -3,7 +3,7 @@ import { Product } from '../../product/entities/product.entity';
 import { Bill } from '../../bill/entities/bill.entity';
 import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
-@Entity()
+@Entity({ name: 'orderProduct' })
 export class OrderProduct extends BusinessRelatedEntity {
   @Column()
   count: number;

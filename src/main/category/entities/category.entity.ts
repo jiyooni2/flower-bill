@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BusinessRelatedEntity } from './../../common/entities/business-related.entity';
 
-@Entity()
+@Entity({ name: 'category' })
 export class Category extends BusinessRelatedEntity {
   @Column()
   name: string;

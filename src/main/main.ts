@@ -34,7 +34,7 @@ class AppUpdater {
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: 'database.sqlite',
-  synchronize: false,
+  synchronize: true,
   entities: [Bill, Store, Category, OrderProduct, Product, Owner, Business],
   logging: true,
 });

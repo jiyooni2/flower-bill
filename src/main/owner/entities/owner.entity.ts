@@ -1,7 +1,7 @@
 import { Column, Entity } from 'typeorm';
 import { CoreEntity } from '../../common/entities/core.entity';
 
-@Entity()
+@Entity({ name: 'owner' })
 export class Owner extends CoreEntity {
   @Column()
   nickname: string;
